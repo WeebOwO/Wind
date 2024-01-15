@@ -39,6 +39,7 @@ namespace wind
         void ResetCommanEncoders();
     };
 
+    // using to manage rendering resources
     class Renderer : public Service<Renderer>
     {
     public:
@@ -62,6 +63,7 @@ namespace wind
         }
 
         auto GetPso(uint64_t id) { return m_psoCache->GetPso(id); }
+        
 
     private:
         void GeneratePSO(const std::string& assetPath);

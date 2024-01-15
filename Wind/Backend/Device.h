@@ -4,7 +4,9 @@
 
 #include "Allocator.h"
 #include "Descriptor.h"
+#include "Handle.h"
 #include "VulkanHeader.h"
+
 
 namespace wind
 {
@@ -44,6 +46,9 @@ namespace wind
         auto GetAllocator() const -> VkAllocator*;
         auto GetLimits() { return m_limits; }
 
+        BufferHandle  CreateGPUBuffer();
+        TextureHandle CreateGPUTexture(const vk::ImageCreateInfo createInfo);
+
         AllocatedBuffer AllocateBuffer(const vk::BufferCreateInfo&    bufferCreateInfo,
                                        const VmaAllocationCreateInfo& allocationCreateInfo) const;
 
@@ -59,7 +64,7 @@ namespace wind
         // block style submit
         vk::CommandBuffer GetBackUpCommandBuffer();
         void              SubmitBackUpCommandBuffer(const vk::CommandBuffer& buffer);
-        
+
     private:
         void InitAllocator();
         void CreateInstance();
@@ -91,7 +96,8 @@ namespace wind
         Scope<VkAllocator> m_allocator;
         bool               m_enableDebug {true};
 
-        // main queue backup command buffer which do some imm task
+        // main queue backup command buffer which do some immediate task (in block way, means cpu will stall to sync
+        // with gpu)
         vk::CommandPool   m_backupCommandPool;
         vk::CommandBuffer m_backupCommandBuffer;
         vk::Fence         m_backupCommandfence;

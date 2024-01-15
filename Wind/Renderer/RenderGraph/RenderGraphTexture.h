@@ -6,7 +6,7 @@
 #include "RenderGraphResource.h"
 
 namespace wind
-{
+{   
     class RenderGraphTexture : public RenderGraphResource
     {
     public:
@@ -17,7 +17,7 @@ namespace wind
             uint32_t            depth;
             TextureViewType     type;
             vk::Format          format;
-            vk::ImageLayout     layout    = vk::ImageLayout::eUndefined;
+            vk::ImageLayout     layout    = vk::ImageLayout::eUndefined; 
             vk::ImageUsageFlags usage     = vk::ImageUsageFlagBits::eColorAttachment;
             bool                useMipmap = false;
         };

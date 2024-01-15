@@ -89,6 +89,11 @@ namespace wind
         m_nativeHandle.pipelineBarrier(srcFlags, dstFlags, {}, 0, nullptr, 0, nullptr, 1, &imageBarrier);
     }
 
+    void CommandBuffer::TransferImageLayout(const GPUTexture& texture, vk::ImageLayout newLayout) 
+    {
+        
+    }
+
     void CommandBuffer::RenderUI()
     {
         ImGui::Render();

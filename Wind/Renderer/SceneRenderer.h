@@ -30,7 +30,6 @@ namespace wind
         void DrawMesh(CommandBuffer& encoder);
 
         Scene*      m_renderScene;
-        FrameParms* m_framedata;
 
         vk::Viewport m_viewPort {};
 

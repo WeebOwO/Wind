@@ -30,7 +30,7 @@ namespace wind
         uint32_t        m_byteSize;
         AllocatedBuffer m_buffer;
     };
-
+    
     class UploadBuffer : public GPUBuffer
     {
     public:

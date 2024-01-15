@@ -81,7 +81,11 @@ namespace wind
         m_psoCache->Destroy();
     }
 
-    void Renderer::GeneratePSO(const std::string& assetPath) { PipelineBuilder builder; }
+    void Renderer::GeneratePSO(const std::string& assetPath) { 
+        PipelineBuilder builder; 
+        // generate gbuffer pso
+        
+    }
 
     GPUTexture* Renderer::GetRenderGraphOutput()
     {

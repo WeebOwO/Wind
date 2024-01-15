@@ -35,6 +35,25 @@ namespace wind
         for (const auto& [name, node] : m_passNodes)
         {
             ResourceRegistry registry(*this, node.get());
+
+            // insert barrier here
+            for (auto depend : node->dependResources)
+            {   
+                if (depend)
+                {
+                    auto resource = m_resources[depend];
+                    if(resource->type == RenderGraphResourceType::Texture) {
+                        RenderGraphTexture* texture = static_cast<RenderGraphTexture*>(resource);
+                        
+                    }
+                }
+            }
+
+            for (auto output : node->outputResources)
+            {
+                
+            }
+
             node->Execute(registry, *renderEncoder);
         }
 

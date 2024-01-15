@@ -3,8 +3,8 @@
 #include "Engine/RenderConfig.h"
 #include <shaderc/shaderc.hpp>
 
-#include "Core/Log.h"
 #include "Core/Config.h"
+#include "Core/Log.h"
 #include "Engine/RuntimeContext.h"
 #include "Resource/VertexFactory.h"
 
@@ -30,21 +30,23 @@ namespace wind
         device = scope::Create<GPUDevice>();
 
         // init the renderer
-        RenderConfig config;
+        RenderConfig config {.renderPath = RenderPath::Defer};
+
         renderer = scope::Create<Renderer>(*device, config);
         renderer->Init();
 
-        // init project path        
+        // init project path
         const std::string projectDir = PROJECT_DIR;
-        pathManager.projectPath = PROJECT_DIR;
-        pathManager.shaderPath  = projectDir + "\\Shaders";
-        pathManager.asssetPath  = projectDir + "\\Assets";
-        pathManager.pipelinePath  = pathManager.asssetPath.string() + "\\RenderPipeline";
+        pathManager.projectPath      = PROJECT_DIR;
+        pathManager.shaderPath       = projectDir + "\\Shaders";
+        pathManager.asssetPath       = projectDir + "\\Assets";
+        pathManager.pipelinePath     = pathManager.asssetPath.string() + "\\RenderPipeline";
         // init the lua virutal machine
         luaState = luaL_newstate();
-        if(luaState == NULL) {
+        if (luaState == NULL)
+        {
             WIND_CORE_ERROR("Fail to create lua machine");
-        } 
+        }
     }
 
     void RuntimeContext::Quit()
@@ -61,7 +63,8 @@ namespace wind
         guiContext->Init(*device, window);
     }
 
-    std::filesystem::path RuntimeContext::GetPipelinePath(const std::string& name) {
+    std::filesystem::path RuntimeContext::GetPipelinePath(const std::string& name)
+    {
         return pathManager.pipelinePath.string() + "\\" + name;
     }
 

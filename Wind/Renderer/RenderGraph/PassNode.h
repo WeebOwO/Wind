@@ -30,6 +30,7 @@ namespace wind
         virtual void InitResources() = 0;
 
     protected:
+        friend class RenderGraph;
         std::vector<RenderGraphHandle> dependResources;
         std::vector<RenderGraphHandle> outputResources;
 

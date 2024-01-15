@@ -3,13 +3,11 @@
 #include <entt/entt.hpp>
 #include <type_traits>
 
-
 #include "ECS/Component.h"
 #include "Scene/Scene.h"
 
 namespace wind
 {
-
     class GameObject
     {
     public:
@@ -71,5 +69,4 @@ namespace wind
         entt::entity m_enttHandle;
         Scene*       m_scene;
     };
-
 }; // namespace wind

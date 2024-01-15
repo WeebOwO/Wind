@@ -8,11 +8,11 @@ namespace wind
     static bool IsIntegerBasedFormat(vk::Format format) { return false; };
 
     void GPUTexture::CreateDefaultImageView(const vk::ImageSubresourceRange& range, vk::ImageViewType viewType)
-    {   
+    {
         auto vkDevice = device.GetVkDeviceHandle();
-    
+
         vk::ImageViewCreateInfo viewCreateInfo {
-            .image = m_allocatedImage.image, .viewType = viewType, .format = m_desc.format, .subresourceRange = range};
+            .image = m_allocatedImage.image, .viewType = viewType, .format = m_format, .subresourceRange = range};
 
         m_defaultView = vkDevice.createImageView(viewCreateInfo);
     }
@@ -25,25 +25,19 @@ namespace wind
 
     vk::ImageSubresourceRange GPUTexture::GetImageSubresourceRange(uint32_t mip, uint32_t level) const
     {
-        return vk::ImageSubresourceRange {.aspectMask     = utils::ImageFormatToImageAspect(m_desc.format),
+        return vk::ImageSubresourceRange {.aspectMask     = utils::ImageFormatToImageAspect(m_format),
                                           .baseMipLevel   = mip,
-                                          .levelCount     = m_desc.mipCount,
+                                          .levelCount     = m_mipCount,
                                           .baseArrayLayer = level,
-                                          .layerCount     = m_desc.layerCount};
+                                          .layerCount     = m_layerCount};
     }
 
     GPUTexture::GPUTexture(const vk::ImageCreateInfo& createInfo)
     {
         // init our GPUTextureDesc
-        m_desc = Desc {.width       = createInfo.extent.width,
-                       .height      = createInfo.extent.height,
-                       .depth       = createInfo.extent.depth,
-                       .mipCount    = createInfo.mipLevels,
-                       .layerCount  = createInfo.arrayLayers,
-                       .format      = createInfo.format,
-                       .usage       = createInfo.usage,
-                       .sampleCount = createInfo.samples,
-                       .layout      = createInfo.initialLayout};
+        m_width = createInfo.extent.width, m_height = createInfo.extent.height, m_depth = createInfo.extent.depth,
+        m_mipCount = createInfo.mipLevels, m_layerCount = createInfo.arrayLayers, m_format = createInfo.format,
+        m_usage = createInfo.usage, m_sampleCount = createInfo.samples, m_layout = createInfo.initialLayout;
 
         VmaAllocationCreateInfo allocationInfo {
             .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_AUTO, .priority = 1.0f};
@@ -59,7 +53,7 @@ namespace wind
                                     const ImVec4& border_colc)
     {
         if (!m_imguiSet)
-            m_imguiSet = ImGui_ImplVulkan_AddTexture(m_defaultSampler, m_defaultView, (VkImageLayout)m_desc.layout);
+            m_imguiSet = ImGui_ImplVulkan_AddTexture(m_defaultSampler, m_defaultView, (VkImageLayout)m_layout);
         ImGui::Image((ImTextureID)m_imguiSet, size, uv0, uv1, tint_col, border_colc);
     }
 
@@ -77,6 +71,8 @@ namespace wind
         // use device allocator to destroy
         device->DestroyImage(m_allocatedImage);
     }
+
+    void GPUTexture::SetImageLayout(vk::ImageLayout layout) noexcept { m_layout = layout; }
 } // namespace wind
 
 namespace wind::utils
@@ -153,5 +149,14 @@ namespace wind::utils
                 return vk::AccessFlagBits::eFragmentShadingRateAttachmentReadKHR;
         }
         return {};
+    }
+
+    bool IsDepthFormat(vk::Format format)
+    {
+        if (format == vk::Format::eD32Sfloat || format == vk::Format::eD32SfloatS8Uint)
+        {
+            return true;
+        }
+        return false;
     }
 } // namespace wind::utils

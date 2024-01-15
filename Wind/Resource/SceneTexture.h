@@ -2,5 +2,8 @@
 
 namespace wind
 {
-    
+    class SceneTexture
+    {
+        
+    };
 } // namespace wind

@@ -60,6 +60,8 @@ namespace wind
                                  vk::PipelineStageFlags           dstFlags,
                                  const vk::ImageSubresourceRange& subRange); // this is verbose version
 
+        void TransferImageLayout(const GPUTexture& texture, vk::ImageLayout newLayout);
+
         // dynamic rendering
         void BeginRendering(const vk::RenderingInfo& renderingInfo);
         void EndRendering();
@@ -67,12 +69,10 @@ namespace wind
         // uipart
         void RenderUI();
 
-        // compute
     protected:
         RenderCommandQueueType m_queueType;
-
-        vk::CommandBuffer m_nativeHandle;
-        vk::CommandPool   m_cmdPool;
+        vk::CommandBuffer      m_nativeHandle;
+        vk::CommandPool        m_cmdPool;
     };
 
     // always alloc from stack, try not to use this from heap memory
@@ -105,7 +105,7 @@ namespace wind
 
     private:
         GPUDevice* m_device {nullptr};
-        
+
         std::vector<vk::CommandPool> m_commandPools;
         std::vector<uint8_t>         m_usedBUffers;
     };
