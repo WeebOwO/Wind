@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+#include "Backend/RHIResource.h"
 #include "Device.h"
 #include "Utils.h"
 
@@ -32,7 +33,7 @@ namespace wind
                                           .layerCount     = m_layerCount};
     }
 
-    GPUTexture::GPUTexture(const vk::ImageCreateInfo& createInfo)
+    GPUTexture::GPUTexture(GPUDevice& device, const vk::ImageCreateInfo& createInfo) : RHIResource(device)
     {
         // init our GPUTextureDesc
         m_width = createInfo.extent.width, m_height = createInfo.extent.height, m_depth = createInfo.extent.depth,
@@ -57,19 +58,13 @@ namespace wind
         ImGui::Image((ImTextureID)m_imguiSet, size, uv0, uv1, tint_col, border_colc);
     }
 
-    Ref<GPUTexture> GPUTexture::Create(const vk::ImageCreateInfo& createInfo)
-    {
-        return ref::Create<GPUTexture>(createInfo);
-    }
-
     GPUTexture::~GPUTexture()
     {
-        auto& device = g_runtimeContext.device;
         if (m_defaultSampler)
-            device->GetVkDeviceHandle().destroySampler(m_defaultSampler);
-        device->GetVkDeviceHandle().destroyImageView(m_defaultView);
+            device.GetVkDeviceHandle().destroySampler(m_defaultSampler);
+        device.GetVkDeviceHandle().destroyImageView(m_defaultView);
         // use device allocator to destroy
-        device->DestroyImage(m_allocatedImage);
+        device.DestroyImage(m_allocatedImage);
     }
 
     void GPUTexture::SetImageLayout(vk::ImageLayout layout) noexcept { m_layout = layout; }

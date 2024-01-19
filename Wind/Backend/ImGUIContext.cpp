@@ -1,5 +1,6 @@
 #include "ImGUIContext.h"
 
+#include "Engine/RuntimeContext.h"
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_glfw.h>
 #include <Imgui/imgui_impl_vulkan.h>
@@ -69,7 +70,7 @@ namespace wind
 
         ImGui_ImplVulkan_Init(&initInfo, nullptr);
 
-        ImmCommandBuffer taskEncoder;
+        ImmCommandBuffer taskEncoder(*g_runtimeContext.device);
         taskEncoder.PushTask([](const vk::CommandBuffer& buffer) {
             VkCommandBuffer Cbuffer = (VkCommandBuffer)buffer;
             ImGui_ImplVulkan_CreateFontsTexture(Cbuffer);

@@ -19,10 +19,10 @@ namespace wind
         General
     };
 
-    class CommandBuffer : public RHIResource<RHIResourceType::CommandBuffer>
+    class CommandBuffer : public RHIResource
     {
     public:
-        CommandBuffer(RenderCommandQueueType queueType = RenderCommandQueueType::General);
+        CommandBuffer(GPUDevice& device, RenderCommandQueueType queueType = RenderCommandQueueType::General);
         ~CommandBuffer();
 
         void              Begin();
@@ -76,12 +76,12 @@ namespace wind
     };
 
     // always alloc from stack, try not to use this from heap memory
-    class ImmCommandBuffer : public RHIResource<RHIResourceType::CommandBuffer>
+    class ImmCommandBuffer : public RHIResource
     {
     public:
         using TaskFunc = std::function<void(const vk::CommandBuffer&)>;
 
-        ImmCommandBuffer();
+        ImmCommandBuffer(GPUDevice& device);
         ~ImmCommandBuffer() = default;
 
         void PushTask(const TaskFunc& func);
@@ -96,7 +96,7 @@ namespace wind
     class CommandBufferManager
     {
     public:
-        void Init(GPUDevice* device, uint32_t numThreads);
+        void Init(GPUDevice& device, uint32_t numThreads);
         void Quit();
 
         void ResetPool(uint32_t frameIndex);

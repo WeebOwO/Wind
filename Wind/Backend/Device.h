@@ -3,14 +3,19 @@
 #include "std.h"
 
 #include "Allocator.h"
+#include "Command.h"
 #include "Descriptor.h"
 #include "Handle.h"
 #include "VulkanHeader.h"
 
+#include "Texture.h"
+#include "Backend/Buffer.h"
+#include "Backend/Command.h"
 
 namespace wind
 {
     class VkAllocator;
+    class DeviceBuffer;
 
     struct QueueIndices
     {
@@ -46,8 +51,19 @@ namespace wind
         auto GetAllocator() const -> VkAllocator*;
         auto GetLimits() { return m_limits; }
 
-        BufferHandle  CreateGPUBuffer();
-        TextureHandle CreateGPUTexture(const vk::ImageCreateInfo createInfo);
+        Scope<DeviceBuffer> CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
+        Scope<UploadBuffer> CreateUploadBuffer(uint32_t byteSize);
+        Ref<RasterShader>   CreateRastShader(const std::string& debugName,
+                                             const std::string& vertexFilePath,
+                                             const std::string& fragfilePath);
+
+        Ref<CommandBuffer> CreateCommandBuffer(RenderCommandQueueType queueType);
+
+        Ref<GPUTexture> CreateGPUTexture(const vk::ImageCreateInfo& createInfo) {
+            return ref::Create<GPUTexture>(*this, createInfo);
+        }
+
+        ImmCommandBuffer CreateImmCommandBuffer();
 
         AllocatedBuffer AllocateBuffer(const vk::BufferCreateInfo&    bufferCreateInfo,
                                        const VmaAllocationCreateInfo& allocationCreateInfo) const;

@@ -9,6 +9,7 @@
 
 namespace wind
 {
+    class GPUDevice;
     enum class TextureViewType
     {
         Texture1D,
@@ -19,15 +20,11 @@ namespace wind
         CubeMapArray
     };
 
-    struct GPUTexture : public RHIResource<RHIResourceType::Texture>
+    struct GPUTexture : public RHIResource
     {
     public:
-        GPUTexture() = default;
-        GPUTexture(const vk::ImageCreateInfo& createInfo);
+        GPUTexture(GPUDevice& device, const vk::ImageCreateInfo& createInfo);
         ~GPUTexture();
-
-        [[deprecated("Will deprecate in next version")]] static Ref<GPUTexture>
-        Create(const vk::ImageCreateInfo& createInfo);
 
         void CreateDefaultImageView(const vk::ImageSubresourceRange& range, vk::ImageViewType viewType);
 

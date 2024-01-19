@@ -2,6 +2,7 @@
 
 #include "Backend/PipelineBuilder.h"
 
+#include "Engine/RuntimeContext.h"
 #include "Resource/Loader.h"
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
@@ -24,8 +25,8 @@ namespace wind
 {
     void FrameParms::Init(vk::Device device)
     {
-        computeEncoder = ref::Create<CommandBuffer>();
-        renderEncoder  = ref::Create<CommandBuffer>();
+        computeEncoder = g_runtimeContext.device->CreateCommandBuffer(RenderCommandQueueType::Compute);
+        renderEncoder  = g_runtimeContext.device->CreateCommandBuffer(RenderCommandQueueType::Graphics);
 
         vk::FenceCreateInfo fenceCreateInfo {.flags = vk::FenceCreateFlagBits::eSignaled};
         flightFence = device.createFence(fenceCreateInfo);
@@ -60,10 +61,13 @@ namespace wind
 
         // init the shader map
         m_shaderMap = scope::Create<ShaderMap>();
-        m_shaderMap->CacheRasterShader(
-            RasterShader::Create("BasePassShader", "Triangle.vert.spv", "Triangle.frag.spv"));
-        m_shaderMap->CacheRasterShader(
-            RasterShader::Create("CompositeShader", "FullScreen.vert.spv", "Composite.frag.spv"));
+
+        auto basePassShader = m_device.CreateRastShader("BasePassShader", "Triangle.vert.spv", "Triangle.frag.spv");
+        auto compositeShader =
+            m_device.CreateRastShader("CompositeShader", "FullScreen.vert.spv", "Composite.frag.spv");
+
+        m_shaderMap->CacheRasterShader(basePassShader);
+        m_shaderMap->CacheRasterShader(compositeShader);
 
         // init material manager
         m_materialManager = scope::Create<MaterialManager>();
@@ -81,10 +85,10 @@ namespace wind
         m_psoCache->Destroy();
     }
 
-    void Renderer::GeneratePSO(const std::string& assetPath) { 
-        PipelineBuilder builder; 
+    void Renderer::GeneratePSO(const std::string& assetPath)
+    {
+        PipelineBuilder builder;
         // generate gbuffer pso
-        
     }
 
     GPUTexture* Renderer::GetRenderGraphOutput()

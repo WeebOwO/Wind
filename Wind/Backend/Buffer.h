@@ -8,12 +8,16 @@
 
 namespace wind
 {
-    class GPUBuffer : public RHIResource<RHIResourceType::Buffer>
+    class GPUDevice;
+
+    class GPUBuffer : public RHIResource
     {
     public:
-        GPUBuffer(uint32_t                       byteSize,
+        GPUBuffer(GPUDevice&                     device,
+                  uint32_t                       byteSize,
                   vk::BufferUsageFlags           usageFlags,
                   const VmaAllocationCreateInfo& AllocationCreateInfo) noexcept;
+
         ~GPUBuffer();
 
         GPUBuffer(const GPUBuffer& other)            = delete;
@@ -30,11 +34,19 @@ namespace wind
         uint32_t        m_byteSize;
         AllocatedBuffer m_buffer;
     };
-    
+
+    class DeviceBuffer : public GPUBuffer
+    {
+    public:
+        DeviceBuffer(GPUDevice& device, uint32_t byteSize, vk::BufferUsageFlags usageFlags);
+    };
+
     class UploadBuffer : public GPUBuffer
     {
     public:
-        UploadBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags = vk::BufferUsageFlagBits::eTransferSrc);
+        UploadBuffer(GPUDevice&           device,
+                     uint32_t             byteSize,
+                     vk::BufferUsageFlags usageFlags = vk::BufferUsageFlagBits::eTransferSrc);
         ~UploadBuffer();
 
         void  WriteData(void* data, uint32_t size, uint32_t offset = 0);
@@ -45,16 +57,10 @@ namespace wind
         void* m_mapMemory {nullptr};
     };
 
-    class DeviceBuffer : public GPUBuffer
-    {
-    public:
-        DeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
-    };
-
     class ReadBackBuffer : public GPUBuffer
     {
     public:
-        ReadBackBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
+        ReadBackBuffer(GPUDevice& device, uint32_t byteSize, vk::BufferUsageFlags usageFlags);
         ~ReadBackBuffer();
 
         void* MapMemory();
@@ -68,7 +74,7 @@ namespace wind
     class PushBuffer : public GPUBuffer
     {
     public:
-        PushBuffer(uint32_t buffersize, vk::BufferUsageFlags usage, VmaMemoryUsage vmaMemoryUsage);
+        PushBuffer(GPUDevice& device, uint32_t buffersize, vk::BufferUsageFlags usage, VmaMemoryUsage vmaMemoryUsage);
 
         template<typename T>
         uint32_t Push(T& data);
@@ -86,5 +92,5 @@ namespace wind
 
 namespace wind::utils
 {
-    uint32_t PadUniformBufferSize(uint32_t originSize);
+    uint32_t PadUniformBufferSize(GPUDevice& device, uint32_t originSize);
 }

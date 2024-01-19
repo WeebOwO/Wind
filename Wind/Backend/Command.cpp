@@ -1,11 +1,13 @@
 #include "Command.h"
 
+#include "Backend/RHIResource.h"
 #include "Device.h"
 #include "Engine/RenderConfig.h"
 
 namespace wind
 {
-    CommandBuffer::CommandBuffer(RenderCommandQueueType queueType) : m_queueType(queueType)
+    CommandBuffer::CommandBuffer(GPUDevice& device, RenderCommandQueueType queueType) :
+        RHIResource(device), m_queueType(queueType)
     {
         auto queueIndices = device.GetQueueIndices();
         auto vkDevice     = device.GetVkDeviceHandle();
@@ -51,7 +53,7 @@ namespace wind
         return m_nativeHandle;
     }
 
-    ImmCommandBuffer::ImmCommandBuffer()
+    ImmCommandBuffer::ImmCommandBuffer(GPUDevice& device) : RHIResource(device)
     {
         m_handle = device.GetBackUpCommandBuffer();
         vk::CommandBufferBeginInfo beginInfo {.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit};
@@ -70,8 +72,9 @@ namespace wind
         device.SubmitBackUpCommandBuffer(m_handle);
     }
 
-    void CommandBufferManager::Init(GPUDevice* device, uint32_t numThreads) {
-        m_device = device;
+    void CommandBufferManager::Init(GPUDevice& device, uint32_t numThreads)
+    {
+        m_device                      = &device;
         const uint32_t totalPoolCount = numThreads * RenderConfig::MAX_FRAME_IN_FLIGHT;
         // create init command buffer
     }

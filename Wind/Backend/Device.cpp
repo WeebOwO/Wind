@@ -1,10 +1,16 @@
 #include "Device.h"
 
+#include "Backend/Texture.h"
+#include "std.h"
 #include <GLFW/glfw3.h>
 
+#include "Buffer.h"
+#include "Command.h"
+#include "RasterShader.h"
 #include "Shader.h"
 
 #include "Core/Log.h"
+#include "Resource/Loader.h"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
@@ -266,5 +272,49 @@ namespace wind
         m_device->resetFences(m_backupCommandfence);
 
         m_device->resetCommandPool(m_backupCommandPool);
+    }
+
+    Scope<DeviceBuffer> GPUDevice::CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags)
+    {
+        auto deviceBuffer = scope::Create<DeviceBuffer>(*this, byteSize, usageFlags);
+        return deviceBuffer;
+    }
+
+    Scope<UploadBuffer> GPUDevice::CreateUploadBuffer(uint32_t byteSize)
+    {
+        auto buffer = scope::Create<UploadBuffer>(*this, byteSize);
+        return buffer;
+    }
+
+    ImmCommandBuffer GPUDevice::CreateImmCommandBuffer() { return ImmCommandBuffer(*this); }
+
+    Ref<RasterShader> GPUDevice::CreateRastShader(const std::string& debugName,
+                                                  const std::string& vertexFilePath,
+                                                  const std::string& fragfilePath)
+    {
+        auto vertexSpirv = io::LoadBinary<uint32_t>(vertexFilePath);
+        auto fragSpirv   = io::LoadBinary<uint32_t>(fragfilePath);
+
+        vk::ShaderModuleCreateInfo vertexshaderModuleCreateInfo {.codeSize = vertexSpirv.size() * sizeof(uint32_t),
+                                                                 .pCode    = vertexSpirv.data()};
+
+        vk::ShaderModuleCreateInfo fragshaderModuleCreateInfo {.codeSize = fragSpirv.size() * sizeof(uint32_t),
+                                                               .pCode    = fragSpirv.data()};
+
+        auto vertexModule = m_device->createShaderModule(vertexshaderModuleCreateInfo);
+        auto fragModule   = m_device->createShaderModule(fragshaderModuleCreateInfo);
+
+        auto shader = ref::Create<RasterShader>(*this, debugName, vertexModule, fragModule);
+        // collect all information and build the pipelinelayout
+        shader->CollectMetaData(vertexSpirv, vk::ShaderStageFlagBits::eVertex);
+        shader->CollectMetaData(fragSpirv, vk::ShaderStageFlagBits::eFragment);
+        shader->GeneratePipelineLayout();
+
+        return shader;
+    }
+
+    Ref<CommandBuffer> GPUDevice::CreateCommandBuffer(RenderCommandQueueType queueType)
+    {
+        return ref::Create<CommandBuffer>(*this, queueType);
     }
 }; // namespace wind

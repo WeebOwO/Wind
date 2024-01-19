@@ -28,25 +28,24 @@ namespace wind
 
     void CommandBuffer::EndRendering() { m_nativeHandle.endRendering(); }
 
-    void
-    CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
+    void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
     {
         m_nativeHandle.draw(vertexCount, instanceCount, firstVertex, firstInstance);
     }
 
     void CommandBuffer::DrawIndexed(uint32_t indexCount,
-                                     uint32_t instanceCount,
-                                     uint32_t firstIndex,
-                                     uint32_t vertexOffset,
-                                     uint32_t firstInstance)
+                                    uint32_t instanceCount,
+                                    uint32_t firstIndex,
+                                    uint32_t vertexOffset,
+                                    uint32_t firstInstance)
     {
         m_nativeHandle.drawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
     }
 
     void CommandBuffer::BindVertexBuffer(uint32_t          firstBinding,
-                                          uint32_t          bindingCount,
-                                          const vk::Buffer& buffer,
-                                          vk::DeviceSize    offset)
+                                         uint32_t          bindingCount,
+                                         const vk::Buffer& buffer,
+                                         vk::DeviceSize    offset)
     {
         m_nativeHandle.bindVertexBuffers(firstBinding, bindingCount, &buffer, &offset);
     }
@@ -66,13 +65,13 @@ namespace wind
     }
 
     void CommandBuffer::TransferImageLayout(const vk::Image&                 image,
-                                             vk::AccessFlags                  srcMask,
-                                             vk::AccessFlags                  dstMask,
-                                             vk::ImageLayout                  oldlayout,
-                                             vk::ImageLayout                  newLayout,
-                                             vk::PipelineStageFlags           srcFlags,
-                                             vk::PipelineStageFlags           dstFlags,
-                                             const vk::ImageSubresourceRange& subRange)
+                                            vk::AccessFlags                  srcMask,
+                                            vk::AccessFlags                  dstMask,
+                                            vk::ImageLayout                  oldlayout,
+                                            vk::ImageLayout                  newLayout,
+                                            vk::PipelineStageFlags           srcFlags,
+                                            vk::PipelineStageFlags           dstFlags,
+                                            const vk::ImageSubresourceRange& subRange)
     {
 
         vk::ImageMemoryBarrier imageBarrier {
@@ -89,10 +88,7 @@ namespace wind
         m_nativeHandle.pipelineBarrier(srcFlags, dstFlags, {}, 0, nullptr, 0, nullptr, 1, &imageBarrier);
     }
 
-    void CommandBuffer::TransferImageLayout(const GPUTexture& texture, vk::ImageLayout newLayout) 
-    {
-        
-    }
+    void CommandBuffer::TransferImageLayout(const GPUTexture& texture, vk::ImageLayout newLayout) {}
 
     void CommandBuffer::RenderUI()
     {

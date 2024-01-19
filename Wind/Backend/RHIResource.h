@@ -2,21 +2,9 @@
 
 #include "std.h"
 
-#include "Engine/RuntimeContext.h"
-
 namespace wind
 {
     class GPUDevice;
-
-    enum class RHIResourceType : uint8_t
-    {
-        Buffer,
-        Texture,
-        Shader,
-        CommandBuffer,
-        ShaderParamer,
-        Pipeline
-    };
 
     // this part is copy from raptor engine
     enum ResourceState
@@ -42,20 +30,11 @@ namespace wind
         RESOURCE_STATE_SHADING_RATE_SOURCE               = 0x8000,
     };
 
-    template<RHIResourceType ResourceType>
-    struct ResourceHandle
-    {
-        static constexpr RHIResourceType handleType = ResourceType;
-        uint32_t                         handle;
-    };
-
-    template<RHIResourceType ResourceType>
     struct RHIResource
     {
-        RHIResource() : device(*g_runtimeContext.device) {}
+        RHIResource(GPUDevice& device);
 
-        GPUDevice&                   device;
-        ResourceHandle<ResourceType> handle;
-        ResourceState                state = ResourceState::RESOURCE_STATE_UNDEFINED;
+        GPUDevice&    device;
+        ResourceState state = ResourceState::RESOURCE_STATE_UNDEFINED;
     };
 } // namespace wind

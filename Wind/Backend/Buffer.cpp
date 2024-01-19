@@ -4,12 +4,13 @@
 
 namespace wind
 {
-    GPUBuffer::GPUBuffer(uint32_t                       byteSize,
+    GPUBuffer::GPUBuffer(GPUDevice&                     device,
+                         uint32_t                       byteSize,
                          vk::BufferUsageFlags           usageFlags,
                          const VmaAllocationCreateInfo& AllocationCreateInfo) noexcept :
+        RHIResource(device),
         m_byteSize(byteSize)
     {
-
         vk::BufferCreateInfo BufferCreateInfo = {
             .size = byteSize, .usage = usageFlags, .sharingMode = vk::SharingMode::eExclusive};
         m_buffer = device.AllocateBuffer(BufferCreateInfo, AllocationCreateInfo);
@@ -17,8 +18,9 @@ namespace wind
 
     GPUBuffer::~GPUBuffer() { device.DestroyBuffer(m_buffer); }
 
-    UploadBuffer::UploadBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags) :
+    UploadBuffer::UploadBuffer(GPUDevice& device, uint32_t byteSize, vk::BufferUsageFlags usageFlags) :
         GPUBuffer(
+            device,
             byteSize,
             usageFlags,
             VmaAllocationCreateInfo {
@@ -26,6 +28,17 @@ namespace wind
                 .usage    = VMA_MEMORY_USAGE_AUTO,
                 .priority = 1.0f,
             })
+    {}
+
+    DeviceBuffer::DeviceBuffer(GPUDevice& device, uint32_t byteSize, vk::BufferUsageFlags usageFlags) :
+        GPUBuffer(device,
+                  byteSize,
+                  usageFlags,
+                  VmaAllocationCreateInfo {
+                      .flags    = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+                      .usage    = VMA_MEMORY_USAGE_AUTO,
+                      .priority = 1.0f,
+                  })
     {}
 
     void* UploadBuffer::MapMemory()
@@ -68,18 +81,9 @@ namespace wind
         memcpy(memory, data, size);
     }
 
-    DeviceBuffer::DeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags) :
-        GPUBuffer(byteSize,
-                  usageFlags,
-                  VmaAllocationCreateInfo {
-                      .flags    = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-                      .usage    = VMA_MEMORY_USAGE_AUTO,
-                      .priority = 1.0f,
-                  })
-    {}
-
-    ReadBackBuffer::ReadBackBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags) :
-        GPUBuffer(byteSize,
+    ReadBackBuffer::ReadBackBuffer(GPUDevice& device, uint32_t byteSize, vk::BufferUsageFlags usageFlags) :
+        GPUBuffer(device,
+                  byteSize,
                   usageFlags,
                   VmaAllocationCreateInfo {
                       .flags    = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
@@ -115,8 +119,11 @@ namespace wind
         }
     }
 
-    PushBuffer::PushBuffer(uint32_t buffersize, vk::BufferUsageFlags usage, VmaMemoryUsage vmaMemoryUsage) :
-        GPUBuffer(buffersize, usage, VmaAllocationCreateInfo {.usage = vmaMemoryUsage})
+    PushBuffer::PushBuffer(GPUDevice&           device,
+                           uint32_t             buffersize,
+                           vk::BufferUsageFlags usage,
+                           VmaMemoryUsage       vmaMemoryUsage) :
+        GPUBuffer(device, buffersize, usage, VmaAllocationCreateInfo {.usage = vmaMemoryUsage})
     {}
 
     void PushBuffer::Reset() { m_currentOffset = 0; }
@@ -124,9 +131,9 @@ namespace wind
 
 namespace wind::utils
 {
-    uint32_t PadUniformBufferSize(uint32_t originSize)
+    uint32_t PadUniformBufferSize(GPUDevice& device, uint32_t originSize)
     {
-        auto     limits          = g_runtimeContext.device->GetLimits();
+        auto     limits          = device.GetLimits();
         uint32_t minUboAlignment = limits.minUniformBufferOffsetAlignment;
         uint32_t alignedSize     = originSize;
         if (minUboAlignment > 0)

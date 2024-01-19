@@ -8,6 +8,8 @@
 
 namespace wind
 {
+    Shader::Shader(GPUDevice& device) : RHIResource(device) {}
+
     void Shader::CollectMetaData(const std::vector<uint32_t>& spirvCode, vk::ShaderStageFlags flag)
     {
         spirv_cross::CompilerGLSL    compiler(spirvCode);

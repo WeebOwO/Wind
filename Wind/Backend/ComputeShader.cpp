@@ -6,7 +6,10 @@
 
 namespace wind
 {
-    ComputeShader::ComputeShader(const std::string& debugName, const std::vector<uint32_t>& spirvCode)
+    ComputeShader::ComputeShader(GPUDevice&                   device,
+                                 const std::string&           debugName,
+                                 const std::vector<uint32_t>& spirvCode) :
+        Shader(device)
     {
         SetShaderName(debugName);
         auto vkDevice = device.GetVkDeviceHandle();

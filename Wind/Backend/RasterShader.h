@@ -11,7 +11,8 @@ namespace wind
     public:
         friend class GraphicsPipelineBuilder;
 
-        RasterShader(const std::string&      name,
+        RasterShader(GPUDevice&              device,
+                     const std::string&      name,
                      const vk::ShaderModule& vertexModule,
                      const vk::ShaderModule& fragModule) noexcept;
 
@@ -21,9 +22,6 @@ namespace wind
 
         auto GetVertexModule() const noexcept { return m_vertexModule; }
         auto GetFragModule() const noexcept { return m_fragModule; }
-
-        static Ref<RasterShader>
-        Create(const std::string& debugName, const std::string& vertexFilePath, const std::string& fragfilePath);
 
     private:
         vk::ShaderModule m_vertexModule;
