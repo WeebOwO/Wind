@@ -60,7 +60,7 @@ namespace wind
                                  vk::PipelineStageFlags           dstFlags,
                                  const vk::ImageSubresourceRange& subRange); // this is verbose version
 
-        void TransferImageLayout(const GPUTexture& texture, vk::ImageLayout newLayout);
+        void ApplyTransition(const GPUTexture& texture, ResourceState newState);
 
         // dynamic rendering
         void BeginRendering(const vk::RenderingInfo& renderingInfo);

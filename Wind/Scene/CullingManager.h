@@ -10,5 +10,7 @@ namespace wind
     };
 
     class CullingManager
-    {};
+    {   
+        
+    };
 } // namespace wind

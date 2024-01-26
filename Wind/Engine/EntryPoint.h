@@ -3,7 +3,6 @@
 #include "Engine/Application.h"
 #include "Engine/Engine.h"
 
-
 extern wind::Scope<wind::Application> CreateClientApplication();
 
 namespace wind

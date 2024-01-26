@@ -8,9 +8,9 @@
 #include "Handle.h"
 #include "VulkanHeader.h"
 
-#include "Texture.h"
 #include "Backend/Buffer.h"
 #include "Backend/Command.h"
+#include "Texture.h"
 
 namespace wind
 {
@@ -49,21 +49,40 @@ namespace wind
         auto GetVkInstance() const noexcept { return *m_vkInstance; }
 
         auto GetAllocator() const -> VkAllocator*;
-        auto GetLimits() { return m_limits; }
+        auto GetLimits() const noexcept { return m_limits; }
 
         Scope<DeviceBuffer> CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
         Scope<UploadBuffer> CreateUploadBuffer(uint32_t byteSize);
-        Ref<RasterShader>   CreateRastShader(const std::string& debugName,
-                                             const std::string& vertexFilePath,
-                                             const std::string& fragfilePath);
+
+        Ref<RasterShader> CreateRastShader(const std::string& debugName,
+                                           const std::string& vertexFilePath,
+                                           const std::string& fragfilePath);
 
         Ref<CommandBuffer> CreateCommandBuffer(RenderCommandQueueType queueType);
 
-        Ref<GPUTexture> CreateGPUTexture(const vk::ImageCreateInfo& createInfo) {
+        Ref<GPUTexture> CreateGPUTexture(const vk::ImageCreateInfo& createInfo)
+        {
             return ref::Create<GPUTexture>(*this, createInfo);
         }
 
         ImmCommandBuffer CreateImmCommandBuffer();
+
+        vk::DescriptorSet AllocateDescriptor(const vk::DescriptorSetLayout&) const;
+
+        // block style submit
+        vk::CommandBuffer GetBackUpCommandBuffer();
+        void              SubmitBackUpCommandBuffer(const vk::CommandBuffer& buffer);
+
+    private:
+        friend class GPUBuffer;
+        friend class GPUTexture;
+
+        void InitAllocator();
+        void CreateInstance();
+        void PickupPhysicalDevice();
+        void CreateDevice();
+        void QueryQueueFamilyIndices();
+        void InitBackupCommandBuffer();
 
         AllocatedBuffer AllocateBuffer(const vk::BufferCreateInfo&    bufferCreateInfo,
                                        const VmaAllocationCreateInfo& allocationCreateInfo) const;
@@ -74,20 +93,6 @@ namespace wind
                                      const VmaAllocationCreateInfo& allocationCreateInfo) const;
 
         void DestroyImage(AllocatedImage& image) const;
-
-        vk::DescriptorSet AllocateDescriptor(const vk::DescriptorSetLayout&) const;
-
-        // block style submit
-        vk::CommandBuffer GetBackUpCommandBuffer();
-        void              SubmitBackUpCommandBuffer(const vk::CommandBuffer& buffer);
-
-    private:
-        void InitAllocator();
-        void CreateInstance();
-        void PickupPhysicalDevice();
-        void CreateDevice();
-        void QueryQueueFamilyIndices();
-        void InitBackupCommandBuffer();
 
         std::vector<const char*> GetRequiredExtensions();
 
@@ -104,7 +109,7 @@ namespace wind
         vk::UniqueDevice         m_device;
 
         vk::UniqueDebugUtilsMessengerEXT m_dubugMessenger;
-        vk::DynamicLoader                m_vkLoader {};
+        vk::DynamicLoader                m_vkLoader;
 
         std::unordered_set<std::string> m_supportedExtensions;
         std::vector<const char*>        m_enableExtensions;

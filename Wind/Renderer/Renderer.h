@@ -64,7 +64,6 @@ namespace wind
 
         auto GetPso(uint64_t id) { return m_psoCache->GetPso(id); }
         
-
     private:
         void GeneratePSO(const std::string& assetPath);
 

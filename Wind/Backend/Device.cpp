@@ -276,14 +276,12 @@ namespace wind
 
     Scope<DeviceBuffer> GPUDevice::CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags)
     {
-        auto deviceBuffer = scope::Create<DeviceBuffer>(*this, byteSize, usageFlags);
-        return deviceBuffer;
+        return scope::Create<DeviceBuffer>(*this, byteSize, usageFlags);
     }
 
     Scope<UploadBuffer> GPUDevice::CreateUploadBuffer(uint32_t byteSize)
     {
-        auto buffer = scope::Create<UploadBuffer>(*this, byteSize);
-        return buffer;
+        return scope::Create<UploadBuffer>(*this, byteSize);
     }
 
     ImmCommandBuffer GPUDevice::CreateImmCommandBuffer() { return ImmCommandBuffer(*this); }

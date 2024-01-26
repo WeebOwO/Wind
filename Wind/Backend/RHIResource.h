@@ -30,10 +30,15 @@ namespace wind
         RESOURCE_STATE_SHADING_RATE_SOURCE               = 0x8000,
     };
 
-    struct RHIResource
+    class RHIResource
     {
+    public:
         RHIResource(GPUDevice& device);
 
+        auto GetResourceState() const noexcept { return state; }
+        void SetResourceState(ResourceState newState) noexcept { state = newState; }
+
+    protected:
         GPUDevice&    device;
         ResourceState state = ResourceState::RESOURCE_STATE_UNDEFINED;
     };
