@@ -1,6 +1,8 @@
 #include "RenderGraph.h"
 
+#include "Backend/Texture.h"
 #include "PassNode.h"
+#include "Renderer/RenderGraph/RenderGraphResource.h"
 #include "ResourceRegistry.h"
 
 #include "Core/Log.h"
@@ -33,14 +35,12 @@ namespace wind
 
         for (const auto& [name, node] : m_passNodes)
         {
-            ResourceRegistry registry(*this, node.get());
-
             // insert barrier here
             for (auto depend : node->dependResources)
             {
                 if (depend)
                 {
-                    auto resource = m_resources[depend];
+                    RenderGraphResource* resource = m_resources[depend.m_index];
                     if (resource->type == RenderGraphResourceType::Texture)
                     {
                         auto texture    = static_cast<RenderGraphTexture*>(resource);
@@ -54,16 +54,24 @@ namespace wind
             {
                 if (output)
                 {
-                    auto resource = m_resources[output];
+                    RenderGraphResource* resource = m_resources[output.m_index];
                     if (resource->type == RenderGraphResourceType::Texture)
                     {
                         auto texture    = static_cast<RenderGraphTexture*>(resource);
                         auto gpuTexture = texture->GetGPUTexture();
-                        gpuTexture->SetImageLayout(cmdBuffer, vk::ImageLayout::eColorAttachmentOptimal);
+                        if (utils::IsDepthFormat(gpuTexture->format()))
+                        {
+                            gpuTexture->SetImageLayout(cmdBuffer, vk::ImageLayout::eDepthAttachmentOptimal);
+                        }
+                        else
+                        {
+                            gpuTexture->SetImageLayout(cmdBuffer, vk::ImageLayout::eDepthAttachmentOptimal);
+                        }
                     }
                 }
             }
 
+            ResourceRegistry registry(*this, node.get());
             node->Execute(registry, cmdBuffer);
         }
 

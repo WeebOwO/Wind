@@ -10,7 +10,18 @@ namespace wind
         PassNode(rg), m_debugName(name), m_passBase(std::move(pass))
     {}
 
-    void RenderPassNode::DeclareRenderTarget(const RenderDesc& desc) { m_renderDesc = desc; }
+    void RenderPassNode::DeclareRenderTarget(const RenderDesc& desc)
+    {
+        m_renderDesc = desc;
+
+        for (auto attachment : desc.attchments.array)
+        {
+            if (attachment.texture)
+            {
+                outputResources.push_back(attachment.texture);
+            }
+        }
+    }
 
     void RenderPassNode::InitResources()
     {
@@ -22,8 +33,8 @@ namespace wind
             if (attachment.texture)
             {
                 renderGraph.InitGraphResource(attachment.texture);
-                auto                        texture = renderGraph.Get(attachment.texture);
-             
+                auto texture = renderGraph.Get(attachment.texture);
+
                 vk::RenderingAttachmentInfo attachmentInfo {.imageView   = texture->GetImageView(),
                                                             .imageLayout = texture->GetLayout(),
                                                             .loadOp      = attachment.loadop,
@@ -42,8 +53,8 @@ namespace wind
         if (desc.attchments.depth.texture)
         {
             renderGraph.InitGraphResource(desc.attchments.depth.texture);
-            auto texture          = renderGraph.Get(desc.attchments.depth.texture);
-          
+            auto texture = renderGraph.Get(desc.attchments.depth.texture);
+
             m_depthAttachmentInfo = vk::RenderingAttachmentInfo {.imageView   = texture->GetImageView(),
                                                                  .imageLayout = texture->GetLayout(),
                                                                  .loadOp      = desc.attchments.depth.loadop,
@@ -55,8 +66,8 @@ namespace wind
         if (desc.attchments.stencil.texture)
         {
             renderGraph.InitGraphResource(desc.attchments.stencil.texture);
-            auto texture            = renderGraph.Get(desc.attchments.depth.texture);
-          
+            auto texture = renderGraph.Get(desc.attchments.depth.texture);
+
             m_stencilAttachmentInfo = vk::RenderingAttachmentInfo {.imageView   = texture->GetImageView(),
                                                                    .imageLayout = texture->GetLayout(),
                                                                    .loadOp      = desc.attchments.depth.loadop,

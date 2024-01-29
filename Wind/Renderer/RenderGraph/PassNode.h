@@ -31,6 +31,7 @@ namespace wind
 
     protected:
         friend class RenderGraph;
+        
         std::vector<RenderGraphHandle> dependResources;
         std::vector<RenderGraphHandle> outputResources;
 

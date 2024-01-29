@@ -2,6 +2,8 @@
 
 #include "Backend/Command.h"
 #include "Core/Script.h"
+#include "Renderer/RenderGraph/RenderGraphID.h"
+#include "Renderer/RenderGraph/RenderGraphTexture.h"
 #include <tracy/Tracy.hpp>
 
 #include "Window.h"
@@ -164,6 +166,8 @@ namespace wind
             "PresentPass",
             [&](RenderGraph::Builder& builder, PresentPassData& data) {
                 // present pass don't need to declare render pass
+                data.sceneColor = blackBoard.Get<RenderGraphTexture>("output");
+                builder.AddDependResource(data.sceneColor);
             },
             [&](ResourceRegistry& resourceRegistry, PresentPassData& data, vk::CommandBuffer cb) {
                 // todo: add a pipeline barrier to make sure scene color is render finished

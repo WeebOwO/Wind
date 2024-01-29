@@ -34,6 +34,8 @@ namespace wind
                 static_cast<RenderPassNode*>(m_node)->DeclareRenderTarget(renderDesc);
             }
 
+            void AddDependResource(RenderGraphHandle handle) { m_node->dependResources.push_back(handle); }
+
         private:
             RenderGraph& m_graph;
             PassNode*    m_node;
@@ -55,13 +57,13 @@ namespace wind
         bool  ContainPass(const std::string& passName) { return m_passNodes.contains(passName); }
 
         void MarkAsDirty();
-        
+
     private:
         friend class PassNode;
         friend class RenderPassNode;
         friend class ResourceRegistry;
         friend class Renderer;
-        
+
         template<typename ResourceType>
         RenderGraphID<ResourceType> Create(const std::string& name, const typename ResourceType::Desc& desc) noexcept;
 
@@ -76,7 +78,7 @@ namespace wind
         }
 
         Builder AddPassInternal(const std::string& name, Scope<RenderGraphPassBase> pass);
-        
+
         // present pass ralated
         vk::RenderingInfo GetPresentRenderingInfo() const noexcept;
 

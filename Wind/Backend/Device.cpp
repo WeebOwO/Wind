@@ -1,6 +1,5 @@
 #include "Device.h"
 
-#include "Backend/Texture.h"
 #include "std.h"
 #include <GLFW/glfw3.h>
 
