@@ -2,11 +2,13 @@
 
 #include "std.h"
 
+#include "Handle.h"
+#include "VulkanHeader.h"
+
 namespace wind
 {
     class GPUDevice;
 
-    // this part is copy from raptor engine
     enum ResourceState
     {
         RESOURCE_STATE_UNDEFINED                         = 0,
@@ -35,8 +37,8 @@ namespace wind
     public:
         RHIResource(GPUDevice& device);
 
-        auto GetResourceState() const noexcept { return state; }
-        void SetResourceState(ResourceState newState) noexcept { state = newState; }
+        ResourceState GetResourceState() const noexcept { return state; }
+        void          SetResourceState(ResourceState newState) noexcept { state = newState; }
 
     protected:
         GPUDevice&    device;

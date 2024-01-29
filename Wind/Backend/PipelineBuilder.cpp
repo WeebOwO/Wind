@@ -119,7 +119,7 @@ namespace wind
                                                            .layout              = m_layout,
                                                            .renderPass          = nullptr};
 
-        auto vkDevice = g_runtimeContext.device->GetVkDeviceHandle();
+        auto vkDevice = g_runtimeContext.device->vkDevice();
         return vkDevice.createGraphicsPipelines(nullptr, pipelineCreateInfo).value.front();
     }
 } // namespace wind

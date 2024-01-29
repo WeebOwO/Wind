@@ -8,7 +8,7 @@
 #include "Engine/RuntimeContext.h"
 
 namespace wind
-{   
+{
     class RenderGraphTexture : public RenderGraphResource
     {
     public:
@@ -19,7 +19,7 @@ namespace wind
             uint32_t            depth;
             TextureViewType     type;
             vk::Format          format;
-            vk::ImageLayout     layout    = vk::ImageLayout::eUndefined; 
+            vk::ImageLayout     layout    = vk::ImageLayout::eUndefined;
             vk::ImageUsageFlags usage     = vk::ImageUsageFlagBits::eColorAttachment;
             bool                useMipmap = false;
         };
@@ -36,6 +36,7 @@ namespace wind
         vk::Image     GetImage() const noexcept;
         vk::ImageView GetImageView() const noexcept;
 
+        auto GetGPUTexture() const { return m_texture; }
         auto GetUsage() const noexcept { return m_desc.usage; }
         auto GetLayout() const noexcept { return m_desc.layout; }
 

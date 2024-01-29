@@ -77,7 +77,7 @@ namespace wind
 
     void Shader::GeneratePipelineLayout()
     {
-        auto vkDevice = device.GetVkDeviceHandle();
+        auto vkDevice = device.vkDevice();
 
         std::vector<vk::DescriptorSetLayoutCreateInfo> descriptorSetLayoutCreateInfos;
         std::vector<vk::DescriptorSetLayoutBinding>    layoutBindings;
@@ -125,7 +125,7 @@ namespace wind
 
     Shader::~Shader()
     {
-        auto vkDevice = device.GetVkDeviceHandle();
+        auto vkDevice = device.vkDevice();
         vkDevice.waitIdle();
 
         vkDevice.destroyPipelineLayout(m_layout);

@@ -11,14 +11,14 @@ namespace wind
     VkAllocator::VkAllocator(GPUDevice& device)
     {
         VmaAllocatorCreateInfo createInfo {.flags                          = {},
-                                           .physicalDevice                 = device.GetVkPhysicalDevice(),
-                                           .device                         = device.GetVkDeviceHandle(),
+                                           .physicalDevice                 = device.physicalDevice(),
+                                           .device                         = device.vkDevice(),
                                            .preferredLargeHeapBlockSize    = 0,
                                            .pAllocationCallbacks           = nullptr,
                                            .pDeviceMemoryCallbacks         = nullptr,
                                            .pHeapSizeLimit                 = nullptr,
                                            .pVulkanFunctions               = nullptr,
-                                           .instance                       = device.GetVkInstance(),
+                                           .instance                       = device.vkInstance(),
                                            .vulkanApiVersion               = VK_API_VERSION_1_3,
                                            .pTypeExternalMemoryHandleTypes = nullptr};
 

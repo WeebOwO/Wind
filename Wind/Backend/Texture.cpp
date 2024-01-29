@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+#include "Backend/Command.h"
 #include "Backend/RHIResource.h"
 #include "Device.h"
 #include "Utils.h"
@@ -10,7 +11,7 @@ namespace wind
 
     void GPUTexture::CreateDefaultImageView(const vk::ImageSubresourceRange& range, vk::ImageViewType viewType)
     {
-        auto vkDevice = device.GetVkDeviceHandle();
+        auto vkDevice = device.vkDevice();
 
         vk::ImageViewCreateInfo viewCreateInfo {
             .image = m_allocatedImage.image, .viewType = viewType, .format = m_format, .subresourceRange = range};
@@ -38,7 +39,7 @@ namespace wind
         // init our GPUTextureDesc
         m_width = createInfo.extent.width, m_height = createInfo.extent.height, m_depth = createInfo.extent.depth,
         m_mipCount = createInfo.mipLevels, m_layerCount = createInfo.arrayLayers, m_format = createInfo.format,
-        m_usage = createInfo.usage, m_sampleCount = createInfo.samples, m_layout = createInfo.initialLayout;
+        m_usage = createInfo.usage, m_sampleCount = createInfo.samples, m_currentLayout = createInfo.initialLayout;
 
         VmaAllocationCreateInfo allocationInfo {
             .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_AUTO, .priority = 1.0f};
@@ -54,20 +55,30 @@ namespace wind
                                     const ImVec4& border_colc)
     {
         if (!m_imguiSet)
-            m_imguiSet = ImGui_ImplVulkan_AddTexture(m_defaultSampler, m_defaultView, (VkImageLayout)m_layout);
+            m_imguiSet = ImGui_ImplVulkan_AddTexture(m_defaultSampler, m_defaultView, (VkImageLayout)m_currentLayout);
         ImGui::Image((ImTextureID)m_imguiSet, size, uv0, uv1, tint_col, border_colc);
     }
 
     GPUTexture::~GPUTexture()
     {
         if (m_defaultSampler)
-            device.GetVkDeviceHandle().destroySampler(m_defaultSampler);
-        device.GetVkDeviceHandle().destroyImageView(m_defaultView);
+            device.vkDevice().destroySampler(m_defaultSampler);
+        device.vkDevice().destroyImageView(m_defaultView);
         // use device allocator to destroy
         device.DestroyImage(m_allocatedImage);
     }
 
-    void GPUTexture::SetImageLayout(vk::ImageLayout layout) noexcept { m_layout = layout; }
+    void GPUTexture::SetImageLayout(vk::CommandBuffer    cb,
+                                    vk::ImageLayout      newLayout,
+                                    vk::ImageAspectFlags aspectMask) noexcept
+    {
+        if (newLayout == m_currentLayout)
+            return;
+        vk::ImageLayout oldLayout = m_currentLayout;
+        m_currentLayout           = newLayout;
+
+        command::TransferLayout(cb, m_allocatedImage.image, m_mipCount, m_layerCount, oldLayout, newLayout);
+    }
 } // namespace wind
 
 namespace wind::utils

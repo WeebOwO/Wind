@@ -11,7 +11,7 @@ namespace wind
 {
     class Scene;
     class View;
-    
+
     class SceneRenderer
     {
     public:
@@ -27,9 +27,9 @@ namespace wind
         void InitView(View& view); // Dispatch MeshPass
 
         void BuildMeshDrawCommand(const MeshPass& meshPass);
-        void DrawMesh(CommandBuffer& encoder);
+        void DrawMesh(vk::CommandBuffer commands);
 
-        Scene*      m_renderScene;
+        Scene* m_renderScene;
 
         vk::Viewport m_viewPort {};
 

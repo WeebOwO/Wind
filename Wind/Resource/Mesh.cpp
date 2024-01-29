@@ -24,19 +24,13 @@ namespace wind
         vertexUploadBuffer->WriteData(meshSource.vertices.data(), vertexBufferByteSize, 0);
         indexUploadBuffer->WriteData(meshSource.indices.data(), indexBufferByteSize, 0);
 
-        ImmCommandBuffer copyEncoder = device->CreateImmCommandBuffer();
-
-        copyEncoder.PushTask([&](const vk::CommandBuffer& command) {
+        device->ExecuteImmediately([&](vk::CommandBuffer cb) {
             vk::BufferCopy bufferCopy {.srcOffset = 0, .dstOffset = 0, .size = vertexBufferByteSize};
-            command.copyBuffer(
-                vertexUploadBuffer->GetNativeHandle(), meshSource.vertexBuffer->GetNativeHandle(), bufferCopy);
+            cb.copyBuffer(vertexUploadBuffer->buffer(), meshSource.vertexBuffer->buffer(), bufferCopy);
 
             bufferCopy.setSize(indexBufferByteSize);
-            command.copyBuffer(
-                indexUploadBuffer->GetNativeHandle(), meshSource.indexBuffer->GetNativeHandle(), bufferCopy);
+            cb.copyBuffer(indexUploadBuffer->buffer(), meshSource.indexBuffer->buffer(), bufferCopy);
         });
-
-        copyEncoder.Submit();
     }
 
     void StaticMesh::ReleaseRHI()

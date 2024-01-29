@@ -39,8 +39,8 @@ namespace wind
         return {};
     }
 
-    vk::Image     RenderGraphTexture::GetImage() const noexcept { return m_texture->GetVkImage(); }
-    vk::ImageView RenderGraphTexture::GetImageView() const noexcept { return m_texture->GetView(); }
+    vk::Image     RenderGraphTexture::GetImage() const noexcept { return m_texture->image(); }
+    vk::ImageView RenderGraphTexture::GetImageView() const noexcept { return m_texture->view(); }
 
     RenderGraphTexture::RenderGraphTexture(const Desc& desc) noexcept :
         RenderGraphResource(RenderGraphResourceType::Texture), m_desc(desc)

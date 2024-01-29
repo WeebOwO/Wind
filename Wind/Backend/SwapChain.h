@@ -17,17 +17,17 @@ namespace wind
         void     Resize(uint32_t width, uint32_t height);
         uint32_t ImageCount() const { return m_swapchainImages.size(); }
 
-        auto GetImageView(uint32_t index) const { return m_swapchainViews[index]; }
-        auto GetImage(uint32_t index) const { return m_swapchainImages[index]; }
-        auto GetFormat() const { return m_surfaceFormat.format; }
-        auto GetClearValue() const { return &m_clearValue; }
-        auto GetRenderingInfo(uint32_t index) const { return m_renderingInfos[index]; }
+        auto imageView(uint32_t index) const { return m_swapchainViews[index]; }
+        auto image(uint32_t index) const { return m_swapchainImages[index]; }
+        auto format() const { return m_surfaceFormat.format; }
+        auto clearValue() const { return &m_clearValue; }
+        auto renderingInfo(uint32_t index) const { return m_renderingInfos[index]; }
 
-        std::pair<uint32_t, uint32_t> GetWindowExtent() const { return {m_windowExtent.width, m_windowExtent.height}; }
-        uint32_t                      GetWidth() const { return m_windowExtent.width; }
-        uint32_t                      GetHeight() const { return m_windowExtent.height; }
+        std::pair<uint32_t, uint32_t> extent() const { return {m_windowExtent.width, m_windowExtent.height}; }
+        uint32_t                      width() const { return m_windowExtent.width; }
+        uint32_t                      height() const { return m_windowExtent.height; }
 
-        float GetAspectRatio() const
+        float aspectRatio() const
         {
             return static_cast<float>(m_windowExtent.width) / static_cast<float>(m_windowExtent.height);
         }

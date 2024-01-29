@@ -19,7 +19,7 @@ namespace wind
 
     void ImGUIContext::Init(const GPUDevice& device, const Window& window)
     {   
-        VkDevice   vkdevice  = (VkDevice)device.GetVkDeviceHandle();
+        VkDevice   vkdevice  = (VkDevice)device.vkDevice();
         Swapchain* swapchain = window.GetSwapChain();
 
         VkDescriptorPoolSize pool_sizes[] = {{VK_DESCRIPTOR_TYPE_SAMPLER, 100},
@@ -53,36 +53,34 @@ namespace wind
         ImGui_ImplGlfw_InitForVulkan(window.GetWindow(), true);
 
         ImGui_ImplVulkan_InitInfo initInfo;
-        initInfo.Instance              = device.GetVkInstance();
-        initInfo.PhysicalDevice        = device.GetVkPhysicalDevice();
+        initInfo.Instance              = device.vkInstance();
+        initInfo.PhysicalDevice        = device.physicalDevice();
         initInfo.Device                = vkdevice;
-        initInfo.Queue                 = device.GetMainQueue();
-        initInfo.QueueFamily           = device.GetQueueIndices().mainQueueIndex.value();
+        initInfo.Queue                 = device.mainQueue();
+        initInfo.QueueFamily           = device.queueIndices().mainQueueIndex.value();
         initInfo.PipelineCache         = nullptr;
         initInfo.DescriptorPool        = m_imguiPool;
         initInfo.MinImageCount         = 3;
         initInfo.ImageCount            = 3;
         initInfo.Allocator             = nullptr;
         initInfo.MSAASamples           = VK_SAMPLE_COUNT_1_BIT;
-        initInfo.ColorAttachmentFormat = VkFormat(window.GetSwapChain()->GetFormat());
+        initInfo.ColorAttachmentFormat = VkFormat(window.GetSwapChain()->format());
         initInfo.CheckVkResultFn       = utils::CheckVkResult;
         initInfo.UseDynamicRendering   = true;
 
         ImGui_ImplVulkan_Init(&initInfo, nullptr);
 
-        ImmCommandBuffer taskEncoder(*g_runtimeContext.device);
-        taskEncoder.PushTask([](const vk::CommandBuffer& buffer) {
+        g_runtimeContext.device->ExecuteImmediately([](vk::CommandBuffer buffer) {
             VkCommandBuffer Cbuffer = (VkCommandBuffer)buffer;
             ImGui_ImplVulkan_CreateFontsTexture(Cbuffer);
         });
 
         ImGui_ImplVulkan_DestroyFontUploadObjects();
-        taskEncoder.Submit();
     }
 
     void ImGUIContext::Quit(const GPUDevice& device)
     {
-        VkDevice vkdevice = (VkDevice)device.GetVkDeviceHandle();
+        VkDevice vkdevice = (VkDevice)device.vkDevice();
         vkDestroyDescriptorPool(vkdevice, m_imguiPool, nullptr);
         ImGui_ImplVulkan_Shutdown();
     }

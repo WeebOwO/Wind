@@ -14,7 +14,7 @@ public:
     RenderGraphPassBase() = default;
     virtual ~RenderGraphPassBase() {}
 
-    virtual void Execute(ResourceRegistry&, CommandBuffer&) noexcept {}
+    virtual void Execute(ResourceRegistry&, vk::CommandBuffer cb) noexcept {}
 
     PassType passType;
 };
@@ -22,7 +22,7 @@ public:
 template <typename Data> 
 class RenderGraphPass : public RenderGraphPassBase {
 public:
-    void Execute(ResourceRegistry&, CommandBuffer&) noexcept override {}
+    void Execute(ResourceRegistry&, vk::CommandBuffer cb) noexcept override {}
     RenderGraphPass(PassType type) { passType = type; }
     virtual ~RenderGraphPass() {}
 
@@ -40,8 +40,8 @@ public:
                                      PassType         type = PassType::Graphics)
         : RenderGraphPass<Data>(type), m_execCallBack(std::move(callback)) {}
 
-    void Execute(ResourceRegistry& resourceRegistry, CommandBuffer& encoder) noexcept override { 
-        m_execCallBack(resourceRegistry, this->m_data, encoder); 
+    void Execute(ResourceRegistry& resourceRegistry, vk::CommandBuffer cb) noexcept override { 
+        m_execCallBack(resourceRegistry, this->m_data, cb); 
     }
 
 private:

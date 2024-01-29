@@ -25,7 +25,7 @@ namespace wind
     {
     public:
         PassNode(RenderGraph& rg) : renderGraph(rg) {}
-        virtual void Execute(ResourceRegistry& resourceRegistry, CommandBuffer& encoder) noexcept {}
+        virtual void Execute(ResourceRegistry& resourceRegistry, vk::CommandBuffer cb) noexcept {}
 
         virtual void InitResources() = 0;
 
@@ -63,9 +63,9 @@ namespace wind
         };
 
         RenderPassNode(RenderGraph& rg, const std::string& name, Scope<RenderGraphPassBase> pass);
-        void Execute(ResourceRegistry& resourceRegistry, CommandBuffer& encoder) noexcept override
+        void Execute(ResourceRegistry& resourceRegistry, vk::CommandBuffer cb) noexcept override
         {
-            m_passBase->Execute(resourceRegistry, encoder);
+            m_passBase->Execute(resourceRegistry, cb);
         }
 
         void DeclareRenderTarget(const RenderDesc& desc);

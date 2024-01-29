@@ -10,7 +10,7 @@ namespace wind
     {
         VkSurfaceKHR rawSurface;
         glfwCreateWindowSurface(
-            static_cast<VkInstance>(m_device.GetVkInstance()), window.GetWindow(), nullptr, &rawSurface);
+            static_cast<VkInstance>(m_device.vkInstance()), window.GetWindow(), nullptr, &rawSurface);
         m_surface = rawSurface;
         CreateSwapChainInteral(window.width(), window.height());
         WIND_CORE_INFO("Create swapchain");
@@ -19,7 +19,7 @@ namespace wind
 
     void Swapchain::QuerySurfaceProperty()
     {
-        auto physicalDevice = m_device.GetVkPhysicalDevice();
+        auto physicalDevice = m_device.physicalDevice();
 
         auto presentModes        = physicalDevice.getSurfacePresentModesKHR(m_surface);
         auto surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_surface);
@@ -42,8 +42,8 @@ namespace wind
 
     Swapchain::~Swapchain()
     {
-        auto vkInstance = m_device.GetVkInstance();
-        auto vkDevice   = m_device.GetVkDeviceHandle();
+        auto vkInstance = m_device.vkInstance();
+        auto vkDevice   = m_device.vkDevice();
         CleanUpSwapChain();
 
         vkInstance.destroySurfaceKHR(m_surface);
@@ -51,8 +51,8 @@ namespace wind
 
     void Swapchain::CreateSwapChainInteral(uint32_t width, uint32_t height)
     {
-        auto physicalDevice = m_device.GetVkPhysicalDevice();
-        auto vkDevice       = m_device.GetVkDeviceHandle();
+        auto physicalDevice = m_device.physicalDevice();
+        auto vkDevice       = m_device.vkDevice();
 
         auto surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_surface);
 
@@ -104,7 +104,7 @@ namespace wind
 
     void Swapchain::CreateRenderPass()
     {
-        auto vkDevice = m_device.GetVkDeviceHandle();
+        auto vkDevice = m_device.vkDevice();
 
         vk::AttachmentDescription colorAttachment {
             .format         = m_surfaceFormat.format,
@@ -167,7 +167,7 @@ namespace wind
     std::optional<uint32_t> Swapchain::AcquireNextImage(const vk::Fence&     waitFence,
                                                         const vk::Semaphore& imageAvailableSemaphore) const
     {
-        auto vkDevice = m_device.GetVkDeviceHandle();
+        auto vkDevice = m_device.vkDevice();
         auto _        = vkDevice.waitForFences(waitFence, true, std::numeric_limits<uint64_t>::max());
 
         if (_ != vk::Result::eSuccess)
@@ -203,7 +203,7 @@ namespace wind
                                    .signalSemaphoreCount = 1,
                                    .pSignalSemaphores    = &imageFinishSemaphre};
 
-        m_device.GetMainQueue().submit(submitInfo, signalFence); // render finish
+        m_device.mainQueue().submit(submitInfo, signalFence); // render finish
 
         vk::PresentInfoKHR presentInfo {.waitSemaphoreCount = 1,
                                         .pWaitSemaphores    = &imageFinishSemaphre,
@@ -211,12 +211,12 @@ namespace wind
                                         .pSwapchains        = &m_swapchain,
                                         .pImageIndices      = &imageIndex};
 
-        auto presentResult = m_device.GetMainQueue().presentKHR(presentInfo);
+        auto presentResult = m_device.mainQueue().presentKHR(presentInfo);
     }
 
     void Swapchain::CleanUpSwapChain()
     {
-        auto vkdevice = m_device.GetVkDeviceHandle();
+        auto vkdevice = m_device.vkDevice();
 
         for (auto& view : m_swapchainViews)
         {

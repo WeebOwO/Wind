@@ -43,12 +43,12 @@ namespace wind
 
     void* UploadBuffer::MapMemory()
     {
-        auto& nativeHandle = device.GetAllocator()->NativeHandle();
+        auto& nativeHandle = device.vmallocator()->NativeHandle();
 
         if (m_mapMemory == nullptr)
         {
             void* memory = nullptr;
-            vmaMapMemory(nativeHandle, GetAllocatedBuffer().allocation, &memory);
+            vmaMapMemory(nativeHandle, allocation(), &memory);
             m_mapMemory = memory;
         }
 
@@ -65,13 +65,13 @@ namespace wind
 
     void UploadBuffer::UnmapMemory()
     {
-        auto& nativeHandle = device.GetAllocator()->NativeHandle();
-        vmaUnmapMemory(nativeHandle, GetAllocatedBuffer().allocation);
+        auto& nativeHandle = device.vmallocator()->NativeHandle();
+        vmaUnmapMemory(nativeHandle, allocation());
     }
 
     void UploadBuffer::WriteData(void* data, uint32_t size, uint32_t offset)
     {
-        assert(size + offset <= GetByteSize());
+        assert(size + offset <= m_byteSize);
         if (m_mapMemory == nullptr)
             MapMemory();
 
@@ -94,11 +94,11 @@ namespace wind
 
     void* ReadBackBuffer::MapMemory()
     {
-        auto& nativeHandle = device.GetAllocator()->NativeHandle();
+        auto& nativeHandle = device.vmallocator()->NativeHandle();
         if (m_mapMemory == nullptr)
         {
             void* memory = nullptr;
-            vmaMapMemory(nativeHandle, GetAllocatedBuffer().allocation, &memory);
+            vmaMapMemory(nativeHandle, allocation(), &memory);
             m_mapMemory = (void*)memory;
         }
 
@@ -107,8 +107,8 @@ namespace wind
 
     void ReadBackBuffer::UnmapMemory()
     {
-        auto& nativeHandle = device.GetAllocator()->NativeHandle();
-        vmaUnmapMemory(nativeHandle, GetAllocatedBuffer().allocation);
+        auto& nativeHandle = device.vmallocator()->NativeHandle();
+        vmaUnmapMemory(nativeHandle, allocation());
     }
 
     ReadBackBuffer::~ReadBackBuffer()
@@ -133,7 +133,7 @@ namespace wind::utils
 {
     uint32_t PadUniformBufferSize(GPUDevice& device, uint32_t originSize)
     {
-        auto     limits          = device.GetLimits();
+        auto     limits          = device.physicalLimits();
         uint32_t minUboAlignment = limits.minUniformBufferOffsetAlignment;
         uint32_t alignedSize     = originSize;
         if (minUboAlignment > 0)

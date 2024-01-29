@@ -8,8 +8,7 @@
 #include "Handle.h"
 #include "VulkanHeader.h"
 
-#include "Backend/Buffer.h"
-#include "Backend/Command.h"
+#include "Buffer.h"
 #include "Texture.h"
 
 namespace wind
@@ -38,40 +37,26 @@ namespace wind
         void WaitIdle();
         operator vk::Device() { return *m_device; }
 
-        vk::Queue GetMainQueue() const noexcept { return m_mainQueue; }
-        vk::Queue GetAsyncComputeQueue() const noexcept { return m_asyncComputeQueue; }
-        vk::Queue GetTransferComputeQueue() const noexcept { return m_transferQueue; };
+        vk::Queue                mainQueue() const noexcept { return m_mainQueue; }
+        vk::Queue                asyncComputeQueue() const noexcept { return m_asyncComputeQueue; }
+        vk::Queue                transferComputeQueue() const noexcept { return m_transferQueue; };
+        QueueIndices             queueIndices() const noexcept { return m_queueIndices; }
+        vk::Device               vkDevice() const noexcept { return *m_device; }
+        vk::PhysicalDevice       physicalDevice() const noexcept { return m_physicalDevice; }
+        vk::Instance             vkInstance() const noexcept { return *m_vkInstance; }
+        VkAllocator*             vmallocator() const;
+        vk::PhysicalDeviceLimits physicalLimits() const noexcept { return m_limits; }
 
-        auto GetQueueIndices() const noexcept { return m_queueIndices; }
-
-        auto GetVkDeviceHandle() const noexcept { return *m_device; }
-        auto GetVkPhysicalDevice() const noexcept { return m_physicalDevice; }
-        auto GetVkInstance() const noexcept { return *m_vkInstance; }
-
-        auto GetAllocator() const -> VkAllocator*;
-        auto GetLimits() const noexcept { return m_limits; }
-
-        Scope<DeviceBuffer> CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
-        Scope<UploadBuffer> CreateUploadBuffer(uint32_t byteSize);
-
+        Ref<DeviceBuffer> CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
+        Ref<UploadBuffer> CreateUploadBuffer(uint32_t byteSize);
         Ref<RasterShader> CreateRastShader(const std::string& debugName,
                                            const std::string& vertexFilePath,
                                            const std::string& fragfilePath);
-
-        Ref<CommandBuffer> CreateCommandBuffer(RenderCommandQueueType queueType);
-
-        Ref<GPUTexture> CreateGPUTexture(const vk::ImageCreateInfo& createInfo)
-        {
-            return ref::Create<GPUTexture>(*this, createInfo);
-        }
-
-        ImmCommandBuffer CreateImmCommandBuffer();
+        Ref<GPUTexture>   CreateGPUTexture(const vk::ImageCreateInfo& createInfo);
 
         vk::DescriptorSet AllocateDescriptor(const vk::DescriptorSetLayout&) const;
 
-        // block style submit
-        vk::CommandBuffer GetBackUpCommandBuffer();
-        void              SubmitBackUpCommandBuffer(const vk::CommandBuffer& buffer);
+        void ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func);
 
     private:
         friend class GPUBuffer;
@@ -124,3 +109,8 @@ namespace wind
         vk::Fence         m_backupCommandfence;
     };
 } // namespace wind
+
+namespace wind::utils
+{
+    void ExecuteImmediately(vk::Device device, vk::Queue queue, const std::function<void(vk::CommandBuffer cb)>& func);
+}

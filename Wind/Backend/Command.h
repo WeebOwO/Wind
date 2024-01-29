@@ -9,6 +9,7 @@ namespace wind
     class ComputeShader;
     class RasterShader;
     class GPUTexture;
+    class GPUBuffer;
 
     enum class RenderCommandQueueType : uint8_t
     {
@@ -19,94 +20,37 @@ namespace wind
         General
     };
 
-    class CommandBuffer : public RHIResource
-    {
-    public:
-        CommandBuffer(GPUDevice& device, RenderCommandQueueType queueType = RenderCommandQueueType::General);
-        ~CommandBuffer();
-
-        void              Begin();
-        void              Reset();
-        vk::CommandBuffer Finish();
-
-        // renderpart
-        void BindGraphicsShader(const RasterShader& shader);
-
-        void BeginRenderPass(const vk::RenderPassBeginInfo& renderPassBeginInfo);
-        void EndRenderPass();
-        void BindPSO(const vk::Pipeline& pipeline);
-        void BindVertexBuffer();
-        void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
-        void DrawIndexed(uint32_t indexCount,
-                         uint32_t instanceCount,
-                         uint32_t firstIndex,
-                         uint32_t vertexOffset,
-                         uint32_t firstInstance);
-
-        void
-        BindVertexBuffer(uint32_t firstBinding, uint32_t bindingCount, const vk::Buffer& buffer, vk::DeviceSize offset);
-        void BindIndexBuffer(const vk::Buffer& buffer, vk::DeviceSize offset, vk::IndexType indexType);
-
-        void SetViewport(const vk::Viewport& viewport);
-        void SetScissor(int offsetx, int offsety, uint32_t width, uint32_t height);
-
-        // layout transfer
-        void TransferImageLayout(const vk::Image&                 image,
-                                 vk::AccessFlags                  srcMask,
-                                 vk::AccessFlags                  dstMask,
-                                 vk::ImageLayout                  oldlayout,
-                                 vk::ImageLayout                  newLayout,
-                                 vk::PipelineStageFlags           srcFlags,
-                                 vk::PipelineStageFlags           dstFlags,
-                                 const vk::ImageSubresourceRange& subRange); // this is verbose version
-
-        void ApplyTransition(const GPUTexture& texture, ResourceState newState);
-
-        // dynamic rendering
-        void BeginRendering(const vk::RenderingInfo& renderingInfo);
-        void EndRendering();
-
-        // uipart
-        void RenderUI();
-
-    protected:
-        RenderCommandQueueType m_queueType;
-        vk::CommandBuffer      m_nativeHandle;
-        vk::CommandPool        m_cmdPool;
-    };
-
-    // always alloc from stack, try not to use this from heap memory
-    class ImmCommandBuffer : public RHIResource
-    {
-    public:
-        using TaskFunc = std::function<void(const vk::CommandBuffer&)>;
-
-        ImmCommandBuffer(GPUDevice& device);
-        ~ImmCommandBuffer() = default;
-
-        void PushTask(const TaskFunc& func);
-        void CopyBuffer();
-        void Submit();
-
-    private:
-        vk::CommandBuffer     m_handle;
-        std::vector<TaskFunc> m_tasks;
-    };
-
     class CommandBufferManager
     {
     public:
-        void Init(GPUDevice& device, uint32_t numThreads);
-        void Quit();
+        CommandBufferManager(GPUDevice& device, uint32_t numThreads, uint32_t numCommandBufferPerThread);
+        ~CommandBufferManager();
 
         void ResetPool(uint32_t frameIndex);
 
-        CommandBuffer* GetCommandBuffer(uint32_t frameIndex, uint32_t threadIndex, bool begin);
+        vk::CommandBuffer GetCommandBuffer(uint32_t frameIndex, uint32_t threadIndex, bool begin);
 
     private:
-        GPUDevice* m_device {nullptr};
+        uint32_t CalcPoolIndex(uint32_t frameIndex, uint32_t threadIndex);
 
-        std::vector<vk::CommandPool> m_commandPools;
-        std::vector<uint8_t>         m_usedBUffers;
+        vk::Device                     m_device;
+        std::vector<vk::CommandPool>   m_commandPools;
+        std::vector<uint8_t>           m_usedBuffers;
+        std::vector<vk::CommandBuffer> m_commandBuffers;
+        uint32_t                       m_numPoolsPerFrame;
+        uint32_t                       m_numCommandBufferPerThread;
     };
+
 } // namespace wind
+
+namespace wind::command
+{
+    void RenderUI(vk::CommandBuffer cmdBuffer);
+    void TransferLayout(vk::CommandBuffer    cb,
+                        vk::Image            image,
+                        uint32_t             mipCount,
+                        uint32_t             layerCount,
+                        vk::ImageLayout      oldLayout,
+                        vk::ImageLayout      newLayout,
+                        vk::ImageAspectFlags aspectMask = vk::ImageAspectFlagBits::eColor);
+} // namespace wind::command

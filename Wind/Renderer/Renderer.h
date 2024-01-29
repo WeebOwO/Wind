@@ -20,12 +20,10 @@ namespace wind
     class FrameParms
     {
     public:
-        Ref<CommandBuffer> renderEncoder;
-        Ref<CommandBuffer> computeEncoder;
-
-        vk::Semaphore imageAvailableSemaphore;
-        vk::Semaphore renderFinishedSemaphore;
-        vk::Fence     flightFence;
+        vk::CommandBuffer cmdBuffer;
+        vk::Semaphore     imageAvailableSemaphore;
+        vk::Semaphore     renderFinishedSemaphore;
+        vk::Fence         flightFence;
 
         uint32_t swapchainImageIndex;
 
@@ -35,8 +33,6 @@ namespace wind
         friend class Renderer;
         void Init(vk::Device device);
         void Destroy(vk::Device device);
-
-        void ResetCommanEncoders();
     };
 
     // using to manage rendering resources
@@ -63,7 +59,7 @@ namespace wind
         }
 
         auto GetPso(uint64_t id) { return m_psoCache->GetPso(id); }
-        
+
     private:
         void GeneratePSO(const std::string& assetPath);
 
@@ -74,10 +70,11 @@ namespace wind
         FrameParms m_frameParams[RenderConfig::MAX_FRAME_IN_FLIGHT];
 
         // own these resoruces
-        Scope<MaterialManager> m_materialManager;
-        Scope<RenderGraph>     m_renderGraph;
-        Scope<ShaderMap>       m_shaderMap;
-        Scope<PsoCache>        m_psoCache;
+        Scope<MaterialManager>      m_materialManager;
+        Scope<RenderGraph>          m_renderGraph;
+        Scope<ShaderMap>            m_shaderMap;
+        Scope<PsoCache>             m_psoCache;
+        Scope<CommandBufferManager> m_commandManager;
 
         // predefine pipeline
         vk::Pipeline m_gbufferPSO;

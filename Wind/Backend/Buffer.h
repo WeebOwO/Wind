@@ -23,14 +23,11 @@ namespace wind
         GPUBuffer(const GPUBuffer& other)            = delete;
         GPUBuffer& operator=(const GPUBuffer& other) = delete;
 
-        [[nodiscard]] auto GetNativeHandle() const { return m_buffer.buffer; }
-        [[nodiscard]] auto GetByteSize() const { return m_byteSize; }
-        [[nodiscard]] auto GetAllocation() { return m_buffer.allocation; }
+        [[nodiscard]] auto buffer() const { return m_buffer.buffer; }
+        [[nodiscard]] auto size() const { return m_byteSize; }
+        [[nodiscard]] auto allocation() { return m_buffer.allocation; }
 
     protected:
-        auto GetAllocatedBuffer() { return m_buffer; }
-
-    private:
         uint32_t        m_byteSize;
         AllocatedBuffer m_buffer;
     };

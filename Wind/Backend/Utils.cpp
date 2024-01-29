@@ -8,7 +8,7 @@ namespace wind::utils
     vk::Sampler CreateSampler(const vk::SamplerCreateInfo& createInfo)
     {
         assert(g_runtimeContext.device);
-        vk::Device device = g_runtimeContext.device->GetVkDeviceHandle();
+        vk::Device device = g_runtimeContext.device->vkDevice();
         return device.createSampler(createInfo);
     }
 

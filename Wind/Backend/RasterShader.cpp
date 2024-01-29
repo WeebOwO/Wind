@@ -21,7 +21,7 @@ namespace wind
 
     RasterShader::~RasterShader()
     {
-        auto vkDevice = device.GetVkDeviceHandle();
+        auto vkDevice = device.vkDevice();
         vkDevice.destroyShaderModule(m_vertexModule);
         vkDevice.destroyShaderModule(m_fragModule);
     }

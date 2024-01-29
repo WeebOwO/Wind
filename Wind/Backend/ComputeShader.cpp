@@ -12,7 +12,7 @@ namespace wind
         Shader(device)
     {
         SetShaderName(debugName);
-        auto vkDevice = device.GetVkDeviceHandle();
+        auto vkDevice = device.vkDevice();
 
         // create Pipeline cache
         bool                        cacheValid = spirvCode.size() != 0;
@@ -49,7 +49,7 @@ namespace wind
 
     ComputeShader::~ComputeShader()
     {
-        auto vkDevice = device.GetVkDeviceHandle();
+        auto vkDevice = device.vkDevice();
         vkDevice.waitIdle();
         vkDevice.destroyPipelineCache(m_cache);
         vkDevice.destroyShaderModule(m_computeModule);

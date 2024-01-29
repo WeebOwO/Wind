@@ -1,5 +1,6 @@
 #include "Engine.h"
 
+#include "Backend/Command.h"
 #include "Core/Script.h"
 #include <tracy/Tracy.hpp>
 
@@ -13,12 +14,13 @@
 #include "Resource/Mesh.h"
 #include "Scene/Scene.h"
 // renderer part
-#include "Renderer/View.h"
 #include "Renderer/Material.h"
-#include "Renderer/Renderer.h"
-#include "Renderer/SceneRenderer.h"
 #include "Renderer/RenderGraph/RenderGraphPass.h"
 #include "Renderer/RenderGraph/ResourceRegistry.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/SceneRenderer.h"
+#include "Renderer/View.h"
+
 // imgui part
 #include "Imgui/imgui.h"
 #include "Imgui/imgui_impl_glfw.h"
@@ -163,12 +165,12 @@ namespace wind
             [&](RenderGraph::Builder& builder, PresentPassData& data) {
                 // present pass don't need to declare render pass
             },
-            [&](ResourceRegistry& resourceRegistry, PresentPassData& data, CommandBuffer& encoder) {
+            [&](ResourceRegistry& resourceRegistry, PresentPassData& data, vk::CommandBuffer cb) {
                 // todo: add a pipeline barrier to make sure scene color is render finished
-                encoder.BeginRendering(resourceRegistry.GetPresentRenderingInfo());
+                cb.beginRendering(resourceRegistry.GetPresentRenderingInfo());
                 m_imguiCallback(*g_runtimeContext.renderer);
-                encoder.RenderUI(); // render ui in the final pass
-                encoder.EndRendering();
+                command::RenderUI(cb);
+                cb.endRendering();
             },
             PassType::Graphics);
 

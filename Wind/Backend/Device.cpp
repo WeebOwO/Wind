@@ -204,7 +204,7 @@ namespace wind
 
     void GPUDevice::InitAllocator() { m_allocator = scope::Create<VkAllocator>(*this); }
 
-    VkAllocator* GPUDevice::GetAllocator() const { return m_allocator.get(); }
+    VkAllocator* GPUDevice::vmallocator() const { return m_allocator.get(); }
 
     GPUDevice::GPUDevice()
     {
@@ -255,36 +255,15 @@ namespace wind
         m_backupCommandfence = m_device->createFence(fenceCreateInfo);
     }
 
-    vk::CommandBuffer GPUDevice::GetBackUpCommandBuffer() { return m_backupCommandBuffer; }
-
-    void GPUDevice::SubmitBackUpCommandBuffer(const vk::CommandBuffer& buffer)
+    Ref<DeviceBuffer> GPUDevice::CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags)
     {
-        buffer.end();
-
-        vk::SubmitInfo submitInfo {.commandBufferCount = 1, .pCommandBuffers = &buffer};
-        m_mainQueue.submit(submitInfo, m_backupCommandfence);
-
-        auto result = m_device->waitForFences(m_backupCommandfence, true, std::numeric_limits<float>::max());
-        if (result != vk::Result::eSuccess)
-        {
-            WIND_CORE_WARN("Backup ComandBuffer wait too long time");
-        }
-        m_device->resetFences(m_backupCommandfence);
-
-        m_device->resetCommandPool(m_backupCommandPool);
+        return ref::Create<DeviceBuffer>(*this, byteSize, usageFlags);
     }
 
-    Scope<DeviceBuffer> GPUDevice::CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags)
+    Ref<UploadBuffer> GPUDevice::CreateUploadBuffer(uint32_t byteSize)
     {
-        return scope::Create<DeviceBuffer>(*this, byteSize, usageFlags);
+        return ref::Create<UploadBuffer>(*this, byteSize);
     }
-
-    Scope<UploadBuffer> GPUDevice::CreateUploadBuffer(uint32_t byteSize)
-    {
-        return scope::Create<UploadBuffer>(*this, byteSize);
-    }
-
-    ImmCommandBuffer GPUDevice::CreateImmCommandBuffer() { return ImmCommandBuffer(*this); }
 
     Ref<RasterShader> GPUDevice::CreateRastShader(const std::string& debugName,
                                                   const std::string& vertexFilePath,
@@ -311,8 +290,25 @@ namespace wind
         return shader;
     }
 
-    Ref<CommandBuffer> GPUDevice::CreateCommandBuffer(RenderCommandQueueType queueType)
+    Ref<GPUTexture> GPUDevice::CreateGPUTexture(const vk::ImageCreateInfo& createInfo)
     {
-        return ref::Create<CommandBuffer>(*this, queueType);
+        return ref::Create<GPUTexture>(*this, createInfo);
+    }
+
+    void GPUDevice::ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func)
+    {
+        m_backupCommandBuffer.begin(vk::CommandBufferBeginInfo {});
+        func(m_backupCommandBuffer);
+        m_backupCommandBuffer.end();
+        vk::SubmitInfo submitInfo {.commandBufferCount = 1, .pCommandBuffers = &m_backupCommandBuffer};
+        m_mainQueue.submit(submitInfo, m_backupCommandfence);
+
+        auto result = m_device->waitForFences(m_backupCommandfence, true, std::numeric_limits<float>::max());
+        if (result != vk::Result::eSuccess)
+        {
+            WIND_CORE_WARN("Backup ComandBuffer wait too long time");
+        }
+        m_device->resetFences(m_backupCommandfence);
+        m_device->resetCommandPool(m_backupCommandPool);
     }
 }; // namespace wind

@@ -43,24 +43,30 @@ namespace wind
         m_viewPort.setWidth(width).setHeight(height).setX(offsetX).setY(offsetY).setMinDepth(0.0).setMaxDepth(1.0);
     }
 
-    void SceneRenderer::DrawMesh(CommandBuffer& encoder)
+    void SceneRenderer::DrawMesh(vk::CommandBuffer commands)
     {
         auto renderer = g_runtimeContext.renderer.get();
         for (const auto& meshDrawCommand : m_cacheMeshDrawCommands[BasePass])
         {
             auto pso = renderer->GetPso(meshDrawCommand.pipelineID);
 
-            encoder.SetViewport(m_viewPort);
-            encoder.SetScissor(0, 0, m_viewPort.width, m_viewPort.height);
+            commands.setViewport(0, 1, &m_viewPort);
+
+            vk::Rect2D scissor {.offset = {.x = 0, .y = 0},
+                                .extent = {.width = (uint32_t)m_viewPort.width, .height = (uint32_t)m_viewPort.height}};
+            commands.setScissor(0, 1, &scissor);
 
             auto vertexBuffer = meshDrawCommand.drawMesh.meshSource->vertexBuffer;
             auto indexBuffer  = meshDrawCommand.drawMesh.meshSource->indexBuffer;
 
-            encoder.BindPSO(pso);
-            encoder.BindVertexBuffer(0, 1, vertexBuffer->GetNativeHandle(), 0);
-            encoder.BindIndexBuffer(indexBuffer->GetNativeHandle(), 0, vk::IndexType::eUint32);
+            auto           verBufferHandle = vertexBuffer->buffer();
+            vk::DeviceSize offset          = 0;
 
-            encoder.DrawIndexed(3 * meshDrawCommand.drawMesh.meshSource->indices.size(), 1, 0, 0, 0);
+            commands.bindPipeline(vk::PipelineBindPoint::eGraphics, pso);
+            commands.bindVertexBuffers(0, 1, &verBufferHandle, &offset);
+            commands.bindIndexBuffer(indexBuffer->buffer(), 0, vk::IndexType::eUint32);
+
+            commands.drawIndexed(3 * meshDrawCommand.drawMesh.meshSource->indices.size(), 1, 0, 0, 0);
         }
     }
 
@@ -86,32 +92,29 @@ namespace wind
             "LightingPass",
             [&](RenderGraph::Builder& builder, ColorPassData& data) {
                 // set the data
-                RenderGraphTexture::Desc desc {
-                    .width = m_viewPortWidth,
-                    .height = m_viewPortHeight,
-                    .depth = 1,
-                    .type = TextureViewType::Texture2D,
-                    .format = vk::Format::eR8G8B8A8Srgb,
-                    .layout = vk::ImageLayout::eColorAttachmentOptimal,
-                    .usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled
-                };
-                
-                data.sceneColor = AttachmentInfo {
-                    .texture = builder.CreateTexture(
-                        "SceneColor", desc),
-                    .loadop     = vk::AttachmentLoadOp::eLoad,
-                    .storeop    = vk::AttachmentStoreOp::eStore,
-                    .clearValue = clearValue};
+                RenderGraphTexture::Desc desc {.width  = m_viewPortWidth,
+                                               .height = m_viewPortHeight,
+                                               .depth  = 1,
+                                               .type   = TextureViewType::Texture2D,
+                                               .format = vk::Format::eR8G8B8A8Srgb,
+                                               .layout = vk::ImageLayout::eColorAttachmentOptimal,
+                                               .usage  = vk::ImageUsageFlagBits::eColorAttachment |
+                                                        vk::ImageUsageFlagBits::eSampled};
+
+                data.sceneColor = AttachmentInfo {.texture    = builder.CreateTexture("SceneColor", desc),
+                                                  .loadop     = vk::AttachmentLoadOp::eLoad,
+                                                  .storeop    = vk::AttachmentStoreOp::eStore,
+                                                  .clearValue = clearValue};
 
                 RenderPassNode::RenderDesc renderDesc {
                     .attchments = {.color = {data.sceneColor}, .depth = {}, .stencil = {}}, .renderArea = renderArea};
 
                 builder.DeclareRenderPass(renderDesc);
             },
-            [&](ResourceRegistry& resourceRegistry, ColorPassData& data, CommandBuffer& encoder) {
-                encoder.BeginRendering(resourceRegistry.GetRenderingInfo());
-                DrawMesh(encoder);
-                encoder.EndRendering();
+            [&](ResourceRegistry& resourceRegistry, ColorPassData& data, vk::CommandBuffer cb) {
+                cb.beginRendering(resourceRegistry.GetRenderingInfo());
+                DrawMesh(cb);
+                cb.endRendering();
             },
             PassType::Graphics);
 

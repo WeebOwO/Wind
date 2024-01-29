@@ -12,7 +12,6 @@
 
 namespace wind
 {
-
     RenderGraph::RenderGraph() = default;
 
     RenderGraph::~RenderGraph()
@@ -28,8 +27,8 @@ namespace wind
 
     void RenderGraph::Exec()
     {
-        auto renderEncoder = m_currentFrameData->renderEncoder;
-        renderEncoder->Begin();
+        auto cmdBuffer = m_currentFrameData->cmdBuffer;
+
         SwapchainStartTrans();
 
         for (const auto& [name, node] : m_passNodes)
@@ -38,29 +37,41 @@ namespace wind
 
             // insert barrier here
             for (auto depend : node->dependResources)
-            {   
+            {
                 if (depend)
                 {
                     auto resource = m_resources[depend];
-                    if(resource->type == RenderGraphResourceType::Texture) {
-                        RenderGraphTexture* texture = static_cast<RenderGraphTexture*>(resource);
-                        
+                    if (resource->type == RenderGraphResourceType::Texture)
+                    {
+                        auto texture    = static_cast<RenderGraphTexture*>(resource);
+                        auto gpuTexture = texture->GetGPUTexture();
+                        gpuTexture->SetImageLayout(cmdBuffer, vk::ImageLayout::eShaderReadOnlyOptimal);
                     }
                 }
             }
 
             for (auto output : node->outputResources)
             {
-                
+                if (output)
+                {
+                    auto resource = m_resources[output];
+                    if (resource->type == RenderGraphResourceType::Texture)
+                    {
+                        auto texture    = static_cast<RenderGraphTexture*>(resource);
+                        auto gpuTexture = texture->GetGPUTexture();
+                        gpuTexture->SetImageLayout(cmdBuffer, vk::ImageLayout::eColorAttachmentOptimal);
+                    }
+                }
             }
 
-            node->Execute(registry, *renderEncoder);
+            node->Execute(registry, cmdBuffer);
         }
 
         if (m_swapchain)
         {
             SwapchainEndTrans();
-            m_swapchain->SubmitCommandBuffer(renderEncoder->Finish(),
+            cmdBuffer.end();
+            m_swapchain->SubmitCommandBuffer(cmdBuffer,
                                              m_currentFrameData->flightFence,
                                              m_currentFrameData->imageAvailableSemaphore,
                                              m_currentFrameData->renderFinishedSemaphore,
@@ -101,41 +112,27 @@ namespace wind
     vk::RenderingInfo RenderGraph::GetPresentRenderingInfo() const noexcept
     {
         auto index = m_currentFrameData->swapchainImageIndex;
-        return m_swapchain->GetRenderingInfo(index);
+        return m_swapchain->renderingInfo(index);
     }
 
     void RenderGraph::SwapchainStartTrans()
     {
-        m_currentFrameData->renderEncoder->TransferImageLayout(
-            m_swapchain->GetImage(m_currentFrameData->swapchainImageIndex),
-            vk::AccessFlagBits::eNone,
-            vk::AccessFlagBits::eColorAttachmentWrite,
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::eColorAttachmentOptimal,
-            vk::PipelineStageFlagBits::eTopOfPipe,
-            vk::PipelineStageFlagBits::eColorAttachmentOutput,
-            vk::ImageSubresourceRange {.aspectMask     = vk::ImageAspectFlagBits::eColor,
-                                       .baseMipLevel   = 0,
-                                       .levelCount     = 1,
-                                       .baseArrayLayer = 0,
-                                       .layerCount     = 1});
+        command::TransferLayout(m_currentFrameData->cmdBuffer,
+                                m_swapchain->image(m_currentFrameData->swapchainImageIndex),
+                                1,
+                                1,
+                                vk::ImageLayout::eUndefined,
+                                vk::ImageLayout::eColorAttachmentOptimal);
     }
 
     void RenderGraph::SwapchainEndTrans()
     {
-        m_currentFrameData->renderEncoder->TransferImageLayout(
-            m_swapchain->GetImage(m_currentFrameData->swapchainImageIndex),
-            vk::AccessFlagBits::eColorAttachmentWrite,
-            vk::AccessFlagBits::eNone,
-            vk::ImageLayout::eColorAttachmentOptimal,
-            vk::ImageLayout::ePresentSrcKHR,
-            vk::PipelineStageFlagBits::eColorAttachmentOutput,
-            vk::PipelineStageFlagBits::eBottomOfPipe,
-            vk::ImageSubresourceRange {.aspectMask     = vk::ImageAspectFlagBits::eColor,
-                                       .baseMipLevel   = 0,
-                                       .levelCount     = 1,
-                                       .baseArrayLayer = 0,
-                                       .layerCount     = 1});
+        command::TransferLayout(m_currentFrameData->cmdBuffer,
+                                m_swapchain->image(m_currentFrameData->swapchainImageIndex),
+                                1,
+                                1,
+                                vk::ImageLayout::eColorAttachmentOptimal,
+                                vk::ImageLayout::ePresentSrcKHR);
     }
 
     void RenderGraph::InitGraphResource(RenderGraphHandle handle) { m_resources[handle.m_index]->InitRHI(); }

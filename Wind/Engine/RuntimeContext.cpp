@@ -30,7 +30,7 @@ namespace wind
         device = scope::Create<GPUDevice>();
 
         // init the renderer
-        RenderConfig config {.renderPath = RenderPath::Defer};
+        RenderConfig config {.commandBufferPerThread = 3, .renderPath = RenderPath::Defer};
 
         renderer = scope::Create<Renderer>(*device, config);
         renderer->Init();

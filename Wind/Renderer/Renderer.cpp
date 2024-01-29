@@ -25,9 +25,6 @@ namespace wind
 {
     void FrameParms::Init(vk::Device device)
     {
-        computeEncoder = g_runtimeContext.device->CreateCommandBuffer(RenderCommandQueueType::Compute);
-        renderEncoder  = g_runtimeContext.device->CreateCommandBuffer(RenderCommandQueueType::Graphics);
-
         vk::FenceCreateInfo fenceCreateInfo {.flags = vk::FenceCreateFlagBits::eSignaled};
         flightFence = device.createFence(fenceCreateInfo);
 
@@ -42,12 +39,6 @@ namespace wind
         device.destroyFence(flightFence);
         device.destroySemaphore(imageAvailableSemaphore);
         device.destroySemaphore(renderFinishedSemaphore);
-    }
-
-    void FrameParms::ResetCommanEncoders()
-    {
-        computeEncoder->Reset();
-        renderEncoder->Reset();
     }
 
     void Renderer::Init()
@@ -74,6 +65,8 @@ namespace wind
         m_materialManager->InitDefaultMaterial(*m_shaderMap);
 
         m_psoCache = scope::Create<PsoCache>(m_device, *m_shaderMap);
+
+        m_commandManager = scope::Create<CommandBufferManager>(m_device, 1, m_renderConfig.commandBufferPerThread);
     }
 
     void Renderer::Quit()
@@ -103,8 +96,9 @@ namespace wind
         auto& frameData = GetCurrentFrameData();
 
         frameData.swapchainImageIndex =
-            swapchain.AcquireNextImage(frameData.flightFence, frameData.imageAvailableSemaphore).value();
-        frameData.ResetCommanEncoders();
+            swapchain.AcquireNextImage(frameData.flightFence, frameData.imageAvailableSemaphore).value();\
+        m_commandManager->ResetPool(m_frameNumber);
+        frameData.cmdBuffer = m_commandManager->GetCommandBuffer(m_frameNumber, 0, true);
 
         m_renderGraph->SetupSwapChain(swapchain);
         m_renderGraph->SetupFrameData(frameData);

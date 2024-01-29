@@ -26,12 +26,18 @@ namespace wind
         GPUTexture(GPUDevice& device, const vk::ImageCreateInfo& createInfo);
         ~GPUTexture();
 
+        uint32_t        width() const noexcept { return m_width; }
+        uint32_t        height() const noexcept { return m_height; }
+        vk::Image       image() const noexcept { return m_allocatedImage.image; }
+        vk::ImageLayout layout() const noexcept { return m_currentLayout; }
+        vk::Sampler     sampler() const noexcept { return m_defaultSampler; }
+        vk::ImageView   view() const noexcept { return m_defaultView; }
+        vk::Format      format() const noexcept { return m_format; }
+
         void CreateDefaultImageView(const vk::ImageSubresourceRange& range, vk::ImageViewType viewType);
 
-        vk::ImageLayout GetImageLayout() const noexcept { return m_layout; }
-        vk::ImageView   GetView() const { return m_defaultView; } // need to make sure you call CreateImageView before
-        vk::Image       GetVkImage() const noexcept { return m_allocatedImage.image; }
-        vk::Sampler     GetDefaultSampler() const noexcept { return m_defaultSampler; }
+        vk::ImageView GetView() const { return m_defaultView; } // need to make sure you call CreateImageView before
+        vk::Image     GetVkImage() const noexcept { return m_allocatedImage.image; }
 
         vk::ImageSubresourceRange GetDefaultImageSubresourceRange() const;
         vk::ImageSubresourceRange GetImageSubresourceRange(uint32_t mip, uint32_t level = 0) const;
@@ -44,7 +50,13 @@ namespace wind
 
         operator vk::Image() { return m_allocatedImage.image; }
 
-        void SetImageLayout(vk::ImageLayout layout) noexcept;
+        // some commandBuffer interface
+        void SetImageLayout(vk::CommandBuffer cb,
+                            vk::ImageLayout   newlayout,
+                            vk::ImageAspectFlags = vk::ImageAspectFlagBits::eColor) noexcept;
+
+    protected:
+        void Create();
 
     private:
         uint32_t                   m_width;
@@ -54,8 +66,8 @@ namespace wind
         uint32_t                   m_layerCount;
         vk::Format                 m_format;
         vk::ImageUsageFlags        m_usage;
-        vk::SampleCountFlagBits    m_sampleCount = vk::SampleCountFlagBits::e1;
-        vk::ImageLayout            m_layout      = vk::ImageLayout::eUndefined;
+        vk::SampleCountFlagBits    m_sampleCount   = vk::SampleCountFlagBits::e1;
+        vk::ImageLayout            m_currentLayout = vk::ImageLayout::eUndefined;
         AllocatedImage             m_allocatedImage;
         vk::Sampler                m_defaultSampler;
         vk::ImageView              m_defaultView;
