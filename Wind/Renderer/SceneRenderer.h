@@ -18,10 +18,10 @@ namespace wind
         SceneRenderer()  = default;
         ~SceneRenderer() = default;
 
+        void Init();
         void SetViewPort(float offsetX, float offsetY, float width, float height);
 
         void Render(View& view, RenderGraph& renderGraph);
-        void Init();
 
     private:
         void InitView(View& view); // Dispatch MeshPass

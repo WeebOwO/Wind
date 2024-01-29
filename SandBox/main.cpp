@@ -22,22 +22,6 @@ public:
 
         wind::Engine engine(std::move(window));
 
-        engine.SetImguiCallBack([](wind::Renderer& renderer) {
-            // show demo window
-            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-            ImGui::ShowDemoWindow();
-            // show some text
-            auto viewportOffset = ImGui::GetCursorPos(); // includes tab bar
-            auto viewportSize   = ImGui::GetContentRegionAvail();
-            auto output         = renderer.GetRenderGraphOutput();
-            ImGui::Begin("Viewport");
-            {
-                ImGui::Text("Hello world!");
-                output->MarkUseByImgui(viewportSize, {0, 1}, {1, 0});
-            }
-            ImGui::End();
-        });
-
         engine.Run();
     }
 };

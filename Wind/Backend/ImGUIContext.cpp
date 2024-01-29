@@ -13,12 +13,11 @@
 #include "Backend/SwapChain.h"
 #include "Backend/Utils.h"
 
-
 namespace wind
 {
 
     void ImGUIContext::Init(const GPUDevice& device, const Window& window)
-    {   
+    {
         VkDevice   vkdevice  = (VkDevice)device.vkDevice();
         Swapchain* swapchain = window.GetSwapChain();
 

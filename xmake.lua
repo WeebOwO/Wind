@@ -9,4 +9,4 @@ add_includedirs("3rdParty/")
 set_languages("c++20")
 set_runtimes("MD")
 
-includes("Editor/", "Wind/")
+includes("SandBox/", "Wind/")

@@ -1,9 +1,6 @@
 #include "Engine.h"
 
-#include "Backend/Command.h"
 #include "Core/Script.h"
-#include "Renderer/RenderGraph/RenderGraphID.h"
-#include "Renderer/RenderGraph/RenderGraphTexture.h"
 #include <tracy/Tracy.hpp>
 
 #include "Window.h"
@@ -133,28 +130,13 @@ namespace wind
         // execute main render job
         auto& renderGraph = g_runtimeContext.renderer->BeginFrame(*m_window->GetSwapChain());
         // set viewport
-        View           view;
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        View view;
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize(viewport->Size);
-        ImGui::SetNextWindowViewport(viewport->ID);
-
-        auto viewportOffset = ImGui::GetCursorPos(); // includes tab bar
-        auto viewportSize   = ImGui::GetContentRegionAvail();
-
-        m_sceneRenderer->SetViewPort(viewportOffset.x, viewportOffset.y, viewportSize.x, viewportSize.y);
-
+        // set viewport and render
+        m_sceneRenderer->SetViewPort(0, 0, m_window->width(), m_window->height());
         m_sceneRenderer->Render(view, renderGraph);
 
-        // imgui end part
-        ImGuiIO& io = ImGui::GetIO();
-        (void)io;
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-        }
         auto& blackBoard = renderGraph.GetBlackBoard();
 
         struct PresentPassData
@@ -170,11 +152,30 @@ namespace wind
                 builder.AddDependResource(data.sceneColor);
             },
             [&](ResourceRegistry& resourceRegistry, PresentPassData& data, vk::CommandBuffer cb) {
-                // todo: add a pipeline barrier to make sure scene color is render finished
+                // do all the ui command in final pass
+                GPUTexture* output = g_runtimeContext.renderer->GetRenderGraphOutput();
+
+                // show viewport
+                ImGui::ShowDemoWindow();
+
+                ImGui::Begin("Viewport");
+                auto viewportOffset = ImGui::GetCursorPos(); // includes tab bar
+                auto viewportSize   = ImGui::GetContentRegionAvail();
+                output->MarkUseByImgui(viewportSize, {0, 1}, {1, 0});
+                ImGui::End();
+
                 cb.beginRendering(resourceRegistry.GetPresentRenderingInfo());
-                m_imguiCallback(*g_runtimeContext.renderer);
                 command::RenderUI(cb);
                 cb.endRendering();
+
+                // imgui part code
+                ImGuiIO& io = ImGui::GetIO();
+                (void)io;
+                if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+                {
+                    ImGui::UpdatePlatformWindows();
+                    ImGui::RenderPlatformWindowsDefault();
+                }
             },
             PassType::Graphics);
 

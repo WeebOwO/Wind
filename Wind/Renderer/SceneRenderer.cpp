@@ -40,7 +40,12 @@ namespace wind
         m_viewPortWidth  = uint32_t(width);
         m_viewPortHeight = uint32_t(height);
 
-        m_viewPort.setWidth(width).setHeight(height).setX(offsetX).setY(offsetY).setMinDepth(0.0).setMaxDepth(1.0);
+        m_viewPort.setWidth(width)
+                  .setHeight(height)
+                  .setX(offsetX)
+                  .setY(offsetY)
+                  .setMinDepth(0.0)
+                  .setMaxDepth(1.0);
     }
 
     void SceneRenderer::DrawMesh(vk::CommandBuffer commands)
