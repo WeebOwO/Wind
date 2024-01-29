@@ -1,12 +1,11 @@
 #include "RenderGraph.h"
 
-#include "Backend/Texture.h"
 #include "PassNode.h"
-#include "Renderer/RenderGraph/RenderGraphResource.h"
 #include "ResourceRegistry.h"
 
 #include "Core/Log.h"
 
+#include "Backend/Texture.h"
 #include "Backend/Command.h"
 #include "Backend/SwapChain.h"
 
