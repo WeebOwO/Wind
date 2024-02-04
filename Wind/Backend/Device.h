@@ -56,7 +56,7 @@ namespace wind
 
         vk::DescriptorSet AllocateDescriptor(const vk::DescriptorSetLayout&) const;
 
-        void ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func);
+        void ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func) const;
 
     private:
         friend class GPUBuffer;

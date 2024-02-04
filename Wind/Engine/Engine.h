@@ -12,13 +12,11 @@ namespace wind
     class Engine
     {
     public:
-        using ImGuiCallBack = std::function<void(Renderer&)>;
         Engine(Scope<Window> window); // here use unique ptr to transfer ownership from editor to engine
         ~Engine();
 
         void Run();
-        void SetImguiCallBack(ImGuiCallBack&& callback) { m_imguiCallback = std::move(callback); }
-
+        
     private:
         void Init();
         void PostInit();
@@ -35,6 +33,5 @@ namespace wind
         uint32_t                              m_activeSceneIndex;
         std::chrono::steady_clock::time_point m_lastTickTimePoint {std::chrono::steady_clock::now()};
         Scope<SceneRenderer>                  m_sceneRenderer;
-        ImGuiCallBack                         m_imguiCallback;
     };
 } // namespace wind

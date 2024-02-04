@@ -21,15 +21,13 @@ namespace wind
         void Init();
         void SetViewPort(float offsetX, float offsetY, float width, float height);
 
-        void Render(View& view, RenderGraph& renderGraph);
+        void Render(View& view, RenderGraph& renderGraph, const Scene& scene);
 
     private:
-        void InitView(View& view); // Dispatch MeshPass
+        void InitView(View& view, const Scene& scene); // Dispatch MeshPass
 
         void BuildMeshDrawCommand(const MeshPass& meshPass);
         void DrawMesh(vk::CommandBuffer commands);
-
-        Scene* m_renderScene;
 
         vk::Viewport m_viewPort {};
 

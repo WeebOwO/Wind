@@ -75,8 +75,5 @@ namespace wind
         Scope<ShaderMap>            m_shaderMap;
         Scope<PsoCache>             m_psoCache;
         Scope<CommandBufferManager> m_commandManager;
-
-        // predefine pipeline
-        vk::Pipeline m_gbufferPSO;
     };
 } // namespace wind

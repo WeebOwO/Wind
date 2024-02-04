@@ -15,7 +15,6 @@
 
 namespace wind
 {
-
     void ImGUIContext::Init(const GPUDevice& device, const Window& window)
     {
         VkDevice   vkdevice  = (VkDevice)device.vkDevice();
@@ -69,7 +68,7 @@ namespace wind
 
         ImGui_ImplVulkan_Init(&initInfo, nullptr);
 
-        g_runtimeContext.device->ExecuteImmediately([](vk::CommandBuffer buffer) {
+        device.ExecuteImmediately([](vk::CommandBuffer buffer) {
             VkCommandBuffer Cbuffer = (VkCommandBuffer)buffer;
             ImGui_ImplVulkan_CreateFontsTexture(Cbuffer);
         });

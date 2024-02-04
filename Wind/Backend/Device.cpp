@@ -294,7 +294,7 @@ namespace wind
         return ref::Create<GPUTexture>(*this, createInfo);
     }
 
-    void GPUDevice::ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func)
+    void GPUDevice::ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func) const
     {
         m_backupCommandBuffer.begin(vk::CommandBufferBeginInfo {});
         func(m_backupCommandBuffer);

@@ -26,12 +26,12 @@ namespace wind
 
     void SceneRenderer::Init() {}
 
-    void SceneRenderer::InitView(View& view)
+    void SceneRenderer::InitView(View& view, const Scene& scene)
     {
         for (auto meshPassType = MeshPassType::BasePass; meshPassType != MeshPassType::Count;
              meshPassType      = Step(meshPassType))
         {
-            BuildMeshDrawCommand(m_renderScene->m_meshPasses[meshPassType]);
+            BuildMeshDrawCommand(scene.m_meshPasses[meshPassType]);
         }
     }
 
@@ -75,10 +75,9 @@ namespace wind
         }
     }
 
-    void SceneRenderer::Render(View& view, RenderGraph& rg)
+    void SceneRenderer::Render(View& view, RenderGraph& rg, const Scene& scene)
     {
-        m_renderScene = g_runtimeContext.activeScene;
-        InitView(view);
+        InitView(view, scene);
 
         auto& blackBoard = rg.GetBlackBoard();
 

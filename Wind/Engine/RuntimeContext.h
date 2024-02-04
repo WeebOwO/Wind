@@ -7,7 +7,6 @@
 
 #include "Resource/Mesh.h"
 
-#include "Renderer/RenderGraph/RenderPassEnum.h"
 #include "Renderer/ShaderMap.h"
 
 namespace vk
@@ -43,7 +42,6 @@ namespace wind
         Scope<ImGUIContext> guiContext  = nullptr;
         Scope<Renderer>     renderer    = nullptr;
         lua_State*          luaState    = nullptr;
-        Scene*              activeScene = nullptr;
         PathManager         pathManager;
     };
 

@@ -48,7 +48,7 @@ namespace wind
 
         scene->Init();
         auto gameobject = scene->CreateGameObject("Test");
-        auto tag        = gameobject.GetComponent<TagComponent>();
+        auto tag      = gameobject.GetComponent<TagComponent>();
 
         Ref<StaticMesh> mesh = ref::Create<StaticMesh>();
 
@@ -135,7 +135,7 @@ namespace wind
 
         // set viewport and render
         m_sceneRenderer->SetViewPort(0, 0, m_window->width(), m_window->height());
-        m_sceneRenderer->Render(view, renderGraph);
+        m_sceneRenderer->Render(view, renderGraph, *m_scenes[m_activeSceneIndex]);
 
         auto& blackBoard = renderGraph.GetBlackBoard();
 
@@ -187,10 +187,8 @@ namespace wind
     {
         ZoneScopedN("LogicTick");
         m_window->OnUpdate(delta);
-
+        
         auto& activeScene = m_scenes[m_activeSceneIndex];
         activeScene->Update();
-
-        g_runtimeContext.activeScene = activeScene.get();
     }
 } // namespace wind
