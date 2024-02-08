@@ -9,7 +9,7 @@ xmake project -k vsxmake -m "debug,release"
 
 ## Current Status
 Current just a simple triangle with imgui viewport.
-![tt](image.png)
+![tt](/Assets/CurentState.png)
 
 ## Reference
 * [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API)
