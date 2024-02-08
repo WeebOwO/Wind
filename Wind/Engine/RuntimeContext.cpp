@@ -28,6 +28,13 @@ namespace wind
         // Core engine part
         Log::Init();
         device = scope::Create<GPUDevice>();
+        
+        // init project path
+        const std::string projectDir = PROJECT_DIR;
+        pathManager.projectPath      = PROJECT_DIR;
+        pathManager.shaderPath       = projectDir + "\\Shaders";
+        pathManager.asssetPath       = projectDir + "\\Assets";
+        pathManager.pipelinePath     = pathManager.asssetPath.string() + "\\RenderPipeline";
 
         // init the renderer
         RenderConfig config {.commandBufferPerThread = 3, .renderPath = RenderPath::Defer};
@@ -35,12 +42,6 @@ namespace wind
         renderer = scope::Create<Renderer>(*device, config);
         renderer->Init();
 
-        // init project path
-        const std::string projectDir = PROJECT_DIR;
-        pathManager.projectPath      = PROJECT_DIR;
-        pathManager.shaderPath       = projectDir + "\\Shaders";
-        pathManager.asssetPath       = projectDir + "\\Assets";
-        pathManager.pipelinePath     = pathManager.asssetPath.string() + "\\RenderPipeline";
         // init the lua virutal machine
         luaState = luaL_newstate();
         if (luaState == NULL)

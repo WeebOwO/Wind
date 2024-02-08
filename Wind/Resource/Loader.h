@@ -7,8 +7,8 @@
 #include "Core/Log.h"
 
 namespace wind::io
-{   
-    // todo: move this part in io thread 
+{
+    // todo: move this part in io thread
     class Scene;
 
     template<typename T>
@@ -38,5 +38,8 @@ namespace wind::io
         void LoadGLTFScene(Scene& scene, const std::string& filePath);
     };
 
+    std::string ReadFileToString(const std::filesystem::path& filePath);
+
     nlohmann::json LoadJson(std::filesystem::path filePath);
+
 } // namespace wind::io

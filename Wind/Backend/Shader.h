@@ -23,6 +23,7 @@ namespace wind
         auto GetShaderName() const { return m_debugName; }
         auto GetPipelineLayout() const { return m_layout; }
         auto SetShaderName(const std::string& name) { m_debugName = name; }
+        
         void CollectMetaData(const std::vector<uint32_t>& spirvCode, vk::ShaderStageFlags flag);
         void GeneratePipelineLayout();
 

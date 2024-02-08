@@ -16,6 +16,11 @@ namespace wind
                      const vk::ShaderModule& vertexModule,
                      const vk::ShaderModule& fragModule) noexcept;
 
+        RasterShader(GPUDevice&         device,
+                     const std::string& name,
+                     const std::string& vertexName,
+                     const std::string& fragName);
+
         ~RasterShader();
 
         vk::PipelineLayout GetPipelineLayout() const noexcept { return m_layout; }

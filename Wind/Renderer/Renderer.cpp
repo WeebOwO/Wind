@@ -50,12 +50,12 @@ namespace wind
 
         m_renderGraph = scope::Create<RenderGraph>();
 
-        // init the shader map
         m_shaderMap = scope::Create<ShaderMap>();
 
-        auto basePassShader = m_device.CreateRastShader("BasePassShader", "Triangle.vert.spv", "Triangle.frag.spv");
-        auto compositeShader =
-            m_device.CreateRastShader("CompositeShader", "FullScreen.vert.spv", "Composite.frag.spv");
+        std::filesystem::path shaderPath = g_runtimeContext.pathManager.shaderPath;
+
+        auto basePassShader  = m_device.CreateRastShader("BasePassShader", "Triangle.vert", "Triangle.frag");
+        auto compositeShader = m_device.CreateRastShader("CompositeShader", "FullScreen.vert", "Composite.frag");
 
         m_shaderMap->CacheRasterShader(basePassShader);
         m_shaderMap->CacheRasterShader(compositeShader);
@@ -96,7 +96,7 @@ namespace wind
         auto& frameData = GetCurrentFrameData();
 
         frameData.swapchainImageIndex =
-            swapchain.AcquireNextImage(frameData.flightFence, frameData.imageAvailableSemaphore).value();\
+            swapchain.AcquireNextImage(frameData.flightFence, frameData.imageAvailableSemaphore).value();
         m_commandManager->ResetPool(m_frameNumber);
         frameData.cmdBuffer = m_commandManager->GetCommandBuffer(m_frameNumber, 0, true);
 

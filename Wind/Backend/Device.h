@@ -45,6 +45,7 @@ namespace wind
         vk::Instance             vkInstance() const noexcept { return *m_vkInstance; }
         VkAllocator*             vmallocator() const;
         vk::PhysicalDeviceLimits physicalLimits() const noexcept { return m_limits; }
+        
         DeviceBufferRef          CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
         UploadBufferRef          CreateUploadBuffer(uint32_t byteSize);
         RasterShaderRef          CreateRastShader(const std::string& debugName,
