@@ -27,4 +27,6 @@ namespace wind
         vk::ShaderModule m_vertexModule;
         vk::ShaderModule m_fragModule;
     };
+
+    using RasterShaderRef = Ref<RasterShader>;
 } // namespace wind

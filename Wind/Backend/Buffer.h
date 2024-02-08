@@ -85,6 +85,11 @@ namespace wind
 
         uint8_t* m_mapMemory {nullptr};
     };
+
+    using DeviceBufferRef   = Ref<DeviceBuffer>;
+    using UploadBufferRef   = Ref<UploadBuffer>;
+    using ReadBackBufferRef = Ref<ReadBackBuffer>;
+    
 } // namespace wind
 
 namespace wind::utils

@@ -21,10 +21,11 @@ namespace wind
         Window(const WindowDesc& desc);
         ~Window();
 
-        [[nodiscard]] auto GetWindow() const { return m_window; }
+        [[nodiscard]] auto window() const { return m_window; }
         [[nodiscard]] auto width() const { return m_windowInfo.width; }
         [[nodiscard]] auto height() const { return m_windowInfo.height; }
         [[nodiscard]] auto IsVsyncEnable() const { return m_vsync; }
+        
         Swapchain*         GetSwapChain() const { return m_swapchain.get(); }
 
         void Init();

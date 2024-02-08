@@ -43,13 +43,13 @@ namespace wind
         void InitRHI() override;
         void ReleaseRHI() override;
 
-        void SetTexture(Ref<GPUTexture> texture);
+        void SetTexture(GPUTextureRef texture);
         auto GetTexture() const { return m_texture.get(); }
 
     private:
         friend class RenderPassNode;
         Desc            m_desc;
-        Ref<GPUTexture> m_texture;
+        GPUTextureRef m_texture;
     };
 
 } // namespace wind

@@ -9,8 +9,7 @@ namespace wind
     Swapchain::Swapchain(const GPUDevice& device, const Window& window) : m_device(device)
     {
         VkSurfaceKHR rawSurface;
-        glfwCreateWindowSurface(
-            static_cast<VkInstance>(m_device.vkInstance()), window.GetWindow(), nullptr, &rawSurface);
+        glfwCreateWindowSurface(static_cast<VkInstance>(m_device.vkInstance()), window.window(), nullptr, &rawSurface);
         m_surface = rawSurface;
         CreateSwapChainInteral(window.width(), window.height());
         WIND_CORE_INFO("Create swapchain");
@@ -106,39 +105,6 @@ namespace wind
     {
         auto vkDevice = m_device.vkDevice();
 
-        vk::AttachmentDescription colorAttachment {
-            .format         = m_surfaceFormat.format,
-            .samples        = vk::SampleCountFlagBits::e1,
-            .loadOp         = vk::AttachmentLoadOp::eClear,
-            .storeOp        = vk::AttachmentStoreOp::eStore,
-            .stencilLoadOp  = vk::AttachmentLoadOp::eDontCare,
-            .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
-            .initialLayout  = vk::ImageLayout::eUndefined,
-            .finalLayout    = vk::ImageLayout::ePresentSrcKHR,
-        };
-
-        vk::AttachmentReference colorReference {.attachment = 0, .layout = vk::ImageLayout::eAttachmentOptimal};
-
-        vk::SubpassDescription subpassDesc {
-            .pipelineBindPoint    = vk::PipelineBindPoint::eGraphics,
-            .colorAttachmentCount = 1,
-            .pColorAttachments    = &colorReference,
-        };
-
-        vk::SubpassDependency denpendency {.srcSubpass    = VK_SUBPASS_EXTERNAL,
-                                           .dstSubpass    = 0,
-                                           .srcStageMask  = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                                           .dstStageMask  = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                                           .srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite,
-                                           .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite};
-
-        vk::RenderPassCreateInfo renderPassCreateInfo {.attachmentCount = 1,
-                                                       .pAttachments    = &colorAttachment,
-                                                       .subpassCount    = 1,
-                                                       .pSubpasses      = &subpassDesc,
-                                                       .dependencyCount = 1,
-                                                       .pDependencies   = &denpendency};
-
         m_renderingInfos.resize(m_swapchainViews.size());
         m_attachmentInfos.resize(m_swapchainViews.size());
         // create dynamic rendering part
@@ -184,6 +150,7 @@ namespace wind
         {
             return std::nullopt;
         }
+
         return result.value;
     }
 

@@ -36,9 +36,6 @@ namespace wind
 
         void CreateDefaultImageView(const vk::ImageSubresourceRange& range, vk::ImageViewType viewType);
 
-        vk::ImageView GetView() const { return m_defaultView; } // need to make sure you call CreateImageView before
-        vk::Image     GetVkImage() const noexcept { return m_allocatedImage.image; }
-
         vk::ImageSubresourceRange GetDefaultImageSubresourceRange() const;
         vk::ImageSubresourceRange GetImageSubresourceRange(uint32_t mip, uint32_t level = 0) const;
 
@@ -74,6 +71,10 @@ namespace wind
         std::vector<vk::ImageView> m_cubeMapViews; // only useful when we create cubemap
         vk::DescriptorSet          m_imguiSet;     // only useful when need to sample by imgui context
     };
+
+    
+    using GPUTextureRef = Ref<GPUTexture>;
+
 } // namespace wind
 
 namespace wind::utils

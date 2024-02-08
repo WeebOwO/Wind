@@ -3,13 +3,12 @@
 #include "std.h"
 
 #include "Allocator.h"
+#include "Buffer.h"
 #include "Command.h"
 #include "Descriptor.h"
-#include "Handle.h"
-#include "VulkanHeader.h"
-
-#include "Buffer.h"
+#include "RasterShader.h"
 #include "Texture.h"
+#include "VulkanHeader.h"
 
 namespace wind
 {
@@ -34,9 +33,9 @@ namespace wind
         GPUDevice();
         ~GPUDevice();
 
-        void WaitIdle();
         operator vk::Device() { return *m_device; }
 
+        void                     WaitIdle();
         vk::Queue                mainQueue() const noexcept { return m_mainQueue; }
         vk::Queue                asyncComputeQueue() const noexcept { return m_asyncComputeQueue; }
         vk::Queue                transferComputeQueue() const noexcept { return m_transferQueue; };
@@ -46,17 +45,14 @@ namespace wind
         vk::Instance             vkInstance() const noexcept { return *m_vkInstance; }
         VkAllocator*             vmallocator() const;
         vk::PhysicalDeviceLimits physicalLimits() const noexcept { return m_limits; }
-
-        Ref<DeviceBuffer> CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
-        Ref<UploadBuffer> CreateUploadBuffer(uint32_t byteSize);
-        Ref<RasterShader> CreateRastShader(const std::string& debugName,
-                                           const std::string& vertexFilePath,
-                                           const std::string& fragfilePath);
-        Ref<GPUTexture>   CreateGPUTexture(const vk::ImageCreateInfo& createInfo);
-
-        vk::DescriptorSet AllocateDescriptor(const vk::DescriptorSetLayout&) const;
-
-        void ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func) const;
+        DeviceBufferRef          CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
+        UploadBufferRef          CreateUploadBuffer(uint32_t byteSize);
+        RasterShaderRef          CreateRastShader(const std::string& debugName,
+                                                  const std::string& vertexFilePath,
+                                                  const std::string& fragfilePath);
+        GPUTextureRef            CreateGPUTexture(const vk::ImageCreateInfo& createInfo);
+        vk::DescriptorSet        AllocateDescriptor(const vk::DescriptorSetLayout&) const;
+        void                     ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func) const;
 
     private:
         friend class GPUBuffer;
@@ -109,8 +105,3 @@ namespace wind
         vk::Fence         m_backupCommandfence;
     };
 } // namespace wind
-
-namespace wind::utils
-{
-    void ExecuteImmediately(vk::Device device, vk::Queue queue, const std::function<void(vk::CommandBuffer cb)>& func);
-}

@@ -7,7 +7,7 @@ namespace wind
 {
     ShaderMap::ShaderMap() {}
 
-    void ShaderMap::CacheRasterShader(Ref<RasterShader> shader)
+    void ShaderMap::CacheRasterShader(RasterShaderRef shader)
     {
         m_rasterShaderCache[shader->GetShaderName()] = shader;
     }

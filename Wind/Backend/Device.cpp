@@ -264,7 +264,7 @@ namespace wind
         return ref::Create<UploadBuffer>(*this, byteSize);
     }
 
-    Ref<RasterShader> GPUDevice::CreateRastShader(const std::string& debugName,
+    RasterShaderRef GPUDevice::CreateRastShader(const std::string& debugName,
                                                   const std::string& vertexFilePath,
                                                   const std::string& fragfilePath)
     {
@@ -289,7 +289,7 @@ namespace wind
         return shader;
     }
 
-    Ref<GPUTexture> GPUDevice::CreateGPUTexture(const vk::ImageCreateInfo& createInfo)
+    GPUTextureRef GPUDevice::CreateGPUTexture(const vk::ImageCreateInfo& createInfo)
     {
         return ref::Create<GPUTexture>(*this, createInfo);
     }

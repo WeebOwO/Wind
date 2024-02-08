@@ -76,7 +76,7 @@ namespace wind
 #endif
         ScriptTest();
         LoadScene();
-        while (!glfwWindowShouldClose(m_window->GetWindow()))
+        while (!glfwWindowShouldClose(m_window->window()))
         {
             ZoneScoped;
             float fs = CalcDeltaTime();

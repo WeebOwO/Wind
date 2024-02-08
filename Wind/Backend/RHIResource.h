@@ -2,46 +2,15 @@
 
 #include "std.h"
 
-#include "Handle.h"
 #include "VulkanHeader.h"
 
 namespace wind
 {
     class GPUDevice;
 
-    enum ResourceState
+    struct RHIResource
     {
-        RESOURCE_STATE_UNDEFINED                         = 0,
-        RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER        = 0x1,
-        RESOURCE_STATE_INDEX_BUFFER                      = 0x2,
-        RESOURCE_STATE_RENDER_TARGET                     = 0x4,
-        RESOURCE_STATE_UNORDERED_ACCESS                  = 0x8,
-        RESOURCE_STATE_DEPTH_WRITE                       = 0x10,
-        RESOURCE_STATE_DEPTH_READ                        = 0x20,
-        RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE         = 0x40,
-        RESOURCE_STATE_PIXEL_SHADER_RESOURCE             = 0x80,
-        RESOURCE_STATE_SHADER_RESOURCE                   = 0x40 | 0x80,
-        RESOURCE_STATE_STREAM_OUT                        = 0x100,
-        RESOURCE_STATE_INDIRECT_ARGUMENT                 = 0x200,
-        RESOURCE_STATE_COPY_DEST                         = 0x400,
-        RESOURCE_STATE_COPY_SOURCE                       = 0x800,
-        RESOURCE_STATE_GENERIC_READ                      = (((((0x1 | 0x2) | 0x40) | 0x80) | 0x200) | 0x800),
-        RESOURCE_STATE_PRESENT                           = 0x1000,
-        RESOURCE_STATE_COMMON                            = 0x2000,
-        RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE = 0x4000,
-        RESOURCE_STATE_SHADING_RATE_SOURCE               = 0x8000,
-    };
-
-    class RHIResource
-    {
-    public:
         RHIResource(GPUDevice& device);
-
-        ResourceState GetResourceState() const noexcept { return state; }
-        void          SetResourceState(ResourceState newState) noexcept { state = newState; }
-
-    protected:
-        GPUDevice&    device;
-        ResourceState state = ResourceState::RESOURCE_STATE_UNDEFINED;
+        GPUDevice& device;
     };
 } // namespace wind

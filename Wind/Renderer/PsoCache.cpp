@@ -20,8 +20,8 @@ namespace wind
     uint64_t
     PsoCache::CachePso(const Material& material, VertexFactoryType vertextype, RenderGraphPassType graphPassType)
     {
-        auto shadingModel = material.GetShadingModel();
-        auto blendMode    = material.GetBlendMode();
+        auto shadingModel = material.desc().ShadingModel;
+        auto blendMode    = material.desc().blendMode;
 
         uint64_t shadingModelID = (uint64_t)shadingModel;
         uint64_t blendModeID    = (uint64_t)blendMode;
@@ -39,7 +39,7 @@ namespace wind
         PipelineBuilder builder;
 
         // create render state base on material
-        auto desc = material.GetMaterialDesc();
+        auto desc = material.desc();
 
         bool depthTest  = desc.blendMode != BlendMode::Opaque;
         bool depthWrite = desc.blendMode != BlendMode::Opaque;
@@ -47,7 +47,7 @@ namespace wind
         builder.SetInputAssemblyState(vk::PrimitiveTopology::eTriangleList, false)
             .SetVertexType(EVertexType::StaticMesh)
             .SetRasterizationState(vk::PolygonMode::eFill, vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
-            .SetRenderState(PopRenderStateFromMaterial(material.GetMaterialDesc()));
+            .SetRenderState(PopRenderStateFromMaterial(desc));
 
         m_pipelineCacheMaterial[stateID] = builder.Build();
 

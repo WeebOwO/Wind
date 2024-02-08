@@ -46,7 +46,7 @@ namespace wind
         RenderGraphResource(RenderGraphResourceType::Texture), m_desc(desc)
     {}
 
-    void RenderGraphTexture::SetTexture(Ref<GPUTexture> texture) { m_texture = texture; }
+    void RenderGraphTexture::SetTexture(GPUTextureRef texture) { m_texture = texture; }
 
     void RenderGraphTexture::InitRHI()
     {

@@ -3,8 +3,9 @@
 #include "std.h"
 
 #include "Asset/Asset.h"
-#include "RenderResource.h"
+#include "Backend/Buffer.h"
 #include "VertexFactory.h"
+#include "RenderResource.h"
 
 
 namespace wind
@@ -17,8 +18,8 @@ namespace wind
         std::vector<StaticMeshVertexFactory::Vertex> vertices;
         std::vector<StaticMeshVertexFactory::Index>  indices;
 
-        Ref<DeviceBuffer> vertexBuffer;
-        Ref<DeviceBuffer> indexBuffer;
+        DeviceBufferRef vertexBuffer;
+        DeviceBufferRef indexBuffer;
 
         int materialIndex {-1};
     };

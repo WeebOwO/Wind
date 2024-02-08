@@ -48,7 +48,7 @@ namespace wind
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
                                                           // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-        ImGui_ImplGlfw_InitForVulkan(window.GetWindow(), true);
+        ImGui_ImplGlfw_InitForVulkan(window.window(), true);
 
         ImGui_ImplVulkan_InitInfo initInfo;
         initInfo.Instance              = device.vkInstance();

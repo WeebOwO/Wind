@@ -7,18 +7,18 @@
 #include "Engine/EntryPoint.h"
 #include "Engine/Window.h"
 
-class Editor : public wind::Application
+class SimpleApp : public wind::Application
 {
 public:
-    Editor() {}
+    SimpleApp() {}
 
     void Run() override
     {
-        wind::Window::WindowDesc  desc {.width = 1920, .height = 1080, .windowTitle = "WindEngineV2", .vsync = true};
+        wind::Window::WindowDesc  desc {.width = 1920, .height = 1080, .windowTitle = "Wind", .vsync = true};
         wind::Scope<wind::Window> window = wind::scope::Create<wind::Window>(desc);
         wind::Engine              engine(std::move(window));
         engine.Run();
     }
 };
 
-wind::Scope<wind::Application> wind::CreateClientApplication() { return scope::Create<Editor>(); }
+wind::Scope<wind::Application> wind::CreateClientApplication() { return scope::Create<SimpleApp>(); }

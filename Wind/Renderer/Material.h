@@ -43,11 +43,7 @@ namespace wind
 
         static Ref<Material> Create(const Desc& desc);
 
-        auto GetShadingModel() const noexcept { return m_shadingModel; }
-        auto GetBlendMode() const noexcept { return m_blendMode; }
-        auto GetShader() const noexcept { return m_rasterShader; }
-
-        auto GetMaterialDesc() const noexcept { return m_desc; }
+        auto desc() const noexcept { return m_desc; }
 
     protected:
         Desc                           m_desc;
