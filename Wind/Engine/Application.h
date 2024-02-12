@@ -4,7 +4,6 @@
 
 namespace wind
 {
-
     class Application
     {
     public:

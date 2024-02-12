@@ -25,10 +25,7 @@ namespace wind
         [[nodiscard]] auto width() const { return m_windowInfo.width; }
         [[nodiscard]] auto height() const { return m_windowInfo.height; }
         [[nodiscard]] auto IsVsyncEnable() const { return m_vsync; }
-        
-        Swapchain*         GetSwapChain() const { return m_swapchain.get(); }
 
-        void Init();
         void OnUpdate(float fs);
 
     private:
@@ -38,9 +35,8 @@ namespace wind
             std::string title;
         };
 
-        GLFWwindow*      m_window {nullptr};
-        WindowInfo       m_windowInfo {};
-        Scope<Swapchain> m_swapchain;
-        bool             m_vsync;
+        GLFWwindow* m_window {nullptr};
+        WindowInfo  m_windowInfo {};
+        bool        m_vsync;
     };
 } // namespace wind

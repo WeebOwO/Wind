@@ -49,7 +49,7 @@ namespace wind
             .SetRasterizationState(vk::PolygonMode::eFill, vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
             .SetRenderState(PopRenderStateFromMaterial(desc));
 
-        m_pipelineCacheMaterial[stateID] = builder.Build();
+        m_pipelineCacheMaterial[stateID] = builder.Build(m_device);
 
         return stateID;
     }
@@ -92,6 +92,6 @@ namespace wind
             .SetVertexType(EVertexType::NoVertex)
             .SetRenderState(PopRenderStateFromMaterial(desc));
 
-        m_pipelineCachePredefine[desc.debugName] = builder.Build();
+        m_pipelineCachePredefine[desc.debugName] = builder.Build(m_device);
     }
 } // namespace wind

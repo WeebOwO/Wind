@@ -30,19 +30,17 @@ namespace wind
         std::filesystem::path pipelinePath;
     };
 
-    struct RuntimeContext
+    class RuntimeContext
     {
-        void Init();
-        void PostInit(const Window& window);
+    public:
+        void Init(const Window& window);
         void Quit();
 
         std::filesystem::path GetPipelinePath(const std::string& name);
 
-        Scope<GPUDevice>    device      = nullptr;
-        Scope<ImGUIContext> guiContext  = nullptr;
-        Scope<Renderer>     renderer    = nullptr;
-        lua_State*          luaState    = nullptr;
-        PathManager         pathManager;
+        Scope<GPUDevice> device;
+        Scope<Renderer>  renderer;
+        PathManager      pathManager;
     };
 
     std::filesystem::path GetPath(std::filesystem::path path);

@@ -83,13 +83,13 @@ namespace wind
             .setDepthTestEnable(true)
             .setStencilTestEnable(false)
             .setDepthCompareOp(vk::CompareOp::eLessOrEqual);
-            
+
         if (renderState.rasterShader != nullptr)
             SetShaderState(*renderState.rasterShader);
         return *this;
     }
 
-    vk::Pipeline PipelineBuilder::Build()
+    vk::Pipeline PipelineBuilder::Build(const vk::Device device)
     {
         // dynamic state
         std::array<vk::DynamicState, 2> dynamicStates = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
@@ -119,7 +119,6 @@ namespace wind
                                                            .layout              = m_layout,
                                                            .renderPass          = nullptr};
 
-        auto vkDevice = g_runtimeContext.device->vkDevice();
-        return vkDevice.createGraphicsPipelines(nullptr, pipelineCreateInfo).value.front();
+        return device.createGraphicsPipelines(nullptr, pipelineCreateInfo).value.front();
     }
 } // namespace wind

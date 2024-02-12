@@ -1,8 +1,8 @@
 #include "Renderer.h"
 
+#include "Backend/ImGuiContext.h"
 #include "Backend/PipelineBuilder.h"
 
-#include "Engine/RuntimeContext.h"
 #include "Resource/Loader.h"
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
@@ -23,6 +23,7 @@
 
 namespace wind
 {
+
     void FrameParms::Init(vk::Device device)
     {
         vk::FenceCreateInfo fenceCreateInfo {.flags = vk::FenceCreateFlagBits::eSignaled};
@@ -41,16 +42,19 @@ namespace wind
         device.destroySemaphore(renderFinishedSemaphore);
     }
 
-    void Renderer::Init()
+    Renderer::Renderer(GPUDevice& device, const RenderConfig& config) : m_device(device), m_renderConfig(config) {}
+
+    void Renderer::Init(const Window& window)
     {
         for (auto& data : m_frameParams)
         {
             data.Init(m_device);
         }
 
+        m_swapchain   = scope::Create<Swapchain>(m_device, window);
+        m_uiContext   = scope::Create<WindUIContext>(m_device, window, *m_swapchain);
         m_renderGraph = scope::Create<RenderGraph>();
-
-        m_shaderMap = scope::Create<ShaderMap>();
+        m_shaderMap   = scope::Create<ShaderMap>();
 
         std::filesystem::path shaderPath = g_runtimeContext.pathManager.shaderPath;
 
@@ -71,6 +75,7 @@ namespace wind
 
     void Renderer::Quit()
     {
+        m_device.WaitIdle();
         for (auto& data : m_frameParams)
         {
             data.Destroy(m_device);
@@ -78,11 +83,7 @@ namespace wind
         m_psoCache->Destroy();
     }
 
-    void Renderer::GeneratePSO(const std::string& assetPath)
-    {
-        PipelineBuilder builder;
-        // generate gbuffer pso
-    }
+    void Renderer::GeneratePSO(const std::string& assetPath) { PipelineBuilder builder; }
 
     GPUTexture* Renderer::GetRenderGraphOutput()
     {
@@ -91,16 +92,16 @@ namespace wind
         return m_renderGraph->Get(output)->GetTexture();
     }
 
-    RenderGraph& Renderer::BeginFrame(const Swapchain& swapchain)
+    RenderGraph& Renderer::BeginFrame()
     {
         auto& frameData = GetCurrentFrameData();
 
         frameData.swapchainImageIndex =
-            swapchain.AcquireNextImage(frameData.flightFence, frameData.imageAvailableSemaphore).value();
+            m_swapchain->AcquireNextImage(frameData.flightFence, frameData.imageAvailableSemaphore).value();
         m_commandManager->ResetPool(m_frameNumber);
         frameData.cmdBuffer = m_commandManager->GetCommandBuffer(m_frameNumber, 0, true);
 
-        m_renderGraph->SetupSwapChain(swapchain);
+        m_renderGraph->SetupSwapChain(*m_swapchain);
         m_renderGraph->SetupFrameData(frameData);
 
         return *m_renderGraph;

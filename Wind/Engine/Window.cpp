@@ -16,12 +16,6 @@ namespace wind
         m_window = glfwCreateWindow(desc.width, desc.height, desc.windowTitle.c_str(), nullptr, nullptr);
     }
 
-    void Window::Init()
-    {
-        auto& Device = *g_runtimeContext.device;
-        m_swapchain  = scope::Create<Swapchain>(Device, *this);
-    }
-
     Window::~Window() { glfwDestroyWindow(m_window); }
 
     void Window::OnUpdate(float fs) { glfwPollEvents(); }

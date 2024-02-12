@@ -22,9 +22,3 @@ namespace wind::utils
         }
     }
 } // namespace wind::utils
-
-namespace wind::utils
-{
-    vk::Sampler CreateSampler(const vk::SamplerCreateInfo& createInfo);
-    vk::Sampler CreateDefaultSampler();
-} // namespace wind::utils

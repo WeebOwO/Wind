@@ -56,7 +56,7 @@ namespace wind
 
         PipelineBuilder& SetRenderState(const RenderState& renderState); // this part care about blend
 
-        vk::Pipeline Build();
+        vk::Pipeline Build(const vk::Device device);
 
     private:
         void SetShaderState(const RasterShader& shader);

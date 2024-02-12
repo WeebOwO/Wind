@@ -31,6 +31,7 @@ namespace wind
 
     private:
         friend class Renderer;
+
         void Init(vk::Device device);
         void Destroy(vk::Device device);
     };
@@ -39,13 +40,13 @@ namespace wind
     class Renderer : public Service<Renderer>
     {
     public:
-        Renderer(GPUDevice& device, RenderConfig config) : m_device(device), m_renderConfig(config) {}
+        Renderer(GPUDevice& device, const RenderConfig& config);
 
-        void Init() override;
-        void Quit() override;
+        void Init(const Window& window);
+        void Quit();
 
         // return the render graph will use this frame resource
-        RenderGraph& BeginFrame(const Swapchain& swapchain);
+        RenderGraph& BeginFrame();
         void         NextFrame();
 
         auto&       GetCurrentFrameData() { return m_frameParams[m_frameNumber]; }
@@ -75,5 +76,7 @@ namespace wind
         Scope<ShaderMap>            m_shaderMap;
         Scope<PsoCache>             m_psoCache;
         Scope<CommandBufferManager> m_commandManager;
+        Scope<Swapchain>            m_swapchain;
+        Scope<WindUIContext>        m_uiContext;
     };
 } // namespace wind

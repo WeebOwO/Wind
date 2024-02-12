@@ -1,5 +1,6 @@
 #include "ImGUIContext.h"
 
+#include "Backend/ImGuiContext.h"
 #include "Engine/RuntimeContext.h"
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_glfw.h>
@@ -15,10 +16,10 @@
 
 namespace wind
 {
-    void ImGUIContext::Init(const GPUDevice& device, const Window& window)
+    WindUIContext::WindUIContext(const GPUDevice& device, const Window& window, const Swapchain& swapchain) :
+        m_device(device)
     {
-        VkDevice   vkdevice  = (VkDevice)device.vkDevice();
-        Swapchain* swapchain = window.GetSwapChain();
+        VkDevice vkdevice = (VkDevice)device.vkDevice();
 
         VkDescriptorPoolSize pool_sizes[] = {{VK_DESCRIPTOR_TYPE_SAMPLER, 100},
                                              {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100},
@@ -62,7 +63,7 @@ namespace wind
         initInfo.ImageCount            = 3;
         initInfo.Allocator             = nullptr;
         initInfo.MSAASamples           = VK_SAMPLE_COUNT_1_BIT;
-        initInfo.ColorAttachmentFormat = VkFormat(window.GetSwapChain()->format());
+        initInfo.ColorAttachmentFormat = VkFormat(swapchain.format());
         initInfo.CheckVkResultFn       = utils::CheckVkResult;
         initInfo.UseDynamicRendering   = true;
 
@@ -76,10 +77,9 @@ namespace wind
         ImGui_ImplVulkan_DestroyFontUploadObjects();
     }
 
-    void ImGUIContext::Quit(const GPUDevice& device)
+    WindUIContext::~WindUIContext()
     {
-        VkDevice vkdevice = (VkDevice)device.vkDevice();
-        vkDestroyDescriptorPool(vkdevice, m_imguiPool, nullptr);
+        vkDestroyDescriptorPool(m_device.vkDevice(), m_imguiPool, nullptr);
         ImGui_ImplVulkan_Shutdown();
     }
 } // namespace wind

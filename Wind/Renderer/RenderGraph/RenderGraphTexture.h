@@ -48,7 +48,7 @@ namespace wind
 
     private:
         friend class RenderPassNode;
-        Desc            m_desc;
+        Desc          m_desc;
         GPUTextureRef m_texture;
     };
 

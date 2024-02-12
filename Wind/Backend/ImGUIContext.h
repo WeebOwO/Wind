@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VulkanHeader.h"
+#include "SwapChain.h"
 
 namespace wind
 {
@@ -8,13 +9,14 @@ namespace wind
     class GPUDevice;
 
     // this part use c-interface vulkan
-    class ImGUIContext
+    class WindUIContext
     {
     public:
-        void Init(const GPUDevice& device, const Window& window);
-        void Quit(const GPUDevice& device);
+        WindUIContext(const GPUDevice& device, const Window& window, const Swapchain& swapchain);
+        ~WindUIContext();
 
     private:
+        const GPUDevice& m_device;
         VkDescriptorPool m_imguiPool;
         VkRenderPass     m_renderPass;
     };

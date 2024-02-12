@@ -45,7 +45,19 @@ namespace wind
             .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_AUTO, .priority = 1.0f};
 
         m_allocatedImage = device.AllocateImage(createInfo, allocationInfo);
-        m_defaultSampler = utils::CreateDefaultSampler();
+
+        auto samplerCreateInfo = vk::SamplerCreateInfo {.magFilter     = vk::Filter::eLinear,
+                                                        .minFilter     = vk::Filter::eLinear,
+                                                        .mipmapMode    = vk::SamplerMipmapMode::eLinear,
+                                                        .addressModeU  = vk::SamplerAddressMode::eClampToEdge,
+                                                        .addressModeV  = vk::SamplerAddressMode::eClampToEdge,
+                                                        .addressModeW  = vk::SamplerAddressMode::eClampToEdge,
+                                                        .mipLodBias    = 0.0f,
+                                                        .maxAnisotropy = 1.0f,
+                                                        .minLod        = 0.0f,
+                                                        .maxLod        = 100.0f,
+                                                        .borderColor   = vk::BorderColor::eFloatOpaqueWhite};
+        m_defaultSampler       = device.vkDevice().createSampler(samplerCreateInfo);
     }
 
     void GPUTexture::MarkUseByImgui(const ImVec2& size,
