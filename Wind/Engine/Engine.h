@@ -1,6 +1,6 @@
 #pragma once
 
-#include "std.h"
+#include <std.h>
 
 namespace wind
 {
@@ -16,7 +16,7 @@ namespace wind
         ~Engine();
 
         void Run();
-        
+
     private:
         void Init();
         void PostInit();

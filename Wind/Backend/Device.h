@@ -30,6 +30,15 @@ namespace wind
     class GPUDevice
     {
     public:
+        static void Init();
+        static void Quit();
+
+        static GPUDevice& Get()
+        {
+            assert(s_instance);
+            return *s_instance;
+        }
+
         GPUDevice();
         ~GPUDevice();
 
@@ -45,15 +54,15 @@ namespace wind
         vk::Instance             vkInstance() const noexcept { return *m_vkInstance; }
         VkAllocator*             vmallocator() const;
         vk::PhysicalDeviceLimits physicalLimits() const noexcept { return m_limits; }
-        
-        DeviceBufferRef          CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
-        UploadBufferRef          CreateUploadBuffer(uint32_t byteSize);
-        RasterShaderRef          CreateRastShader(const std::string& debugName,
-                                                  const std::string& vertexFilePath,
-                                                  const std::string& fragfilePath);
-        GPUTextureRef            CreateGPUTexture(const vk::ImageCreateInfo& createInfo);
-        vk::DescriptorSet        AllocateDescriptor(const vk::DescriptorSetLayout&) const;
-        void                     ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func) const;
+
+        DeviceBufferRef   CreateDeviceBuffer(uint32_t byteSize, vk::BufferUsageFlags usageFlags);
+        UploadBufferRef   CreateUploadBuffer(uint32_t byteSize);
+        RasterShaderRef   CreateRastShader(const std::string& debugName,
+                                           const std::string& vertexFilePath,
+                                           const std::string& fragfilePath);
+        GPUTextureRef     CreateGPUTexture(const vk::ImageCreateInfo& createInfo);
+        vk::DescriptorSet AllocateDescriptor(const vk::DescriptorSetLayout&) const;
+        void              ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func) const;
 
     private:
         friend class GPUBuffer;
@@ -104,5 +113,7 @@ namespace wind
         vk::CommandPool   m_backupCommandPool;
         vk::CommandBuffer m_backupCommandBuffer;
         vk::Fence         m_backupCommandfence;
+
+        inline static GPUDevice* s_instance = nullptr;
     };
 } // namespace wind

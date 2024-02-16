@@ -292,4 +292,8 @@ namespace wind
         m_device->resetFences(m_backupCommandfence);
         m_device->resetCommandPool(m_backupCommandPool);
     }
+
+    void GPUDevice::Init() { s_instance = new GPUDevice(); }
+
+    void GPUDevice::Quit() { delete s_instance; }
 }; // namespace wind

@@ -51,8 +51,7 @@ namespace wind
 
         PipelineBuilder& SetInputAssemblyState(vk::PrimitiveTopology topology, bool primitiveRestartEnable);
         PipelineBuilder& SetVertexType(EVertexType vertexType); // will change this in future
-        PipelineBuilder&
-        SetRasterizationState(vk::PolygonMode polygonMode, vk::CullModeFlags cullMode, vk::FrontFace frontFace);
+        PipelineBuilder& SetRasterizationState(vk::PolygonMode polygonMode, vk::CullModeFlags cullMode, vk::FrontFace frontFace);
 
         PipelineBuilder& SetRenderState(const RenderState& renderState); // this part care about blend
 

@@ -4,8 +4,8 @@
 #include <shaderc/shaderc.hpp>
 
 #include "Device.h"
-#include "Engine/RuntimeContext.h"
 #include "Resource/Loader.h"
+#include "Core/PathManager.h"
 
 namespace wind
 {
@@ -30,7 +30,9 @@ namespace wind
         static shaderc::Compiler       compiler;
         static shaderc::CompileOptions options;
 
-        std::filesystem::path shaderPath = g_runtimeContext.pathManager.shaderPath;
+        auto& pathManager = PathManager::Get();
+
+        std::filesystem::path shaderPath = pathManager.shaderPath;
 
         auto vertexCode = io::ReadFileToString(shaderPath / vetexShaderName);
         auto frageCode  = io::ReadFileToString(shaderPath / fragShaderName);

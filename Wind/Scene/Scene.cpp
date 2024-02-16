@@ -2,7 +2,6 @@
 
 #include "ECS/Component.h"
 #include "ECS/Entity.h"
-#include "Engine/RuntimeContext.h"
 #include "Renderer/Material.h"
 #include "Renderer/MeshPass.h"
 #include "Resource/Mesh.h"

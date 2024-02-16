@@ -5,8 +5,6 @@
 #include "Backend/Texture.h"
 #include "RenderGraphResource.h"
 
-#include "Engine/RuntimeContext.h"
-
 namespace wind
 {
     class RenderGraphTexture : public RenderGraphResource

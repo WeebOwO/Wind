@@ -3,7 +3,6 @@
 #include "Device.h"
 #include "RasterShader.h"
 
-#include "Engine/RuntimeContext.h"
 #include "Resource/VertexFactory.h"
 
 namespace wind

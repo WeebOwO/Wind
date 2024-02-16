@@ -4,9 +4,8 @@
 
 #include "Asset/Asset.h"
 #include "Backend/Buffer.h"
-#include "VertexFactory.h"
 #include "RenderResource.h"
-
+#include "VertexFactory.h"
 
 namespace wind
 {
@@ -22,6 +21,8 @@ namespace wind
         DeviceBufferRef indexBuffer;
 
         int materialIndex {-1};
+
+        ~MeshSource() {}
     };
 
     class StaticMesh : public RenderResource

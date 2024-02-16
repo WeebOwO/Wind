@@ -1,7 +1,6 @@
 #include "Window.h"
 
 #include "Backend/SwapChain.h"
-#include "Engine/RuntimeContext.h"
 
 namespace wind
 {

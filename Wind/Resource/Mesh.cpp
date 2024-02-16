@@ -2,29 +2,29 @@
 
 #include "Backend/Buffer.h"
 #include "Backend/Command.h"
-#include "Engine/RuntimeContext.h"
+#include "Backend/Device.h"
 
 namespace wind
 {
     void StaticMesh::InitRHI()
     {
-        auto& device = g_runtimeContext.device;
+        auto& device = GPUDevice::Get();
 
         uint32_t vertexBufferByteSize = sizeof(StaticMeshVertexFactory::Vertex) * meshSource.vertices.size();
         uint32_t indexBufferByteSize  = sizeof(StaticMeshVertexFactory::Index) * meshSource.indices.size();
 
-        auto vertexUploadBuffer = device->CreateUploadBuffer(vertexBufferByteSize);
-        auto indexUploadBuffer  = device->CreateUploadBuffer(indexBufferByteSize);
+        auto vertexUploadBuffer = device.CreateUploadBuffer(vertexBufferByteSize);
+        auto indexUploadBuffer  = device.CreateUploadBuffer(indexBufferByteSize);
 
-        meshSource.vertexBuffer = device->CreateDeviceBuffer(
+        meshSource.vertexBuffer = device.CreateDeviceBuffer(
             vertexBufferByteSize, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst);
-        meshSource.indexBuffer = device->CreateDeviceBuffer(
+        meshSource.indexBuffer = device.CreateDeviceBuffer(
             indexBufferByteSize, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst);
 
         vertexUploadBuffer->WriteData(meshSource.vertices.data(), vertexBufferByteSize, 0);
         indexUploadBuffer->WriteData(meshSource.indices.data(), indexBufferByteSize, 0);
 
-        device->ExecuteImmediately([&](vk::CommandBuffer cb) {
+        device.ExecuteImmediately([&](vk::CommandBuffer cb) {
             vk::BufferCopy bufferCopy {.srcOffset = 0, .dstOffset = 0, .size = vertexBufferByteSize};
             cb.copyBuffer(vertexUploadBuffer->buffer(), meshSource.vertexBuffer->buffer(), bufferCopy);
 

@@ -2,11 +2,10 @@
 
 #include "PsoCache.h"
 
-#include "Core/Service.h"
-
 #include "Backend/Command.h"
 #include "Backend/Descriptor.h"
 #include "Backend/Device.h"
+#include "Backend/ImGUIContext.h"
 #include "Engine/RenderConfig.h"
 
 #include "RenderGraph/RenderGraph.h"
@@ -16,6 +15,7 @@ namespace wind
 {
     class Swapchain;
     class PsoCache;
+    class Window;
 
     class FrameParms
     {
@@ -37,13 +37,20 @@ namespace wind
     };
 
     // using to manage rendering resources
-    class Renderer : public Service<Renderer>
+    class Renderer
     {
     public:
-        Renderer(GPUDevice& device, const RenderConfig& config);
+        Renderer(const Window& window, const RenderConfig& config);
+        ~Renderer();
 
-        void Init(const Window& window);
-        void Quit();
+        static Renderer& Get()
+        {
+            assert(s_instance);
+            return *s_instance;
+        }
+
+        static void Init(const Window& window, const RenderConfig& config);
+        static void Quit();
 
         // return the render graph will use this frame resource
         RenderGraph& BeginFrame();
@@ -65,10 +72,8 @@ namespace wind
         void GeneratePSO(const std::string& assetPath);
 
         RenderConfig m_renderConfig;
-
-        GPUDevice& m_device;
-        uint32_t   m_frameNumber = 0;
-        FrameParms m_frameParams[RenderConfig::MAX_FRAME_IN_FLIGHT];
+        uint32_t     m_frameNumber = 0;
+        FrameParms   m_frameParams[RenderConfig::MAX_FRAME_IN_FLIGHT];
 
         // own these resoruces
         Scope<MaterialManager>      m_materialManager;
@@ -78,5 +83,7 @@ namespace wind
         Scope<CommandBufferManager> m_commandManager;
         Scope<Swapchain>            m_swapchain;
         Scope<WindUIContext>        m_uiContext;
+
+        inline static Renderer* s_instance = nullptr;
     };
 } // namespace wind

@@ -16,7 +16,9 @@ namespace wind
         m_buffer = device.AllocateBuffer(BufferCreateInfo, AllocationCreateInfo);
     }
 
-    GPUBuffer::~GPUBuffer() { device.DestroyBuffer(m_buffer); }
+    GPUBuffer::~GPUBuffer() { 
+        device.DestroyBuffer(m_buffer); 
+    }
 
     UploadBuffer::UploadBuffer(GPUDevice& device, uint32_t byteSize, vk::BufferUsageFlags usageFlags) :
         GPUBuffer(

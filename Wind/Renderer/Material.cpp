@@ -1,7 +1,5 @@
 #include "Material.h"
 
-#include "Engine/RuntimeContext.h"
-
 namespace wind
 {
     Material::Material(const std::string& debugName,

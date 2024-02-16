@@ -1,7 +1,8 @@
 #include "SceneRenderer.h"
 
 #include "Backend/Texture.h"
-#include "Renderer/RenderGraph/PassNode.h"
+#include "RenderGraph/PassNode.h"
+#include "Renderer.h"
 
 #include "MeshPass.h"
 #include "Renderer.h"
@@ -12,8 +13,6 @@
 #include "RenderGraph/RenderGraphTexture.h"
 #include "RenderGraph/RenderPassEnum.h"
 #include "RenderGraph/ResourceRegistry.h"
-
-#include "Engine/RuntimeContext.h"
 
 #include "Resource/Loader.h"
 #include "Resource/Mesh.h"
@@ -40,20 +39,15 @@ namespace wind
         m_viewPortWidth  = uint32_t(width);
         m_viewPortHeight = uint32_t(height);
 
-        m_viewPort.setWidth(width)
-                  .setHeight(height)
-                  .setX(offsetX)
-                  .setY(offsetY)
-                  .setMinDepth(0.0)
-                  .setMaxDepth(1.0);
+        m_viewPort.setWidth(width).setHeight(height).setX(offsetX).setY(offsetY).setMinDepth(0.0).setMaxDepth(1.0);
     }
 
     void SceneRenderer::DrawMesh(vk::CommandBuffer commands)
     {
-        auto renderer = g_runtimeContext.renderer.get();
+        auto& renderer = Renderer::Get();
         for (const auto& meshDrawCommand : m_cacheMeshDrawCommands[BasePass])
         {
-            auto pso = renderer->GetPso(meshDrawCommand.pipelineID);
+            auto pso = renderer.GetPso(meshDrawCommand.pipelineID);
 
             commands.setViewport(0, 1, &m_viewPort);
 
@@ -127,7 +121,7 @@ namespace wind
 
     void SceneRenderer::BuildMeshDrawCommand(const MeshPass& meshPass)
     {
-        auto                renderer = g_runtimeContext.renderer.get();
+        auto&               renderer = Renderer::Get();
         RenderGraphPassType graphPassType =
             meshPass.type == MeshPassType::BasePass ? RenderGraphPassType::MeshPassMRT : RenderGraphPassType::MeshPass;
         m_cacheMeshDrawCommands[meshPass.type].clear();
@@ -142,7 +136,7 @@ namespace wind
             meshDrawCommand.materialProxy        = meshProxy->material;
 
             meshDrawCommand.pipelineID =
-                renderer->CachePso(*meshProxy->material, VertexFactoryType::StaicMesh, graphPassType);
+                renderer.CachePso(*meshProxy->material, VertexFactoryType::StaicMesh, graphPassType);
 
             m_cacheMeshDrawCommands[meshPass.type].push_back(meshDrawCommand);
         }

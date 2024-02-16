@@ -33,7 +33,7 @@ namespace wind
     {
         MeshComponent() = default;
         MeshComponent(Ref<StaticMesh> mesh) : meshSource(mesh) {}
-
+        
         Ref<StaticMesh> meshSource;
     };
 

@@ -1,4 +1,5 @@
 #include "RenderGraphTexture.h"
+#include "Backend/Device.h"
 
 namespace wind
 {
@@ -50,7 +51,7 @@ namespace wind
 
     void RenderGraphTexture::InitRHI()
     {
-        auto& device = g_runtimeContext.device;
+        auto& device = GPUDevice::Get();
         // todo: if someone call this twice, we need to check the new desc is same with old ?
         uint32_t mipCount = utils::CalculateImageMipLevelCount(m_desc.width, m_desc.height, m_desc.depth);
 
@@ -64,7 +65,7 @@ namespace wind
             .usage         = m_desc.usage,
             .initialLayout = vk::ImageLayout::eUndefined};
 
-        m_texture = device->CreateGPUTexture(createInfo);
+        m_texture = device.CreateGPUTexture(createInfo);
 
         m_texture->CreateDefaultImageView(
             vk::ImageSubresourceRange {.aspectMask     = utils::ImageFormatToImageAspect(m_desc.format),
