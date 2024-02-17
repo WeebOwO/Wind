@@ -60,6 +60,7 @@ namespace wind
         RasterShaderRef   CreateRastShader(const std::string& debugName,
                                            const std::string& vertexFilePath,
                                            const std::string& fragfilePath);
+        
         GPUTextureRef     CreateGPUTexture(const vk::ImageCreateInfo& createInfo);
         vk::DescriptorSet AllocateDescriptor(const vk::DescriptorSetLayout&) const;
         void              ExecuteImmediately(const std::function<void(vk::CommandBuffer cb)>& func) const;

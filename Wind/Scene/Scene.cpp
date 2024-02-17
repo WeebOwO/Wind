@@ -32,10 +32,13 @@ namespace wind
         for (auto entity : view)
         {
             auto& meshComponent = view.get<MeshComponent>(entity);
+            if (!meshComponent.isInitialized)
+                meshComponent.OnCreate();
+
             std::for_each(m_meshPasses.begin(), m_meshPasses.end(), [&](MeshPass& meshPass) {
                 if (meshPass.filter(*meshComponent.meshSource->material))
                 {
-                    meshPass.staticMeshes.push_back(meshComponent.meshSource.get());
+                    meshPass.staticMeshes.push_back(meshComponent.meshSource);
                 }
             });
         }
@@ -52,5 +55,15 @@ namespace wind
             auto blendMode = material.desc().blendMode;
             return blendMode == BlendMode::Opaque;
         };
+    }
+
+    Scene::~Scene()
+    {
+        auto view = m_registry.view<MeshComponent>();
+        for (auto entity : view)
+        {
+            auto& meshComponent = view.get<MeshComponent>(entity);
+            meshComponent.OnDestroy();
+        }
     }
 } // namespace wind

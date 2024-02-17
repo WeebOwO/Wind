@@ -10,7 +10,12 @@ namespace wind
     class StaticMesh;
 
     struct Component
-    {};
+    {
+        virtual void OnCreate() {}
+        virtual void OnDestroy() {}
+
+        bool isInitialized = false;
+    };
 
     struct IDComponent : public Component
     {
@@ -33,7 +38,10 @@ namespace wind
     {
         MeshComponent() = default;
         MeshComponent(Ref<StaticMesh> mesh) : meshSource(mesh) {}
-        
+
+        void OnCreate() override;
+        void OnDestroy() override;
+
         Ref<StaticMesh> meshSource;
     };
 

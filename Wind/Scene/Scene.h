@@ -28,16 +28,13 @@ namespace wind
     {
     public:
         using GameObjectMap = std::unordered_map<UUID, GameObject>;
-
+        ~Scene();
         void Init();
 
         GameObject CreateGameObject(std::string name = {});
         void       Update();
 
     private:
-        struct GPUScene
-        {};
-
         friend class GameObject;
         friend class SceneRenderer;
 

@@ -1,5 +1,6 @@
 #include "Engine.h"
 
+#include "Engine/Application.h"
 #include "taskflow/core/executor.hpp"
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_glfw.h>
@@ -49,7 +50,7 @@ namespace wind
         executor.run(taskflow).wait();
     }
 
-    Engine::Engine(Scope<Window> window) : m_window(std::move(window))
+    Engine::Engine(const ApplicationInfo& applicationInfo) : m_applicaitonInfo(applicationInfo)
     {
         Init();
         PostInit();
@@ -66,26 +67,25 @@ namespace wind
         auto& scene = m_scenes[m_activeSceneIndex];
 
         scene->Init();
-        // auto gameobject = scene->CreateGameObject("Test");
-        // auto tag        = gameobject.GetComponent<TagComponent>();
+        auto gameobject = scene->CreateGameObject("Test");
+        auto tag        = gameobject.GetComponent<TagComponent>();
 
-        // Ref<StaticMesh> mesh = ref::Create<StaticMesh>();
+        Ref<StaticMesh> mesh = ref::Create<StaticMesh>();
 
-        // // init the triangle
-        // StaticMeshVertexFactory::Vertex v1, v2, v3;
-        // v1.position = {0.0f, -0.5f, 0.0f};
-        // v2.position = {0.5f, 0.5f, 0.0f};
-        // v3.position = {-0.5f, 0.5f, 0.0f};
+        // init the triangle
+        StaticMeshVertexFactory::Vertex v1, v2, v3;
+        v1.position = {0.0f, -0.5f, 0.0f};
+        v2.position = {0.5f, 0.5f, 0.0f};
+        v3.position = {-0.5f, 0.5f, 0.0f};
 
-        // mesh->meshSource.vertices = {v1, v2, v3};
-        // mesh->meshSource.indices  = {{0, 1, 2}};
+        mesh->meshSource.vertices = {v1, v2, v3};
+        mesh->meshSource.indices  = {{0, 1, 2}};
 
-        // // todo: this is stupid, need improve in future
-        // auto materialManager = renderer.GetMaterialManager();
-        // mesh->material       = materialManager->GetMaterial("default_lit").get();
-        // mesh->InitRHI();
+        // todo: this is stupid, need improve in future
+        auto materialManager = renderer.GetMaterialManager();
+        mesh->material       = materialManager->GetMaterial("default_lit").get();
 
-        // gameobject.AddComponent<MeshComponent>(mesh);
+        gameobject.AddComponent<MeshComponent>(mesh);
     }
 
     void Engine::Run()
@@ -93,9 +93,12 @@ namespace wind
 #ifdef TRACY_ENABLE
         WIND_CORE_INFO("Start Tracy");
 #endif
-        TaskFlowTest();
-        ScriptTest();
-        LoadScene();
+        // task flow feature
+        tf::Taskflow taskflow;
+        tf::Executor executor;
+
+        auto loadSceneTask = taskflow.emplace([this]() { LoadScene(); });
+        executor.run(taskflow).wait();
 
         while (!glfwWindowShouldClose(m_window->window()))
         {
@@ -109,6 +112,7 @@ namespace wind
 
     void Engine::Init()
     {
+        m_window = wind::scope::Create<wind::Window>(m_applicaitonInfo.windowDesc);
         Log::Init();
         PathManager::Init();
         GPUDevice::Init();
@@ -136,7 +140,10 @@ namespace wind
     void Engine::Quit()
     {
         GPUDevice::Get().WaitIdle();
-
+        for (auto& scene : m_scenes)
+        {
+            scene.reset();
+        }
         Renderer::Quit();
         PathManager::Quit();
         GPUDevice::Quit();

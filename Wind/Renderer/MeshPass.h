@@ -50,16 +50,16 @@ namespace wind
         Material*         materialProxy;
         VertexFactoryType type;
     };
-    
+
     struct MeshPass
     {
         using MaterialFilter = std::function<bool(const Material& material)>;
 
         void Clear();
 
-        MeshPassType             type;
-        std::vector<StaticMesh*> staticMeshes;
-        MaterialFilter           filter;
+        MeshPassType                 type;
+        std::vector<Ref<StaticMesh>> staticMeshes;
+        MaterialFilter               filter;
     };
 
     MeshPassType Step(MeshPassType type);

@@ -2,8 +2,15 @@
 
 #include "std.h"
 
+#include "Engine/Window.h"
+
 namespace wind
 {
+    struct ApplicationInfo
+    {
+        Window::WindowDesc windowDesc;
+    };
+
     class Application
     {
     public:
