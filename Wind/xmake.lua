@@ -1,4 +1,4 @@
-add_requires("vulkansdk", "vulkan-memory-allocator", "spdlog", "glfw", "glm", "entt", "tracy", "spirv-cross", "shaderc", "lua", "nlohmann_json", 'taskflow')
+add_requires("vulkansdk", "vulkan-memory-allocator", "spdlog", "glfw", "glm", "entt", "tracy", "spirv-cross", "shaderc", "lua", "nlohmann_json", 'taskflow', "tinygltf")
 
 option("tracy")
     set_default(true)
@@ -15,4 +15,4 @@ target("WindRuntime")
     add_configfiles("Core/Config.h.in")
     set_configvar("PROJECT_DIR", "$(projectdir)", {escape = true})
     add_files("/**.cpp", "../3rdParty/**.cpp")
-    add_packages("vulkansdk", "vulkan-memory-allocator", "glfw", "spdlog", "glm", "tracy", "entt", "spirv-cross", "shaderc", "lua", "nlohmann_json", 'taskflow')   
+    add_packages("vulkansdk", "vulkan-memory-allocator", "glfw", "spdlog", "glm", "tracy", "entt", "spirv-cross", "shaderc", "lua", "nlohmann_json", 'taskflow', "tinygltf")   

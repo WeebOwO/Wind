@@ -2,9 +2,10 @@
 
 #include "std.h"
 
-#include "nlohmann/json_fwd.hpp"
-
+#include "Backend/Command.h"
+#include "Core/Core.h"
 #include "Core/Log.h"
+#include "nlohmann/json_fwd.hpp"
 
 namespace wind::io
 {
@@ -32,14 +33,26 @@ namespace wind::io
         return spv;
     }
 
-    class GLTFLoader
-    {
-    public:
-        void LoadGLTFScene(Scene& scene, const std::string& filePath);
-    };
-
-    std::string ReadFileToString(const std::filesystem::path& filePath);
-
+    std::string    ReadFileToString(const std::filesystem::path& filePath);
     nlohmann::json LoadJson(std::filesystem::path filePath);
 
+    class AsynchronousLoader
+    {
+    public:
+        NO_COPYABLE(AsynchronousLoader);
+
+        static AsynchronousLoader& Get() { return *s_instance; }
+        static void                Init(const vk::Device& device);
+        static void                Quit();
+
+        bool LoadGLTFScene(Scene& scene, const std::filesystem::path& filePath);
+
+    private:
+        AsynchronousLoader(const vk::Device device);
+        vk::Device        m_device;
+        vk::CommandBuffer m_commandBuffer;
+        vk::CommandPool   m_commandPool;
+
+        inline static AsynchronousLoader* s_instance = nullptr;
+    };
 } // namespace wind::io

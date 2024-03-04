@@ -5,6 +5,7 @@
 #include <entt/entt.hpp>
 
 #include "Core/UUID.h"
+#include "Asset/Asset.h"
 #include "Renderer/MeshPass.h"
 #include "Scene/LightCaster.h"
 
@@ -24,7 +25,8 @@ namespace wind
         [[nodiscard]] auto GetSpotLightsSize() const { return (uint32_t)(SpotLights.size() * sizeof(SpotLight)); }
     };
 
-    class Scene final
+    // game thread representation of a scene
+    class Scene final : public Asset
     {
     public:
         using GameObjectMap = std::unordered_map<UUID, GameObject>;

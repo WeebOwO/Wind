@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Core/Log.h"
 #include "std.h"
 
+#include "glm/glm.hpp"
+#include "Core/Log.h"
 #include "Core/UUID.h"
+#include "ECS/Component.h"
 
 namespace wind
 {
@@ -45,4 +47,16 @@ namespace wind
         Ref<StaticMesh> meshSource;
     };
 
+    struct TransformComponent : public Component
+    {
+        TransformComponent() = default;
+        TransformComponent(const glm::vec3& position) : position(position) {}
+
+        void OnCreate() override;
+        void OnDestroy() override;
+
+        glm::vec3 position = glm::vec3(0.0f);
+        glm::vec3 rotation = glm::vec3(0.0f);
+        glm::vec3 scale    = glm::vec3(1.0f);
+    };
 } // namespace wind
