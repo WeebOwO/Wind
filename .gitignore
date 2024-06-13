@@ -1,0 +1,6 @@
+# cmake stuff
+**/cmake-build-debug/
+**/cmake-build-release/
+**/cmake-build-debug-mingw/
+# jetbrain
+.idea/

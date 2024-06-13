@@ -1,0 +1,6 @@
+[submodule "Wind/extern/vk-bootstrap"]
+	path = Wind/extern/vk-bootstrap
+	url = https://github.com/charles-lunarg/vk-bootstrap
+[submodule "Wind/extern/vma"]
+	path = Wind/extern/vma
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
