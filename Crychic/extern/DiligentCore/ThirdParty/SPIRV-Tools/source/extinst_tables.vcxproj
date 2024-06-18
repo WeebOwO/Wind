@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{69E24F97-7FCD-3DEA-86DD-B0124D2244A6}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>extinst_tables</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Code\ToyRenderer\CMakeFiles\e1c4a7d0cb45f5c108ecf6e31cc4113b\glsl.std.450.insts.inc.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generate info tables for GLSL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-glsl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.glsl.std.450.grammar.json --glsl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/glsl.std.450.insts.inc --output-language=c++
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.glsl.std.450.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generate info tables for GLSL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-glsl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.glsl.std.450.grammar.json --glsl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/glsl.std.450.insts.inc --output-language=c++
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.glsl.std.450.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generate info tables for GLSL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-glsl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.glsl.std.450.grammar.json --glsl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/glsl.std.450.insts.inc --output-language=c++
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.glsl.std.450.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generate info tables for GLSL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-glsl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.glsl.std.450.grammar.json --glsl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/glsl.std.450.insts.inc --output-language=c++
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.glsl.std.450.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Code\ToyRenderer\CMakeFiles\e1c4a7d0cb45f5c108ecf6e31cc4113b\opencl.std.insts.inc.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generate info tables for OpenCL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-opencl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.opencl.std.100.grammar.json --opencl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/opencl.std.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.opencl.std.100.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generate info tables for OpenCL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-opencl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.opencl.std.100.grammar.json --opencl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/opencl.std.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.opencl.std.100.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generate info tables for OpenCL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-opencl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.opencl.std.100.grammar.json --opencl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/opencl.std.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.opencl.std.100.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generate info tables for OpenCL extended instructions and operands vunified1.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+C:\Users\17733\AppData\Local\Programs\Python\Python310\python.exe D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/utils/generate_grammar_tables.py --extinst-opencl-grammar=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Headers/include/spirv/unified1/extinst.opencl.std.100.grammar.json --opencl-insts-output=D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/opencl.std.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\utils\generate_grammar_tables.py;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\spirv.core.grammar.json;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Headers\include\spirv\unified1\extinst.opencl.std.100.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Code\ToyRenderer\CMakeFiles\ffb67455ba1d7731acce834b0a230f3d\extinst_tables.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\extinst_tables</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\extinst_tables</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\extinst_tables</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\opencl.std.insts.inc;D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\glsl.std.450.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\extinst_tables</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</VerifyInputsAndOutputsExist>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Code/ToyRenderer -BD:/Code/ToyRenderer --check-stamp-file D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Code/ToyRenderer -BD:/Code/ToyRenderer --check-stamp-file D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Code/ToyRenderer -BD:/Code/ToyRenderer --check-stamp-file D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Code/ToyRenderer -BD:/Code/ToyRenderer --check-stamp-file D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\extinst_tables">
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\Code\ToyRenderer\ZERO_CHECK.vcxproj">
+      <Project>{562F2B17-C11D-396A-B417-45959674EC27}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spirv-tools-header-DebugInfo.vcxproj">
+      <Project>{E485B56A-6305-3703-886B-87D5E365EE6F}</Project>
+      <Name>spirv-tools-header-DebugInfo</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spirv-tools-header-NonSemanticShaderDebugInfo100.vcxproj">
+      <Project>{CAD8F2CA-C252-3B92-A266-0CE22F068EDD}</Project>
+      <Name>spirv-tools-header-NonSemanticShaderDebugInfo100</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spirv-tools-header-OpenCLDebugInfo100.vcxproj">
+      <Project>{68250842-22F7-3FD5-9A63-5E30301723FB}</Project>
+      <Name>spirv-tools-header-OpenCLDebugInfo100</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-cldi100.vcxproj">
+      <Project>{4ABEA0E2-E706-3E70-BDC2-C2A3F63151CF}</Project>
+      <Name>spv-tools-cldi100</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-clspvreflection.vcxproj">
+      <Project>{E4E3DA16-AE66-33AB-9C3C-9F3956C3353E}</Project>
+      <Name>spv-tools-clspvreflection</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-debuginfo.vcxproj">
+      <Project>{453EB71B-0799-3F3C-AABB-CC43D198834E}</Project>
+      <Name>spv-tools-debuginfo</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-shdi100.vcxproj">
+      <Project>{D11639CE-0863-35E8-AD11-C50A4B7FD69F}</Project>
+      <Name>spv-tools-shdi100</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-spv-amd-gs.vcxproj">
+      <Project>{83AB501B-773D-3716-968C-0B0DB3F6AFC9}</Project>
+      <Name>spv-tools-spv-amd-gs</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-spv-amd-sb.vcxproj">
+      <Project>{5A6FB027-577A-39AA-ADBD-867568A25572}</Project>
+      <Name>spv-tools-spv-amd-sb</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-spv-amd-sevp.vcxproj">
+      <Project>{EE512E0D-0619-3121-AB0C-64A09829B64C}</Project>
+      <Name>spv-tools-spv-amd-sevp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\spv-tools-spv-amd-stm.vcxproj">
+      <Project>{67BC47F0-A412-3EAF-BA00-D5B298F3099D}</Project>
+      <Name>spv-tools-spv-amd-stm</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

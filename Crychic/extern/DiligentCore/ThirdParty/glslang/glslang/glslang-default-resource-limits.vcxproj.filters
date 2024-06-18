@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\ResourceLimits\ResourceLimits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\ResourceLimits\resource_limits_c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Public\ResourceLimits.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Public\resource_limits_c.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Public">
+      <UniqueIdentifier>{6B624BFA-02E7-3FC9-BE1A-A35C401964B0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{41791C6D-DC7B-3C02-82E9-AFC2ABC97830}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

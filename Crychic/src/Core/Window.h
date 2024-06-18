@@ -15,7 +15,10 @@ namespace crychic
         void Init();
         void Update();
 
-        auto GetGLFWWindow() const { return m_window; }
+        [[nodiscard]] auto GetGLFWWindow() const { return m_window; }
+
+        [[nodiscard]] auto GetWidth() const { return m_width; }
+        [[nodiscard]] auto GetHeight() const { return m_height; }
         
     private:
         GLFWwindow* m_window;

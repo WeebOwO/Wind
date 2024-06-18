@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\CInterface\glslang_c_interface.cpp">
+      <Filter>CInterface</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Public\ShaderLang.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\arrays.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\BaseTypes.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\Common.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\ConstantUnion.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\glslang_c_interface.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\glslang_c_shader_types.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\InfoSink.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\InitializeGlobals.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\intermediate.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\PoolAlloc.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\ResourceLimits.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\ShHandle.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\SpirvIntrinsics.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\Include\Types.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\glslang\glslang\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CInterface">
+      <UniqueIdentifier>{833CDE87-EF88-3FAF-8400-0AB5D1650A9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{0B251CFC-84B4-3BB2-AEC0-8B27B0AF08E3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{6B624BFA-02E7-3FC9-BE1A-A35C401964B0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

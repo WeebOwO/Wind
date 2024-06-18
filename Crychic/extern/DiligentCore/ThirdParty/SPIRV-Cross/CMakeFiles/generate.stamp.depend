@@ -1,0 +1,7 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.27/Modules/FindGit.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/GNUInstallDirs.cmake
+D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Cross/CMakeLists.txt
+D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Cross/cmake/gitversion.in.h

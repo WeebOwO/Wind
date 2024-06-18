@@ -1,7 +1,7 @@
 #include "Core/Application.h"
 
+#include "Rendering/RenderSystem.h"
 #include "JobSystem/JobSystem.h"
-#include "Graphics/RenderSystem.h"
 
 namespace crychic
 {
@@ -15,8 +15,6 @@ namespace crychic
     {
         Init();
 
-        auto A = g_jobSystem->Emplace([]() {std::cout << "A\n";});
-
         while (!m_window->ShouldClose())
         {
             m_window->Update();
@@ -27,9 +25,8 @@ namespace crychic
 
     void Application::Init()
     {
-        wind::Init(m_window->GetGLFWWindow());
         m_subSystems[System::Job]    = std::make_unique<JobSystem>();
-        m_subSystems[System::Render] = std::make_unique<RenderSystem>(wind::GetContext());
+        m_subSystems[System::Render] = std::make_unique<RenderSystem>( m_window.get());
 
         for (auto& subSystem : m_subSystems)
         {
@@ -40,7 +37,7 @@ namespace crychic
 
     void Application::Quit()
     {
-        wind::Quit();
+        std::reverse(m_subSystems.begin(), m_subSystems.end());
         for (auto& subSystem : m_subSystems)
         {
             if (subSystem != nullptr)

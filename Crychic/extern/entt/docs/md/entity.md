@@ -27,7 +27,7 @@
     * [Connection helper](#connection-helper)
     * [Handle](#handle)
     * [Organizer](#organizer)
-  * [Context variables](#context-variables)
+  * [Device variables](#context-variables)
     * [Aliased properties](#aliased-properties)
   * [Snapshot: complete vs continuous](#snapshot-complete-vs-continuous)
     * [Snapshot loader](#snapshot-loader)
@@ -912,7 +912,7 @@ for(auto &&node: graph) {
 The actual scheduling of the tasks is the responsibility of the user, who can
 use the preferred tool.
 
-## Context variables
+## Device variables
 
 Each registry has a _context_ associated with it, which is an `any` object map
 accessible by both type and _name_ for convenience. The _name_ isn't really a

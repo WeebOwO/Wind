@@ -1,0 +1,38 @@
+# CMake generated Testfile for 
+# Source directory: D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools
+# Build directory: D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+if(CTEST_CONFIGURATION_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+  add_test(spirv-tools_expect_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "expect_unittest.py")
+  set_tests_properties(spirv-tools_expect_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;15;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+  add_test(spirv-tools_expect_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "expect_unittest.py")
+  set_tests_properties(spirv-tools_expect_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;15;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
+  add_test(spirv-tools_expect_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "expect_unittest.py")
+  set_tests_properties(spirv-tools_expect_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;15;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+  add_test(spirv-tools_expect_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "expect_unittest.py")
+  set_tests_properties(spirv-tools_expect_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;15;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+else()
+  add_test(spirv-tools_expect_unittests NOT_AVAILABLE)
+endif()
+if(CTEST_CONFIGURATION_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+  add_test(spirv-tools_spirv_test_framework_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "spirv_test_framework_unittest.py")
+  set_tests_properties(spirv-tools_spirv_test_framework_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;18;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+  add_test(spirv-tools_spirv_test_framework_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "spirv_test_framework_unittest.py")
+  set_tests_properties(spirv-tools_spirv_test_framework_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;18;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
+  add_test(spirv-tools_spirv_test_framework_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "spirv_test_framework_unittest.py")
+  set_tests_properties(spirv-tools_spirv_test_framework_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;18;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+  add_test(spirv-tools_spirv_test_framework_unittests "C:/Users/17733/AppData/Local/Programs/Python/Python310/python.exe" "-m" "unittest" "spirv_test_framework_unittest.py")
+  set_tests_properties(spirv-tools_spirv_test_framework_unittests PROPERTIES  WORKING_DIRECTORY "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools" _BACKTRACE_TRIPLES "D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;18;add_test;D:/Code/ToyRenderer/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/CMakeLists.txt;0;")
+else()
+  add_test(spirv-tools_spirv_test_framework_unittests NOT_AVAILABLE)
+endif()
+subdirs("opt")
+subdirs("objdump")

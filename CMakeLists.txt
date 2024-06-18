@@ -4,5 +4,4 @@ project(WindEngine)
 
 set(WIND_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Wind/include")
 
-add_subdirectory("Wind")
-add_subdirectory("Crychic")
+add_subdirectory(Crychic)

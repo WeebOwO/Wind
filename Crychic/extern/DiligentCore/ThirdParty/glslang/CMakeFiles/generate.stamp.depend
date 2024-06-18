@@ -1,0 +1,14 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeDependentOption.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/FindPython/Support.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/FindPython3.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/GNUInstallDirs.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/WriteBasicConfigVersionFile.cmake
+D:/Code/ToyRenderer/DiligentCore/ThirdParty/glslang/CHANGES.md
+D:/Code/ToyRenderer/DiligentCore/ThirdParty/glslang/CMakeLists.txt
+D:/Code/ToyRenderer/DiligentCore/ThirdParty/glslang/ChooseMSVCCRT.cmake
+D:/Code/ToyRenderer/DiligentCore/ThirdParty/glslang/build_info.h.tmpl
+D:/Code/ToyRenderer/DiligentCore/ThirdParty/glslang/parse_version.cmake

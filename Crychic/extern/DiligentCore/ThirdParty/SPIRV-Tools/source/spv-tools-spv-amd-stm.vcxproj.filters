@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Code\ToyRenderer\CMakeFiles\e1c4a7d0cb45f5c108ecf6e31cc4113b\spv-amd-shader-trinary-minmax.insts.inc.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Code\ToyRenderer\CMakeFiles\ffb67455ba1d7731acce834b0a230f3d\spv-tools-spv-amd-stm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Code\ToyRenderer\DiligentCore\ThirdParty\SPIRV-Tools\source\CMakeFiles\spv-tools-spv-amd-stm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{059C084C-657C-3CD7-936D-070A67E926F6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
