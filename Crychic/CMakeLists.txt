@@ -11,13 +11,14 @@ add_subdirectory(extern/DiligentCore)
 
 # set include dir
 include_directories(Crychic PRIVATE
+        include/
         src/
         extern/taskflow/taskflow
         extern/entt/src/entt)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-add_executable(Crychic ${SOURCES})
+add_library(Crychic ${SOURCES})
 
 target_compile_options(Crychic PRIVATE -DUNICODE -DENGINE_DLL)
 

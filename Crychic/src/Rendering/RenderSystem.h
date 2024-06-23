@@ -13,10 +13,6 @@ namespace crychic
 {
     // rendering engine class
     // convert the render graph to a job
-
-    class RenderData
-    {};
-
     constexpr uint32_t kMaxFramesInFlight = 2;
 
     class RenderSystem : public SubSystem

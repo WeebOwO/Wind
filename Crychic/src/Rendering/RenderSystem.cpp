@@ -13,6 +13,8 @@ namespace crychic
     void RenderSystem::Init()
     {
         // create renderer
+
+
         m_isInitialized = true;
     }
 

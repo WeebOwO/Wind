@@ -5,9 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "SubSystem.h"
-#include "Window.h"
-
 namespace crychic
 {
     enum System
@@ -25,9 +22,11 @@ namespace crychic
     };
 
     class RenderSystem;
+    class Window;
+    class SubSystem;
     // use the config info and init this application
     // this class represent the editor that user can interact with
-    class Application final
+    class Application
     {
     public:
         explicit Application(const ApplicationDesc& config);
@@ -35,11 +34,13 @@ namespace crychic
 
         void Run();
 
-        void Init();
-        void Quit();
+        virtual void Init();
+        virtual void Quit();
 
     private:
         std::unique_ptr<Window>                               m_window;
         std::array<std::unique_ptr<SubSystem>, System::Count> m_subSystems;
     };
+
+    Application* CreateApplication(int argc, char** argv);
 } // namespace crychic

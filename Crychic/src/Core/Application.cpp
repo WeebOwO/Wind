@@ -1,7 +1,9 @@
-#include "Core/Application.h"
+#include "Application.h"
 
 #include "Rendering/RenderSystem.h"
 #include "JobSystem/JobSystem.h"
+
+#include <EngineFactoryD3D12.h>
 
 namespace crychic
 {
