@@ -16,7 +16,10 @@ namespace crychic
 
     class PSOCache
     {
+    public:
         static void Init(IRenderDevice* device);
         static void Destroy();
+
+        static IPipelineState* GetPSO(PsoStateID id);
     };
-}
+} // namespace crychic

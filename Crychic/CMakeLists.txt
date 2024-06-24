@@ -16,6 +16,13 @@ include_directories(Crychic PRIVATE
         extern/taskflow/taskflow
         extern/entt/src/entt)
 
+set(BUILD_Version 1)
+
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Config.h.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Config.h
+)
+
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 add_library(Crychic ${SOURCES})

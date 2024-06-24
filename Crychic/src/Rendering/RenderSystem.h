@@ -23,7 +23,7 @@ namespace crychic
         void Init() override;
         void Quit() override;
 
-        void Tick();
+        void Tick() override;
 
     private:
         RefCntAutoPtr<IRenderDevice>  m_device;

@@ -15,13 +15,9 @@ public:
 
     void Quit() override
     {
-
+        Application::Quit(); // quit the base system first
     }
-
-    void Tick()
-    {
-
-    }
+    
 };
 
 crychic::Application* crychic::CreateApplication(int argc, char** argv)

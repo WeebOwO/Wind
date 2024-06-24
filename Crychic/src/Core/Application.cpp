@@ -1,7 +1,7 @@
 #include "Application.h"
 
-#include "Rendering/RenderSystem.h"
 #include "JobSystem/JobSystem.h"
+#include "Rendering/RenderSystem.h"
 
 #include <EngineFactoryD3D12.h>
 
@@ -20,15 +20,15 @@ namespace crychic
         while (!m_window->ShouldClose())
         {
             m_window->Update();
-            g_jobSystem->Tick();
+            g_renderSystem->Tick();
         }
-        return;
+        
     }
 
     void Application::Init()
     {
         m_subSystems[System::Job]    = std::make_unique<JobSystem>();
-        m_subSystems[System::Render] = std::make_unique<RenderSystem>( m_window.get());
+        m_subSystems[System::Render] = std::make_unique<RenderSystem>(m_window.get());
 
         for (auto& subSystem : m_subSystems)
         {
@@ -47,5 +47,5 @@ namespace crychic
         }
     }
 
-    Application::~Application() { Quit(); }
+    Application::~Application() = default;
 } // namespace crychic

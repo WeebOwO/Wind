@@ -7,7 +7,7 @@ namespace crychic
     void JobSystem::Init()
     {
         m_isInitialized = true;
-        g_jobSystem     = this;
+        g_jobSystem = this;
     }
 
     void JobSystem::Quit() {}

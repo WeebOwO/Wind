@@ -10,13 +10,15 @@ namespace crychic
     {
         VS_BasePass = 0,
         PS_BasePass,
+        Count
     };
 
     class ShaderCache
     {
+    public:
         static void Init(IRenderDevice* device);
         static void Destroy();
 
-        IShader* GetShader(ShaderID id);
+        static IShader* GetShader(ShaderID id);
     };
 } // namespace crychic

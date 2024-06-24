@@ -37,6 +37,8 @@ namespace crychic
         virtual void Init();
         virtual void Quit();
 
+        void LoadScene(const std::string& path);
+
     private:
         std::unique_ptr<Window>                               m_window;
         std::array<std::unique_ptr<SubSystem>, System::Count> m_subSystems;
