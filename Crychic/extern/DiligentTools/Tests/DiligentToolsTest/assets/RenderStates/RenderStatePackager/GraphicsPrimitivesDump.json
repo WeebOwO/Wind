@@ -1,0 +1,123 @@
+{
+    "Shaders": [
+        {
+            "Desc": {
+                "Name": "BlitTexture VS",
+                "ShaderType": "VERTEX",
+                "UseCombinedTextureSamplers": true
+            },
+            "SourceLanguage": "HLSL",
+            "FilePath": "GraphicsPrimitives.hlsl",
+            "EntryPoint": "VSBlitTexture"
+        },
+        {
+            "Desc": {
+                "Name": "BlitTexture PS",
+                "ShaderType": "PIXEL",
+                "UseCombinedTextureSamplers": true
+            },
+            "SourceLanguage": "HLSL",
+            "FilePath": "GraphicsPrimitives.hlsl",
+            "EntryPoint": "PSBlitTexture"
+        },
+        {
+            "Desc": {
+                "Name": "ClearUnorderedAccessViewUint CS",
+                "ShaderType": "COMPUTE",
+                "UseCombinedTextureSamplers": true
+            },
+            "SourceLanguage": "HLSL",
+            "FilePath": "ComputePrimitives.hlsl",
+            "EntryPoint": "CSClearUnorderedAccessViewUint"
+        },
+        {
+            "Desc": {
+                "Name": "ClearBufferCounter CS",
+                "ShaderType": "COMPUTE",
+                "UseCombinedTextureSamplers": true
+            },
+            "SourceLanguage": "HLSL",
+            "FilePath": "ComputePrimitives.hlsl",
+            "EntryPoint": "CSClearBufferCounter"
+        }
+    ],
+    "Pipelines": [
+        {
+            "GraphicsPipeline": {
+                "DepthStencilDesc": {
+                    "DepthEnable": false
+                },
+                "RasterizerDesc": {
+                    "FillMode": "SOLID",
+                    "CullMode": "NONE"
+                },
+                "NumRenderTargets": 1,
+                "RTVFormats": {
+                    "0": "RGBA8_UNORM_SRGB"
+                },
+                "PrimitiveTopology": "TRIANGLE_LIST"
+
+            },
+            "PSODesc": {
+                "Name": "Blit Texture",
+                "PipelineType": "GRAPHICS",
+                "ResourceLayout": {
+                    "Variables": [
+                        {
+                            "ShaderStages": "PIXEL",
+                            "Name": "TextureSRV",
+                            "Type": "DYNAMIC"
+                        }
+                    ],
+                    "ImmutableSamplers": [
+                        {
+                            "SamplerOrTextureName": "TextureSRV",
+                            "ShaderStages": "PIXEL",
+                            "Desc": {
+                                "MinFilter": "POINT",
+                                "MagFilter": "POINT",
+                                "MipFilter": "POINT"
+                            }
+                        }
+                    ]
+                }
+            },
+            "pVS": "BlitTexture VS",
+            "pPS": "BlitTexture PS"
+        },
+        {
+            "PSODesc": {
+                "Name": "Clear Unordered Access View Uint",
+                "PipelineType": "COMPUTE",
+                "ResourceLayout": {
+                    "DefaultVariableMergeStages": "COMPUTE",
+                    "Variables": [
+                        {
+                            "ShaderStages": [ "COMPUTE" ],
+                            "Name": "TextureUAV",
+                            "Type": "DYNAMIC"
+                        }
+                    ]
+                }
+            },
+            "pCS": "ClearUnorderedAccessViewUint CS"
+        },
+        {
+            "PSODesc": {
+                "Name": "Clear Buffer Counter",
+                "PipelineType": "COMPUTE",
+                "ResourceLayout": {
+                    "DefaultVariableMergeStages": "COMPUTE",
+                    "Variables": [
+                        {
+                            "ShaderStages": [ "COMPUTE" ],
+                            "Name": "BufferUAV",
+                            "Type": "DYNAMIC"
+                        }
+                    ]
+                }
+            },
+            "pCS": "ClearBufferCounter CS"
+        }
+    ]
+}

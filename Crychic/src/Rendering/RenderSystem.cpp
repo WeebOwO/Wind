@@ -8,6 +8,7 @@
 
 #include "PSOCache.h"
 #include "ShaderCache.h"
+#include "TextureLoader.h"
 
 namespace crychic
 {

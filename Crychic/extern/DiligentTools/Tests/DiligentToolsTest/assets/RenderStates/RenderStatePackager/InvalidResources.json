@@ -1,0 +1,20 @@
+{
+    "Pipelines": [
+        {
+            "PSODesc": {
+                "Name": "BrokenDraw",
+                "PipelineType": "GRAPHICS"
+            },
+            "pVS": {
+                "Desc": {
+                    "Name": "BrokenShader-VS",
+                    "ShaderType": "VERTEX",
+                    "UseCombinedTextureSamplers": true
+                },
+                "SourceLanguage": "HLSL",
+                "FilePath": "BrokenShader.hlsl",
+                "EntryPoint": "BrokenShaderVS"
+            }
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+{
+    "Shaders": [
+        {
+            "Desc": {
+                "Name": "BlitTexture-VS",
+                "ShaderType": "VERTEX",
+                "UseCombinedTextureSamplers": true
+            },
+            "SourceLanguage": "HLSL",
+            "FilePath": "GraphicsPrimitives.hlsl",
+            "EntryPoint": "VSBlitTexture"
+        },
+        {
+            "Desc": {
+                "Name": "BlitTexture-PS",
+                "ShaderType": "PIXEL",
+                "UseCombinedTextureSamplers": true
+            },
+            "SourceLanguage": "HLSL",
+            "FilePath": "GraphicsPrimitives.hlsl",
+            "EntryPoint": "PSBlitTexture"
+        }
+    ],
+    "Pipelines": [
+        {
+            "GraphicsPipeline": {
+                "DepthStencilDesc": {
+                    "DepthEnable": false
+                },
+                "RasterizerDesc": {
+                    "FillMode": "SOLID",
+                    "CullMode": "NONE"
+                },
+                "NumRenderTargets": 1,
+                "RTVFormats": {
+                    "0": "RGBA8_UNORM_SRGB"
+                },
+                "PrimitiveTopology": "TRIANGLE_LIST"
+
+            },
+            "PSODesc": {
+                "Name": "BlitTexture",
+                "PipelineType": "GRAPHICS",
+                "ResourceLayout": {
+                    "Variables": [
+                        {
+                            "ShaderStages": "PIXEL",
+                            "Name": "TextureSRV",
+                            "Type": "DYNAMIC"
+                        }
+                    ],
+                    "ImmutableSamplers": [
+                        {
+                            "SamplerOrTextureName": "TextureSRV",
+                            "ShaderStages": "PIXEL",
+                            "Desc": {
+                                "MinFilter": "POINT",
+                                "MagFilter": "POINT",
+                                "MipFilter": "POINT"
+                            }
+                        }
+                    ]
+                }
+            },
+            "pVS": "BlitTexture-VS",
+            "pPS": "BlitTexture-PS"
+        }
+    ]
+}

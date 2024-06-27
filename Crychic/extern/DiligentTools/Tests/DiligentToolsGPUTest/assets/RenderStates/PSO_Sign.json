@@ -1,0 +1,79 @@
+{
+    "Imports": [
+        "Signature.json"
+    ],
+    "Defaults": {
+        "Shader": {
+            "SourceLanguage": "HLSL",
+            "Desc": {
+                "UseCombinedTextureSamplers": true
+            }
+        }
+    },
+    "Shaders": [
+        {
+            "Desc": {
+                "Name": "GeometryOpaque-VS",
+                "ShaderType": "VERTEX"
+            },
+            "FilePath": "GeometryOpaque.hlsl",
+            "EntryPoint": "VSMain"
+        },
+        {
+            "Desc": {
+                "Name": "GeometryOpaque-PS",
+                "ShaderType": "PIXEL"
+            },
+            "FilePath": "GeometryOpaque.hlsl",
+            "EntryPoint": "PSMain"
+        }
+    ],
+    "RenderPasses": [
+        {
+            "Name": "TestRenderPass",
+            "pAttachments": [
+                {
+                    "Format": "RGBA8_UNORM_SRGB",
+                    "InitialState": "RENDER_TARGET",
+                    "FinalState": "PRESENT"
+                },
+                {
+                    "Format": "D32_FLOAT",
+                    "InitialState": "DEPTH_WRITE",
+                    "FinalState": "DEPTH_WRITE"
+                }
+            ],
+            "pSubpasses": [
+                {
+                    "pRenderTargetAttachments": [
+                        {
+                            "AttachmentIndex": 0,
+                            "State": "RENDER_TARGET"
+                        }
+                    ],
+                    "pDepthStencilAttachment": {
+                        "AttachmentIndex": 1,
+                        "State": "DEPTH_WRITE"
+                    }
+                }
+            ]
+        }
+    ],
+    "Pipelines": [
+        {
+            "GraphicsPipeline": {
+                "pRenderPass": "TestRenderPass",
+                "PrimitiveTopology": "TRIANGLE_LIST"
+            },
+            "ppResourceSignatures": [
+                "TestSignature"
+            ],
+            "PSODesc": {
+                "Name": "GeometryOpaque",
+                "PipelineType": "GRAPHICS"
+            },
+            "pVS": "GeometryOpaque-VS",
+            "pPS": "GeometryOpaque-PS"
+        }
+    ]
+}

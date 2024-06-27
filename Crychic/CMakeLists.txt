@@ -8,9 +8,11 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(extern/DiligentCore)
+add_subdirectory(extern/DiligentTools)
 
 # set include dir
 include_directories(Crychic PRIVATE
+        extern/DiligentTools/TextureLoader/interface
         include/
         src/
         extern/taskflow/taskflow
@@ -37,6 +39,7 @@ target_link_libraries(Crychic PRIVATE
         Diligent-GraphicsEngineD3D12-shared
         Diligent-GraphicsEngineVk-shared
         Diligent-Common
+        Diligent-TextureLoader
 )
 
 copy_required_dlls(Crychic)
