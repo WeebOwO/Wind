@@ -7,12 +7,12 @@ namespace crychic
     void JobSystem::Init()
     {
         m_isInitialized = true;
-        g_jobSystem = this;
+        g_jobSystem     = this;
     }
 
     void JobSystem::Quit() {}
 
-    void JobSystem::Tick() { m_executor.run(m_taskflow).wait(); }
+    void JobSystem::Tick() {}
 
-    void JobSystem::Clear() { m_taskflow.clear(); }
+    void JobSystem::Clear() {}
 } // namespace crychic

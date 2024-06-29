@@ -1,14 +1,11 @@
 #include "RenderSystem.h"
 
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
-
 #include <EngineFactoryD3D12.h>
+#include <ImGuiImplWin32.hpp>
 #include <Win32NativeWindow.h>
 
 #include "PSOCache.h"
 #include "ShaderCache.h"
-#include "TextureLoader.h"
 
 namespace crychic
 {
@@ -19,6 +16,7 @@ namespace crychic
         // create renderer
         ShaderCache::Init(m_device);
         PSOCache::Init(m_device);
+
         m_isInitialized = true;
         g_renderSystem  = this;
     }
@@ -32,9 +30,11 @@ namespace crychic
 
     RenderSystem::RenderSystem(Window* window)
     {
-        Win32NativeWindow nativeWindow {glfwGetWin32Window(window->GetGLFWWindow())};
-        auto*             factoryD3D12 = LoadGraphicsEngineD3D12();
-        auto*             factory      = factoryD3D12();
+        HWND hwnd = window->GetNativeWindow();
+        Win32NativeWindow nativeWindow{hwnd};
+
+        auto* factoryD3D12 = LoadGraphicsEngineD3D12();
+        auto* factory      = factoryD3D12();
 
         SwapChainDesc swapChainDesc {};
 
@@ -43,8 +43,18 @@ namespace crychic
         factory->CreateSwapChainD3D12(
             m_device, m_context, swapChainDesc, FullScreenModeDesc {}, nativeWindow, &m_swapChain);
 
-        m_swapChain->Resize(window->GetWidth(), window->GetHeight());
+        ImGuiDiligentCreateInfo imguiCreateInfo {m_device, m_swapChain->GetDesc()};
+
+        m_imgui = ImGuiImplWin32::Create(imguiCreateInfo, hwnd);
     }
+
+    void RenderSystem::NewFrame()
+    {
+        const auto& swapChainDesc = m_swapChain->GetDesc();
+        m_imgui->NewFrame(swapChainDesc.Width, swapChainDesc.Height, swapChainDesc.PreTransform);
+    }
+
+    void RenderSystem::EndFrame() { m_imgui->EndFrame(); }
 
     void RenderSystem::Tick()
     {
@@ -64,6 +74,8 @@ namespace crychic
         drawAttribs.NumVertices = 3;
         m_context->Draw(drawAttribs);
 
+        // ui pass
+        m_imgui->Render(m_context);
         m_swapChain->Present();
     }
 

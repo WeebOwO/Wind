@@ -6,6 +6,7 @@ namespace crychic
     {
         FrameBegin,
         EntityUpdate,
+        FixedUpdate,
         Render,
     };
 

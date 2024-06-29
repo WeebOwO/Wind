@@ -4,6 +4,12 @@
 
 namespace crychic
 {
+
+    struct Config
+    {
+
+    };
+
     class ConfigManager
     {
     public:

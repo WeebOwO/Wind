@@ -10,7 +10,7 @@ include_directories(Sandbox PRIVATE
         ../Crychic/include
 )
 
-add_executable(Sandbox ${SOURCES})
+add_executable(Sandbox WIN32 ${SOURCES})
 
 target_link_libraries(Sandbox PRIVATE Crychic)
 

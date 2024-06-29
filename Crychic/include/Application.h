@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Windows.h>
+
 #include <array>
 #include <memory>
 #include <string>
@@ -14,7 +16,7 @@ namespace crychic
         Count
     };
 
-    struct ApplicationDesc
+    struct ApplicationConfig
     {
         uint32_t    width;
         uint32_t    height;
@@ -29,7 +31,7 @@ namespace crychic
     class Application
     {
     public:
-        explicit Application(const ApplicationDesc& config);
+        explicit Application(const ApplicationConfig& config);
         ~Application();
 
         void Run();
@@ -39,7 +41,10 @@ namespace crychic
 
         void LoadScene(const std::string& path);
 
+        void ResigerWindow(HINSTANCE hinstance, int nShowCmd);
+
     private:
+        ApplicationConfig                                     m_config;
         std::unique_ptr<Window>                               m_window;
         std::array<std::unique_ptr<SubSystem>, System::Count> m_subSystems;
     };

@@ -1,28 +1,112 @@
 #include "Application.h"
 
+#include <EngineFactoryD3D12.h>
+#include <ImGuiImplWin32.hpp>
+#include <imgui.h>
+
 #include "JobSystem/JobSystem.h"
 #include "Rendering/RenderSystem.h"
-
-#include <EngineFactoryD3D12.h>
+#include "Window.h"
 
 namespace crychic
 {
-    Application::Application(const ApplicationDesc& config)
+    static bool showDemoWindow = true;
+
+    LRESULT CALLBACK MessageProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
-        m_window = std::make_unique<Window>(config.width, config.height, config.title);
-        m_window->Init();
+        if (g_renderSystem)
+        {
+            auto ptr     = g_renderSystem->GetImguiPtr();
+            auto handled = static_cast<ImGuiImplWin32*>(ptr)->Win32_ProcHandler(hWnd, message, wParam, lParam);
+            if(handled != 0)
+                return handled;
+        }
+
+        switch (message)
+        {
+            case WM_PAINT: {
+                PAINTSTRUCT ps;
+                BeginPaint(hWnd, &ps);
+                EndPaint(hWnd, &ps);
+                return 0;
+            }
+            case WM_SIZE: // Window size has been changed
+                return 0;
+
+            case WM_CHAR:
+                if (wParam == VK_ESCAPE)
+                    PostQuitMessage(0);
+                return 0;
+
+            case WM_DESTROY:
+                PostQuitMessage(0);
+                return 0;
+
+            case WM_GETMINMAXINFO: {
+                LPMINMAXINFO lpMMI      = (LPMINMAXINFO)lParam;
+                lpMMI->ptMinTrackSize.x = 320;
+                lpMMI->ptMinTrackSize.y = 240;
+                return 0;
+            }
+
+            default:
+                return DefWindowProc(hWnd, message, wParam, lParam);
+        }
     }
+
+    static void ShowDemoWindow() { ImGui::ShowDemoWindow(&showDemoWindow); }
+
+    Application::Application(const ApplicationConfig& config) : m_config(config) {}
 
     void Application::Run()
     {
         Init();
-
-        while (!m_window->ShouldClose())
+        MSG msg = {0};
+        while (msg.message != WM_QUIT)
         {
-            m_window->Update();
-            g_renderSystem->Tick();
+            if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+            else
+            {
+                g_renderSystem->NewFrame();
+                m_window->Update();
+
+                ShowDemoWindow();
+
+                g_renderSystem->Tick();
+
+                g_renderSystem->EndFrame();
+            }
         }
-        
+    }
+
+    void Application::ResigerWindow(HINSTANCE hinstance, int nShowCmd)
+    {
+        const wchar_t* windowName = L"Crychic";
+
+        static WNDCLASSEX wcex = {sizeof(WNDCLASSEX),
+                                  CS_HREDRAW | CS_VREDRAW,
+                                  MessageProc,
+                                  0L,
+                                  0L,
+                                  hinstance,
+                                  NULL,
+                                  NULL,
+                                  NULL,
+                                  NULL,
+                                  windowName,
+                                  NULL};
+
+        RegisterClassEx(&wcex);
+
+        m_window = std::make_unique<Window>(m_config.width, m_config.height, m_config.title);
+        m_window->Init(hinstance);
+
+        ShowWindow(m_window->GetNativeWindow(), nShowCmd);
+        UpdateWindow(m_window->GetNativeWindow());
     }
 
     void Application::Init()

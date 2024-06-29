@@ -1,7 +1,5 @@
 #pragma once
 
-#include "taskflow.hpp"
-
 #include "Core/SubSystem.h"
 
 namespace crychic
@@ -20,16 +18,6 @@ namespace crychic
         void Tick() override;
 
         void Clear();
-
-        template<typename... T>
-        auto Emplace(T&&... t)
-        {
-            return m_taskflow.emplace(std::forward<T...>(t...));
-        }
-
-    private:
-        tf::Executor m_executor;
-        tf::Taskflow m_taskflow;
     };
 
     extern JobSystem* g_jobSystem;
