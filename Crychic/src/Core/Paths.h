@@ -3,8 +3,12 @@
 #include <filesystem>
 #include <string>
 
-namespace crychic::paths
+namespace crychic
 {
-    std::filesystem::path MainDir();
-    std::filesystem::path ShaderDir();
-} // namespace crychic::paths
+    class Paths
+    {
+    public:
+        static std::filesystem::path MainDir();
+        static std::filesystem::path ShaderDir();
+    };
+} // namespace crychic

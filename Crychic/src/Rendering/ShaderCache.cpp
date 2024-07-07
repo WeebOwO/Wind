@@ -1,6 +1,5 @@
 #include "ShaderCache.h"
 
-#include <memory>
 #include <unordered_map>
 
 #include <RefCntAutoPtr.hpp>
@@ -13,8 +12,6 @@ namespace crychic
     static IRenderDevice* renderDevice = nullptr;
 
     std::unordered_map<ShaderID, RefCntAutoPtr<IShader>> shaderCache;
-
-    const std::string kShaderPath = "shaders/";
 
     constexpr std::string GetShaderFileName(ShaderID id)
     {
@@ -50,7 +47,7 @@ namespace crychic
         shaderCI.EntryPoint      = "main";
         shaderCI.Desc.ShaderType = GetShaderType(id);
 
-        std::filesystem::path shaderPath   = paths::ShaderDir() / GetShaderFileName(id);
+        std::filesystem::path shaderPath   = Paths::ShaderDir() / GetShaderFileName(id);
         std::string           shaderSource = io::LoadFileAsString(shaderPath);
 
         shaderCI.Source = shaderSource.c_str();
@@ -75,6 +72,7 @@ namespace crychic
         renderDevice = device;
         CompileAllShaders();
     }
+
     void ShaderCache::Destroy()
     {
         for (auto& shader : shaderCache)

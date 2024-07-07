@@ -12,13 +12,13 @@ namespace crychic
 {
     static bool showDemoWindow = true;
 
-    LRESULT CALLBACK MessageProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+    static LRESULT CALLBACK MessageProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         if (g_renderSystem)
         {
             auto ptr     = g_renderSystem->GetImguiPtr();
             auto handled = static_cast<ImGuiImplWin32*>(ptr)->Win32_ProcHandler(hWnd, message, wParam, lParam);
-            if(handled != 0)
+            if (handled != 0)
                 return handled;
         }
 
@@ -54,7 +54,11 @@ namespace crychic
         }
     }
 
-    static void ShowDemoWindow() { ImGui::ShowDemoWindow(&showDemoWindow); }
+    static void ShowDemoWindow()
+    {
+        if (showDemoWindow)
+            ImGui::ShowDemoWindow(&showDemoWindow);
+    }
 
     Application::Application(const ApplicationConfig& config) : m_config(config) {}
 
@@ -74,6 +78,7 @@ namespace crychic
                 g_renderSystem->NewFrame();
                 m_window->Update();
 
+                Update();
                 ShowDemoWindow();
 
                 g_renderSystem->Tick();
@@ -83,7 +88,7 @@ namespace crychic
         }
     }
 
-    void Application::ResigerWindow(HINSTANCE hinstance, int nShowCmd)
+    void Application::RegisterWindow(HINSTANCE hinstance, int nShowCmd)
     {
         const wchar_t* windowName = L"Crychic";
 

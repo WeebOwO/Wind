@@ -8,6 +8,7 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 include_directories(Sandbox PRIVATE
         ../Crychic/include
+        include/
 )
 
 add_executable(Sandbox WIN32 ${SOURCES})

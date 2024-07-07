@@ -16,11 +16,18 @@ namespace crychic
         Count
     };
 
+    enum class ApplicationType : uint32_t
+    {
+        Editor = 0,
+        Game,
+    };
+
     struct ApplicationConfig
     {
-        uint32_t    width;
-        uint32_t    height;
-        std::string title;
+        uint32_t        width;
+        uint32_t        height;
+        std::string     title;
+        ApplicationType type;
     };
 
     class RenderSystem;
@@ -38,10 +45,11 @@ namespace crychic
 
         virtual void Init();
         virtual void Quit();
+        virtual void Update() {}
 
         void LoadScene(const std::string& path);
 
-        void ResigerWindow(HINSTANCE hinstance, int nShowCmd);
+        void RegisterWindow(HINSTANCE hinstance, int nShowCmd);
 
     private:
         ApplicationConfig                                     m_config;
