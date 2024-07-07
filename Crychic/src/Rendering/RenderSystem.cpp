@@ -19,6 +19,9 @@ namespace crychic
 
         m_isInitialized = true;
         g_renderSystem  = this;
+
+        // sync with scene
+        Scene::RegisterOnSceneUpdateCallBack([this](Scene& scene, float deltaTime) { m_refScene = &scene; });
     }
 
     void RenderSystem::Quit()
@@ -30,8 +33,8 @@ namespace crychic
 
     RenderSystem::RenderSystem(Window* window)
     {
-        HWND hwnd = window->GetNativeWindow();
-        Win32NativeWindow nativeWindow{hwnd};
+        HWND              hwnd = window->GetNativeWindow();
+        Win32NativeWindow nativeWindow {hwnd};
 
         auto* factoryD3D12 = LoadGraphicsEngineD3D12();
         auto* factory      = factoryD3D12();

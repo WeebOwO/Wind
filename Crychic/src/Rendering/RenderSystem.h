@@ -9,6 +9,8 @@
 #include <RenderDevice.h>
 #include <SwapChain.h>
 
+#include "Scene/Scene.h"
+
 using namespace Diligent;
 
 namespace crychic
@@ -27,7 +29,7 @@ namespace crychic
     public:
         explicit RenderSystem(Window* window);
 
-        ImGuiImplDiligent* GetImguiPtr() const { return m_imgui.get(); }
+        [[nodiscard]] ImGuiImplDiligent* GetImguiPtr() const { return m_imgui.get(); }
 
         void Init() override;
         void Quit() override;
@@ -42,6 +44,8 @@ namespace crychic
         RefCntAutoPtr<IDeviceContext>      m_context;
         RefCntAutoPtr<ISwapChain>          m_swapChain;
         std::unique_ptr<ImGuiImplDiligent> m_imgui;
+
+        Scene* m_refScene;
     };
 
     extern RenderSystem* g_renderSystem;

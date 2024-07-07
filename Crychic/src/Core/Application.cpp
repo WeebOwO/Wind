@@ -6,6 +6,8 @@
 
 #include "JobSystem/JobSystem.h"
 #include "Rendering/RenderSystem.h"
+#include "Scene/Entity.h"
+#include "Scene/SceneManager.h"
 #include "Window.h"
 
 namespace crychic
@@ -112,6 +114,12 @@ namespace crychic
 
         ShowWindow(m_window->GetNativeWindow(), nShowCmd);
         UpdateWindow(m_window->GetNativeWindow());
+    }
+
+    void Application::LoadScene(const std::string& path)
+    {
+        auto scene      = Singleton<SceneManager>::GetInstance().GetOrCreate("DemoScene");
+        auto testEntity = scene->CreateEntity("testEntity");
     }
 
     void Application::Init()

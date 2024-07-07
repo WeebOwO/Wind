@@ -7,10 +7,8 @@ namespace crychic
 
     };
 
-    class MeshComponent
+    struct MeshComponent
     {
-    public:
-        MeshComponent()  = default;
-        ~MeshComponent() = default;
+
     };
 } // namespace crychics

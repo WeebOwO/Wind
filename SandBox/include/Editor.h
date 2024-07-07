@@ -12,6 +12,6 @@ public:
     void Update() override;
 
 private:
-    std::string m_scenePath;
+    std::string m_projectPath;
 };
 

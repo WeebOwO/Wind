@@ -5,5 +5,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     crychic::Application* app = crychic::CreateApplication(__argc, __argv);
     app->RegisterWindow(hInstance, nShowCmd);
     app->Run();
+    delete app;
     return 0;
 }
