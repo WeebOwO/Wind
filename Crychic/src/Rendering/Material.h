@@ -7,6 +7,5 @@ namespace crychic
     public:
         Material()  = default;
         ~Material() = default;
-
     };
 } // namespace crychic

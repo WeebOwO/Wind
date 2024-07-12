@@ -1,9 +1,13 @@
 #include "Paths.h"
 
 #include "Config.h"
+#include "Macro.h"
 
 namespace crychic
 {
-    std::filesystem::path Paths::MainDir() { return R"(D:\Code\Wind\Crychic)"; }
-    std::filesystem::path Paths::ShaderDir() { return MainDir() / "shaders/"; }
-} // namespace crychic::paths
+    static std::string mainDir   = STRINGIFY(MAIN_DIR);
+    static std::string shaderDir = STRINGIFY(SHADER_DIR);
+
+    std::filesystem::path Paths::MainDir() { return mainDir; }
+    std::filesystem::path Paths::ShaderDir() { return shaderDir; }
+} // namespace crychic

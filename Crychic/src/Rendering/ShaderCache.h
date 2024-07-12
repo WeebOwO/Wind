@@ -1,9 +1,9 @@
 #pragma once
 
-#include <RenderDevice.h>
 #include <cstdint>
 
-using namespace Diligent;
+#include "RenderCore.h"
+
 namespace crychic
 {
     enum class ShaderID : uint32_t

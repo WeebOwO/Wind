@@ -5,13 +5,9 @@
 
 #include <Core/ConfigManager.h>
 #include <ImGuiImplDiligent.hpp>
-#include <RefCntAutoPtr.hpp>
-#include <RenderDevice.h>
-#include <SwapChain.h>
 
 #include "Scene/Scene.h"
-
-using namespace Diligent;
+#include "RenderCore.h"
 
 namespace crychic
 {

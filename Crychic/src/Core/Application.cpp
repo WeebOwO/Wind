@@ -78,9 +78,12 @@ namespace crychic
             else
             {
                 g_renderSystem->NewFrame();
-                m_window->Update();
-
+                auto activeScene = Singleton<SceneManager>::GetInstance().GetActiveScene();
                 Update();
+
+                m_window->Update();
+                activeScene->Update(0);
+
                 ShowDemoWindow();
 
                 g_renderSystem->Tick();
@@ -118,8 +121,9 @@ namespace crychic
 
     void Application::LoadScene(const std::string& path)
     {
-        auto scene      = Singleton<SceneManager>::GetInstance().GetOrCreate("DemoScene");
+        auto scene      = Singleton<SceneManager>::GetInstance().CreateScene("DemoScene");
         auto testEntity = scene->CreateEntity("testEntity");
+        scene->SetActive(true);
     }
 
     void Application::Init()

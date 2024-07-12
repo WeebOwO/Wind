@@ -4,7 +4,17 @@
 
 namespace crychic
 {
-    Scene* SceneManager::GetOrCreate(const std::string& name)
+    SceneManager::SceneManager()
+    {
+        Scene::RegisterOnSceneActiveCallBack([this](Scene& scene, bool active) {
+            if (active)
+            {
+                m_activeScene = scene.m_name;
+            }
+        });
+    }
+
+    Scene* SceneManager::CreateScene(const std::string& name)
     {
         if (m_scenes.find(name) != m_scenes.end())
         {
@@ -25,5 +35,7 @@ namespace crychic
             m_scenes.erase(it);
         }
     }
+
+    Scene* SceneManager::GetActiveScene() const { return m_scenes.at(m_activeScene); }
 
 } // namespace crychic

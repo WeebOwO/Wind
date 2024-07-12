@@ -1,1 +1,4 @@
 #define BUILD_Version @BUILD_Version@
+#define ASSET_DIR @ASSET_DIR@
+#define SHADER_DIR @SHADER_DIR@
+#define MAIN_DIR @MAIN_DIR@

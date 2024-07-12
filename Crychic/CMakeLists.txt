@@ -18,7 +18,10 @@ include_directories(Crychic PRIVATE
         src/
         extern/entt/src/entt)
 
+
 set(BUILD_Version 1)
+cmake_path(SET SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
+cmake_path(SET MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Config.h.in
@@ -31,6 +34,8 @@ add_library(Crychic
         ${SOURCES}
         extern/DiligentTools/ThirdParty/imgui/imgui_demo.cpp
 )
+
+target_precompile_headers(Crychic PRIVATE include/RenderCore.h)
 
 target_compile_options(Crychic PRIVATE -DUNICODE -DENGINE_DLL)
 

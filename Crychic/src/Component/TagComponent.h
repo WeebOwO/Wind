@@ -8,7 +8,7 @@ namespace crychic
     {
     public:
         TagComponent() = default;
-        TagComponent(const std::string& tag) : tag(tag) {}
+        explicit TagComponent(const std::string& tag) : tag(tag) {}
 
         std::string tag;
     };
