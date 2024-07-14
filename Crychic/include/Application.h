@@ -28,6 +28,7 @@ namespace crychic
         uint32_t        height;
         std::string     title;
         ApplicationType type;
+        std::string     gameScriptPath;
     };
 
     class RenderSystem;

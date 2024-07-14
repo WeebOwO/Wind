@@ -4,3 +4,5 @@
 **/cmake-build-debug-mingw/
 # jetbrain
 .idea/
+# cmake output
+build/
