@@ -45,5 +45,8 @@ namespace crychic
         CreateAllPso();
     }
 
-    void PSOCache::Destroy() {}
+    void PSOCache::Destroy()
+    {
+        psoCache.clear();
+    }
 } // namespace crychic

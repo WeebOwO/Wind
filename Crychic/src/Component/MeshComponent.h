@@ -20,4 +20,6 @@ namespace crychic
         std::vector<SubMesh>  subMeshes;
         std::vector<Material> materials;
     };
+
+
 } // namespace crychic

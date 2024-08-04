@@ -4,9 +4,10 @@
 
 namespace crychic
 {
-    class ScriptEngine : Singleton<ScriptEngine>
+    class AssetManager : public Singleton<AssetManager>
     {
     public:
 
+    private:
     };
 }
