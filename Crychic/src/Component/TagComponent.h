@@ -2,9 +2,11 @@
 
 #include <string>
 
+#include "Component.h"
+
 namespace crychic
 {
-    class TagComponent
+    class TagComponent : public Component
     {
     public:
         TagComponent() = default;

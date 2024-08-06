@@ -6,8 +6,8 @@
 #include <Core/ConfigManager.h>
 #include <ImGuiImplDiligent.hpp>
 
-#include "Scene/Scene.h"
 #include "RenderCore.h"
+#include "Scene/Scene.h"
 
 namespace crychic
 {
@@ -40,6 +40,7 @@ namespace crychic
         RefCntAutoPtr<IDeviceContext>      m_context;
         RefCntAutoPtr<ISwapChain>          m_swapChain;
         std::unique_ptr<ImGuiImplDiligent> m_imgui;
+        Scene*                             m_refScene;
     };
 
     extern RenderSystem* g_renderSystem;

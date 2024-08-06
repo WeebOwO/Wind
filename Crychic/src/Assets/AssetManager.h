@@ -9,5 +9,6 @@ namespace crychic
     public:
 
     private:
+        
     };
 }

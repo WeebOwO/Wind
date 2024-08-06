@@ -32,7 +32,6 @@ file(GLOB_RECURSE HEADERS "include/*.h")
 
 add_library(Crychic
         ${SOURCES}
-        ${HEADERS}
         extern/DiligentTools/ThirdParty/imgui/imgui_demo.cpp
 )
 

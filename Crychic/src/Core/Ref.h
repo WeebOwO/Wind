@@ -1,24 +1,12 @@
 #pragma once
 
 #include <atomic>
+#include <memory>
 
 namespace crychic
 {
-    class RefCounted
-    {
-    public:
-        virtual ~RefCounted() = default;
-
-        void IncRefCount() const { ++m_refCount; }
-        void DecRefCount() const { --m_refCount; }
-
-        uint32_t GetRefCount() const { return m_refCount.load(); }
-
-    private:
-        mutable std::atomic<uint32_t> m_refCount = 0;
-    };
-
-
-
-
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
 } // namespace crychic
