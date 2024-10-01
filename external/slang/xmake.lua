@@ -1,0 +1,5 @@
+target("slang")
+    set_kind("static")  
+    add_includedirs("include")  
+    add_linkdirs("lib")         
+    add_links("slang")
