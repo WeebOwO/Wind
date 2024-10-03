@@ -2,7 +2,7 @@
 
 #include "Core/Object.h"
 
-namespace wind 
+namespace wind
 {
     class Component : public NamedObject
     {
@@ -10,6 +10,8 @@ namespace wind
         Component(const std::string& name) : NamedObject(name) {}
         virtual ~Component() = default;
 
-
+        virtual void OnCreate() {}
+        virtual void OnDestroy() {}
+        virtual void OnUpdate() {}
     };
-}
+} // namespace wind

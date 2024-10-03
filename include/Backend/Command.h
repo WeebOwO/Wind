@@ -4,6 +4,8 @@
 
 namespace wind
 {
+    class Device;
+
     enum class RenderCommandQueueType : uint8_t
     {
         None     = 0x00,
@@ -30,7 +32,7 @@ namespace wind
     };
 
     template<RenderCommandType CommandType, RenderCommandQueueType QueueType>
-    struct CommandImpl : Command
+    struct CommandImpl : public Command
     {
         static constexpr RenderCommandType      type      = CommandType;
         static constexpr RenderCommandQueueType queueType = QueueType;
@@ -38,7 +40,7 @@ namespace wind
         CommandImpl() { this->type = type; }
     };
 
-    struct DrawCommand : CommandImpl<RenderCommandType::Draw, RenderCommandQueueType::Graphics>
+    struct DrawCommand : public CommandImpl<RenderCommandType::Draw, RenderCommandQueueType::Graphics>
     {
         uint32_t vertexCount   = 0;
         uint32_t instanceCount = 0;
@@ -46,7 +48,7 @@ namespace wind
         uint32_t firstInstance = 0;
     };
 
-    struct DrawIndirectCommand : CommandImpl<RenderCommandType::DrawIndirect, RenderCommandQueueType::Graphics>
+    struct DrawIndirectCommand : public CommandImpl<RenderCommandType::DrawIndirect, RenderCommandQueueType::Graphics>
     {
         uint32_t vertexCount   = 0;
         uint32_t instanceCount = 0;
@@ -54,7 +56,7 @@ namespace wind
         uint32_t firstInstance = 0;
     };
 
-    struct DispatchCommand : CommandImpl<RenderCommandType::Dispatch, RenderCommandQueueType::Compute>
+    struct DispatchCommand : public CommandImpl<RenderCommandType::Dispatch, RenderCommandQueueType::Compute>
     {
         uint32_t groupCountX = 0;
         uint32_t groupCountY = 0;

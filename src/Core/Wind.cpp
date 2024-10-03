@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Backend/Swapchain.h"
 #include "Core/Log.h"
 #include "JobSystem/JobSystem.h"
 

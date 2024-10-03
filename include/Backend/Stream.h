@@ -20,6 +20,8 @@ namespace wind
 
         CommandStream& operator<<(Command* command);
 
+        void Execute(void* data);
+
     private:
         std::vector<Command*> m_commands;
     };

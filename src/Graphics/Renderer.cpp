@@ -1,5 +1,8 @@
 #include "Graphics/Renderer.h"
+
 #include "Backend/Swapchain.h"
+#include "Graphics/PSOCache.h"
+#include "Graphics/ShaderCache.h"
 
 namespace wind
 {
@@ -22,9 +25,19 @@ namespace wind
         return std::make_unique<Renderer>(device, createInfo);
     }
 
-    void Renderer::Sync() {}
+    Renderer& Renderer::SetViewData(const View& view)
+    {
+        m_view = &view;
+        return *this;
+    }
 
-    void Renderer::Render(Scene& scene, View& view)
+    void Renderer::Sync() 
+    {
+        // sync with the swapchain
+
+    }
+
+    void Renderer::Render()
     {
         // render the scene
     }

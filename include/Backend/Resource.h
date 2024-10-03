@@ -13,6 +13,7 @@ namespace wind
         {
             None,
             Shader,
+            Buffer,
             Image,
             Swapchain,
             CommandStream

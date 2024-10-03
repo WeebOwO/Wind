@@ -7,4 +7,5 @@ namespace wind
     class Device;
 
     
+    
 } // namespace wind
