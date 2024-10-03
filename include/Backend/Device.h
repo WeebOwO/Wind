@@ -1,9 +1,12 @@
 #pragma once
 
+#include <queue>
 #include <thread>
 
 #include "Guard.h"
+#include "Pipeline.h"
 #include "Resource.h"
+#include "Shader.h"
 
 #include "Core/NonCopy.h"
 #include "Core/Vector.h"
@@ -38,7 +41,8 @@ namespace wind
         vk::PhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
 
         // some native create functions
-        std::shared_ptr<Swapchain> CreateSwapchain(const SwapchainCreateInfo& createInfo);
+        std::shared_ptr<Swapchain>        CreateSwapchain(const SwapchainCreateInfo& createInfo);
+        std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline();
 
         void ExecuteStream(CommandStream* stream);
 
@@ -85,5 +89,7 @@ namespace wind
         GPUQueue m_mainQueue;         // use for graphics and compute
         GPUQueue m_asyncComputeQueue; // use for async compute
         GPUQueue m_transferQueue;     // use for transfer
+
+        std::queue<Resource*> m_deleteQueue;
     };
 } // namespace wind

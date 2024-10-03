@@ -1,0 +1,2 @@
+#define SHADER_DIR "${SHADER_DIR}"
+#define PROJECT_DIR "${PROJECT_DIR}"

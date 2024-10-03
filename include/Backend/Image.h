@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Device.h"
 #include "Guard.h"
+#include "Device.h"
 #include "Resource.h"
 
 namespace wind

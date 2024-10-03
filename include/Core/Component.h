@@ -9,9 +9,5 @@ namespace wind
     public:
         Component(const std::string& name) : NamedObject(name) {}
         virtual ~Component() = default;
-
-        virtual void OnCreate() {}
-        virtual void OnDestroy() {}
-        virtual void OnUpdate() {}
     };
 } // namespace wind

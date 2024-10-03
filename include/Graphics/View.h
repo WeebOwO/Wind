@@ -11,6 +11,9 @@ namespace wind
         View& SetCamera(Camera* camera);
         View& SetScene(Scene* scene);
 
+        Scene*  GetScene() const;
+        Camera* GetCamera() const;
+    
     private:
         Camera* m_camera;
         Scene*  m_scene;

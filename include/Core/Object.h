@@ -4,9 +4,13 @@
 
 namespace wind
 {
+    struct MetaData
+    {};
+
     // base class for all objects
     // store the runtime type information and some useful functions
     // also used for reflection and serialization
+
     class Object
     {
     public:

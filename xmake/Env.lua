@@ -1,0 +1,5 @@
+option("env")
+    set_showmenu(true)
+    set_default(true)
+    set_configvar("PROJECT_DIR", "$(projectdir)", {escape = false})
+    set_configvar("SHADER_DIR", "$(projectdir)\\shaders", {escape = false})

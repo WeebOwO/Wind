@@ -36,5 +36,6 @@ namespace wind
         std::shared_ptr<Swapchain>   m_swapchain;
         std::unique_ptr<PSOCache>    m_psoCache;
         std::unique_ptr<ShaderCache> m_shaderCache;
+        std::thread::id              m_renderThread;
     };
 } // namespace wind

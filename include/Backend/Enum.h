@@ -54,14 +54,28 @@ namespace wind
 
     enum class ShaderType : uint8_t
     {
-        Vertex,
-        Pixel,
+        Raster,
         Compute,
         RayGen,
         Miss,
         ClosestHit,
         AnyHit,
         Intersection,
+        Count
+    };
+
+    enum class ShadingModel : uint8_t
+    {
+        Unlit,
+        PBR,
+        Count
+    };
+
+    enum class PassType : uint8_t
+    {
+        Default = 0,
+        GBuffer,
+        Lighting,
         Count
     };
 } // namespace wind
