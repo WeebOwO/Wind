@@ -26,21 +26,8 @@ namespace wind
         void Init();
         void Destroy();
 
-        template<typename T>
-        T* GetShader(ShaderID id) requires std::derived_from<T, Shader>
-        {
-            auto it = m_shaders.find(id);
-            if (it == m_shaders.end())
-            {
-                CompileShader(id);
-                it = m_shaders.find(id);
-            }
-
-            return static_cast<T*>(it->second);
-        }
-
     private:
-        using ShaderMap = std::unordered_map<ShaderID, Shader*>;
+        using ShaderMap = std::unordered_map<ShaderID, std::shared_ptr<Shader>>;
 
         void CompileShader(ShaderID id);
 

@@ -1,29 +1,42 @@
 #include "Backend/Shader.h"
 
+#include "Backend/Enum.h"
+#include "Core/Log.h"
+
+#include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
 
 #include "Backend/Device.h"
 
 namespace wind
 {
-    Shader::Shader(Device* device, ShaderType type) : Resource(device, Tag::Shader), m_type(type) {}
+    static vk::ShaderStageFlagBits ConverToShaderStageFromType(ShaderType type)
+    {
+        switch (type)
+        {
+            case ShaderType::Vertex:
+                return vk::ShaderStageFlagBits::eVertex;
+            case ShaderType::Fragment:
+                return vk::ShaderStageFlagBits::eFragment;
+            case ShaderType::Compute:
+                return vk::ShaderStageFlagBits::eCompute;
+            default:
+                WIND_CORE_ERROR("Unsupported shader stage.");
+                return vk::ShaderStageFlagBits::eAll;
+        }
+    };
+
+    Shader::Shader(Device* device, const BlobData& blob) :
+        Resource(device, Tag::Shader), m_type(blob.type), m_blob(blob)
+    {
+        m_blob.stage = ConverToShaderStageFromType(m_type);
+    }
 
     Shader::~Shader()
     {
         vk::Device vkDevice = m_device->GetDevice();
-        for (auto& blob : m_blobs)
-        {
-            vkDevice.destroyShaderModule(blob.module);
-        }
-
-        // Destroy descriptor set layout
-        for (auto& descriptorSetLayout : m_descriptorSetLayouts)
-        {
-            vkDevice.destroyDescriptorSetLayout(descriptorSetLayout);
-        }
+        vkDevice.destroyShaderModule(m_blob.module);
     }
-
-    void Shader::AddBlob(const BlobData& blob) { m_blobs.push_back(blob); }
 
     void Shader::ReflectShader(const BlobData& blob)
     {
@@ -58,12 +71,50 @@ namespace wind
 
     void Shader::GenerateReflectionData()
     {
-        // Collect resource
-        // Generate reflection data
-        for (auto blob : m_blobs)
+        // Reflect shader
+        ReflectShader(m_blob);
+    }
+
+    void Shader::Init()
+    {
+        // Create shader module
+        vk::Device vkDevice = m_device->GetDevice();
+
+        shaderc::Compiler       compiler;
+        shaderc::CompileOptions options;
+
         {
-            // Reflect shader
-            ReflectShader(blob);
+            // Create shader module
+            shaderc::SpvCompilationResult result;
+
+            switch (m_blob.stage)
+            {
+                case vk::ShaderStageFlagBits::eVertex:
+                    result =
+                        compiler.CompileGlslToSpv(m_blob.shaderCode, shaderc_glsl_vertex_shader, "vertex", options);
+                    break;
+                case vk::ShaderStageFlagBits::eFragment:
+                    result =
+                        compiler.CompileGlslToSpv(m_blob.shaderCode, shaderc_glsl_fragment_shader, "fragment", options);
+                    break;
+                default:
+                    WIND_CORE_ERROR("Unsupported shader stage.");
+                    return; // Handle error or throw an exception
+            }
+
+            if (result.GetCompilationStatus() != shaderc_compilation_status_success)
+            {
+                WIND_CORE_ERROR("Failed to compile shader: {0}", result.GetErrorMessage());
+                return; // Handle error or throw an exception
+            }
+
+            vk::ShaderModuleCreateInfo createInfo;
+            createInfo.codeSize = result.cend() - result.cbegin();
+            createInfo.pCode    = result.cbegin();
+
+            m_blob.module = vkDevice.createShaderModule(createInfo);
         }
+
+        GenerateReflectionData();
     }
 } // namespace wind

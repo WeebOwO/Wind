@@ -27,4 +27,21 @@ namespace wind::io
 
         return spv;
     };
+
+    inline std::string ReadFileAsString(const std::string& filename)
+    {
+        // Open the file and put the text to a string
+        std::ifstream file(filename);
+
+        if (!file.is_open())
+        {
+            WIND_CORE_ERROR("Failed to open file with file path {}!", filename);
+        }
+
+        std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+        file.close();
+
+        return text;
+    }
 } // namespace wind::io

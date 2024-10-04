@@ -1,14 +1,24 @@
 #include "Graphics/ShaderCache.h"
 
 #include "Backend/Device.h"
+#include "Backend/Enum.h"
+#include "Backend/Shader.h"
+#include "Core/IO.h"
 #include "Core/Path.h"
+#include <cstdint>
 
 namespace wind
 {
     ShaderCache::ShaderCache(Device* device) : m_device(device) {}
     ShaderCache::~ShaderCache() {}
 
-    std::filesystem::path GetShaderPath(ShaderID id)
+    struct ShaderInfo
+    {
+        std::filesystem::path filePath;
+        ShaderType            type;
+    };
+
+    ShaderInfo GetShaderPath(ShaderID id)
     {
         std::filesystem::path shaderRootDir = path::GetShaderRootDir();
 
@@ -24,13 +34,48 @@ namespace wind
             }
         };
 
-        return shaderRootDir / getShaderName(id);
+        auto getShaderType = [](ShaderID id) -> ShaderType {
+            if (id < ShaderID::PS_Default)
+            {
+                return ShaderType::Vertex;
+            }
+            else if (id < ShaderID::CS_Default)
+            {
+                return ShaderType::Fragment;
+            }
+            else
+            {
+                return ShaderType::Compute;
+            }
+        };
+
+        auto getShaderStage = [](ShaderType type) -> vk::ShaderStageFlagBits {
+            switch (type)
+            {
+                case ShaderType::Vertex:
+                    return vk::ShaderStageFlagBits::eVertex;
+                case ShaderType::Fragment:
+                    return vk::ShaderStageFlagBits::eFragment;
+                case ShaderType::Compute:
+                    return vk::ShaderStageFlagBits::eCompute;
+                default:
+                    return vk::ShaderStageFlagBits::eVertex;
+            }
+        };
+
+        ShaderInfo info {.filePath = shaderRootDir / getShaderName(id), .type = getShaderType(id)};
+
+        return info;
     }
 
     void ShaderCache::CompileShader(ShaderID id)
     {
-        Shader* shader = nullptr;
-        std::filesystem::path shaderPath = GetShaderPath(id);
+        ShaderInfo info = GetShaderPath(id);
+        BlobData   blob(io::ReadFileAsString(info.filePath.string()), info.type);
+
+        std::shared_ptr<Shader> shader = std::make_shared<Shader>(m_device, blob);
+        shader->Init();
+
         m_shaders[id] = shader;
     }
 

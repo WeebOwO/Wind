@@ -11,6 +11,8 @@ namespace wind
         m_swapchain   = std::make_shared<Swapchain>(device, createInfo);
         m_psoCache    = std::make_unique<PSOCache>(device);
         m_shaderCache = std::make_unique<ShaderCache>(device);
+
+        m_shaderCache->Init();
     }
 
     Renderer::~Renderer()
@@ -31,10 +33,9 @@ namespace wind
         return *this;
     }
 
-    void Renderer::Sync() 
+    void Renderer::Sync()
     {
         // sync with the swapchain
-
     }
 
     void Renderer::Render()

@@ -10,10 +10,18 @@ namespace wind
 {
     struct BlobData
     {
-        vk::ShaderStageFlagBits stage;
+    public:
+        BlobData() = default;
+        BlobData(const std::string& code, ShaderType type) : shaderCode(code), type(type) {}
+
+        std::string           shaderCode;
+        ShaderType            type;
+
+    private:
+        friend class Shader;
+        std::vector<uint32_t> data;
         vk::ShaderModule        module;
-        std::vector<uint32_t>   data;
-        std::string             shaderCode;
+        vk::ShaderStageFlagBits stage;
     };
 
     struct ShaderMetaData
@@ -28,37 +36,33 @@ namespace wind
     class Shader : public Resource
     {
     public:
-        Shader(Device* device, ShaderType type);
+        Shader(Device* device, const BlobData& blob);
         virtual ~Shader();
 
-        void AddBlob(const BlobData& blob);
+        void Init() override;
 
     protected:
         void GenerateReflectionData();
         void ReflectShader(const BlobData& blob);
 
         ShaderType                                      m_type;
-        wind::vector<BlobData>                          m_blobs;
-        wind::vector<vk::DescriptorSetLayout>           m_descriptorSetLayouts;
-        wind::vector<vk::DescriptorSet>                 m_descriptorSets;
+        BlobData                                        m_blob;
         std::unordered_map<std::string, ShaderMetaData> m_reflectionDatas;
     };
 
-    class RasterShader final : public Shader
+    class RasterShader : public Resource
     {
     public:
         RasterShader(Device* device);
-        ~RasterShader() override = default;
+        ~RasterShader() = default;
 
         void Load(const std::string& path);
-
-        vk::ShaderModule GetVertexShaderModule() const;
-        vk::ShaderModule GetFragmentShaderModule() const;
 
         void PopShaderStageInfo(std::vector<vk::PipelineShaderStageCreateInfo>& stages);
         void PopPipelineLayoutInfo(vk::PipelineLayoutCreateInfo& layoutInfo);
 
-        void Init() override;
-        void Destroy() override;
+    private:
+        wind::vector<vk::DescriptorSetLayout> m_descriptorSetLayouts;
+        wind::vector<vk::DescriptorSet>       m_descriptorSets;
     };
 } // namespace wind

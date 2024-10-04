@@ -115,6 +115,8 @@ namespace wind
         return CreateResource<Swapchain>(createInfo);
     }
 
+    std::shared_ptr<Shader> Device::CreateShader(const BlobData& blob) { return CreateResource<Shader>(blob); }
+
     void Device::Destroy()
     {
         m_device.destroy();

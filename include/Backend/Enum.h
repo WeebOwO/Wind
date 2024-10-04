@@ -54,7 +54,9 @@ namespace wind
 
     enum class ShaderType : uint8_t
     {
-        Raster,
+        Unknown,
+        Vertex,
+        Fragment,
         Compute,
         RayGen,
         Miss,

@@ -43,6 +43,7 @@ namespace wind
         // some native create functions
         std::shared_ptr<Swapchain>        CreateSwapchain(const SwapchainCreateInfo& createInfo);
         std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline();
+        std::shared_ptr<Shader>           CreateShader(const BlobData& blob);
 
         void ExecuteStream(CommandStream* stream);
 
