@@ -81,7 +81,8 @@ namespace wind
 
     void ShaderCache::Init()
     {
-        for (uint32_t i = 0; i < static_cast<uint32_t>(ShaderID::Count); ++i)
+        // not need to compile compute shader for now
+        for (uint32_t i = 0; i < static_cast<uint32_t>(ShaderID::CS_Default); ++i)
         {
             CompileShader(static_cast<ShaderID>(i));
         }

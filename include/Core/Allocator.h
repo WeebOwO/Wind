@@ -14,4 +14,16 @@ namespace wind
     private:
         virtual void* Allocate(size_t size) = 0;
     };
+
+    class LinearAllocator : public Allocator
+    {
+    public:
+        LinearAllocator(size_t size);
+        ~LinearAllocator();
+
+        
+    private:
+        void*  m_memory;
+        size_t m_size;
+    };
 } // namespace wind

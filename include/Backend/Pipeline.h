@@ -26,6 +26,7 @@ namespace wind
         GraphicsPipeline(Device* device, RasterShader* shader) :
             Pipeline(device, PipelineType::Graphics), m_shader(shader)
         {}
+
         virtual ~GraphicsPipeline() = default;
 
         void Init() override;
@@ -38,7 +39,6 @@ namespace wind
         vk::PipelineDynamicStateCreateInfo             m_dynamicState;
         vk::PipelineVertexInputStateCreateInfo         m_vertexInputState;
         vk::PipelineInputAssemblyStateCreateInfo       m_inputAssemblyState;
-        vk::PipelineViewportStateCreateInfo            m_viewportState;
         vk::PipelineRasterizationStateCreateInfo       m_rasterizationState;
         vk::PipelineMultisampleStateCreateInfo         m_multisampleState;
         vk::PipelineDepthStencilStateCreateInfo        m_depthStencilState;

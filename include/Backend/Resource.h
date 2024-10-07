@@ -17,6 +17,8 @@ namespace wind
             Image,
             Pipeline,
             Swapchain,
+            RenderPass,
+            Material,
             CommandStream
         };
 

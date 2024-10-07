@@ -1,12 +1,11 @@
 #include "Backend/Shader.h"
 
-#include "Backend/Enum.h"
-#include "Core/Log.h"
-
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
 
 #include "Backend/Device.h"
+#include "Backend/Enum.h"
+#include "Core/Log.h"
 
 namespace wind
 {
@@ -108,9 +107,11 @@ namespace wind
                 return; // Handle error or throw an exception
             }
 
+            uint32_t codeSize = result.cend() - result.cbegin();
+            m_blob.data.assign(result.cbegin(), result.cend());
+
             vk::ShaderModuleCreateInfo createInfo;
-            createInfo.codeSize = result.cend() - result.cbegin();
-            createInfo.pCode    = result.cbegin();
+            createInfo.setCode(m_blob.data);
 
             m_blob.module = vkDevice.createShaderModule(createInfo);
         }
