@@ -3,7 +3,7 @@
 #include <queue>
 #include <thread>
 
-#include "Guard.h"
+#include "Buffer.h"
 #include "Pipeline.h"
 #include "Resource.h"
 #include "Shader.h"
@@ -34,6 +34,8 @@ namespace wind
 
         static std::unique_ptr<Device> Create(const DeviceExtensions& extensions, Window* window);
 
+        auto& GetAllocator() { return m_allocator; }
+
         // get and set functions
         vk::Instance       GetInstance() { return m_instance; }
         vk::Device         GetDevice() { return m_device; }
@@ -41,9 +43,15 @@ namespace wind
         vk::PhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
 
         // some native create functions
-        std::shared_ptr<Swapchain>        CreateSwapchain(const SwapchainCreateInfo& createInfo);
-        std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline();
-        std::shared_ptr<Shader>           CreateShader(const BlobData& blob);
+        std::shared_ptr<Swapchain> CreateSwapchain(const SwapchainCreateInfo& createInfo);
+        std::shared_ptr<Shader>    CreateShader(const BlobData& blob);
+
+        // buffer create interface
+        std::shared_ptr<Buffer> CreateBuffer(vk::BufferCreateInfo&          bufferInfo,
+                                             const VmaAllocationCreateInfo& allocInfo);
+
+        // pipeline create interface
+        std::shared_ptr<Pipeline> CreatePipeline(PipelineType type, const wind::vector<Shader*>& shaders);
 
         void ExecuteStream(CommandStream* stream);
 
@@ -92,5 +100,7 @@ namespace wind
         GPUQueue m_transferQueue;     // use for transfer
 
         std::queue<Resource*> m_deleteQueue;
+
+        VmaAllocator m_allocator;
     };
 } // namespace wind

@@ -29,6 +29,7 @@ namespace wind
         Resource(device, Tag::Shader), m_type(blob.type), m_blob(blob)
     {
         m_blob.stage = ConverToShaderStageFromType(m_type);
+        Init();
     }
 
     Shader::~Shader()

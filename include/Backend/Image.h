@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Guard.h"
+#include <vk_mem_alloc.h>
 #include "Device.h"
 #include "Resource.h"
 
@@ -18,22 +18,9 @@ namespace wind
         Image(Device* device) : Resource(device, Tag::Image) {}
         ~Image() override;
 
+        auto GetAllcateImage() { return m_allocateImage; }
+
     protected:
         AllocateImage m_allocateImage;
     };
-
-    class Image2D : public Image
-    {
-    public:
-        Image2D(Device*             device,
-                vk::Format          format,
-                vk::Extent2D        extent,
-                vk::ImageUsageFlags usage);
-                
-        ~Image2D() override;
-
-    private:
-        
-    };
-
 } // namespace wind

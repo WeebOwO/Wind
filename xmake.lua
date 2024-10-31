@@ -19,7 +19,7 @@ target("Renderer")
     add_includedirs("include/", "xmake/")
     add_headerfiles("include/**.h")
     add_files("src/**.cpp")
-    add_packages("spdlog", "glfw", "vulkansdk", "entt", "vk-bootstrap", "vulkan-memory-allocator", "glm", "shaderc", "spirv-cross")
+    add_packages("spdlog", "glfw", "entt", "vk-bootstrap", "vulkansdk", "vulkan-memory-allocator", "glm", "shaderc", "spirv-cross")
 
     add_configfiles("xmake/Config.h.in")
     set_configdir("xmake/")

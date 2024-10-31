@@ -18,52 +18,40 @@ namespace wind
         ShaderType            type;
     };
 
+    std::string GetShaderName(ShaderID id)
+    {
+        switch (id)
+        {
+            case ShaderID::VS_Default:
+                return "Triangle.vert";
+            case ShaderID::PS_Default:
+                return "Triangle.frag";
+            default:
+                return "";
+        };
+    }
+
+    ShaderType GetShaderType(ShaderID id)
+    {
+        if (id < ShaderID::PS_Default)
+        {
+            return ShaderType::Vertex;
+        }
+        else if (id < ShaderID::CS_Default)
+        {
+            return ShaderType::Fragment;
+        }
+        else
+        {
+            return ShaderType::Compute;
+        }
+    }
+
     ShaderInfo GetShaderPath(ShaderID id)
     {
         std::filesystem::path shaderRootDir = path::GetShaderRootDir();
 
-        auto getShaderName = [](ShaderID id) -> std::string {
-            switch (id)
-            {
-                case ShaderID::VS_Default:
-                    return "Triangle.vert";
-                case ShaderID::PS_Default:
-                    return "Triangle.frag";
-                default:
-                    return "";
-            }
-        };
-
-        auto getShaderType = [](ShaderID id) -> ShaderType {
-            if (id < ShaderID::PS_Default)
-            {
-                return ShaderType::Vertex;
-            }
-            else if (id < ShaderID::CS_Default)
-            {
-                return ShaderType::Fragment;
-            }
-            else
-            {
-                return ShaderType::Compute;
-            }
-        };
-
-        auto getShaderStage = [](ShaderType type) -> vk::ShaderStageFlagBits {
-            switch (type)
-            {
-                case ShaderType::Vertex:
-                    return vk::ShaderStageFlagBits::eVertex;
-                case ShaderType::Fragment:
-                    return vk::ShaderStageFlagBits::eFragment;
-                case ShaderType::Compute:
-                    return vk::ShaderStageFlagBits::eCompute;
-                default:
-                    return vk::ShaderStageFlagBits::eVertex;
-            }
-        };
-
-        ShaderInfo info {.filePath = shaderRootDir / getShaderName(id), .type = getShaderType(id)};
+        ShaderInfo info {.filePath = shaderRootDir / GetShaderName(id), .type = GetShaderType(id)};
 
         return info;
     }
@@ -74,7 +62,6 @@ namespace wind
         BlobData   blob(io::ReadFileAsString(info.filePath.string()), info.type);
 
         std::shared_ptr<Shader> shader = std::make_shared<Shader>(m_device, blob);
-        shader->Init();
 
         m_shaders[id] = shader;
     }
@@ -89,4 +76,6 @@ namespace wind
     }
 
     void ShaderCache::Destroy() {}
+
+    Shader* ShaderCache::GetShader(ShaderID id) { return m_shaders[id].get(); }
 } // namespace wind

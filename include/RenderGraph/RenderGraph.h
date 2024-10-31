@@ -6,14 +6,6 @@ namespace wind::rg
 {
     class RenderGraph;
 
-    class RenderGraphBuilder 
-    {
-        public:
-
-        private:
-            
-    };
-
     class RenderGraph
     {
     public:

@@ -8,11 +8,13 @@ namespace wind
 {
     Renderer::Renderer(Device* device, const SwapchainCreateInfo& createInfo) : m_device(device)
     {
-        m_swapchain   = std::make_shared<Swapchain>(device, createInfo);
-        m_psoCache    = std::make_unique<PSOCache>(device);
+        m_swapchain = std::make_shared<Swapchain>(device, createInfo);
+        // create shader cache
         m_shaderCache = std::make_unique<ShaderCache>(device);
-
         m_shaderCache->Init();
+        // create pso cache
+        m_psoCache = std::make_unique<PSOCache>(device, m_shaderCache.get());
+        m_psoCache->Init();
     }
 
     Renderer::~Renderer()

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Guard.h"
+#include <vk_mem_alloc.h>
+
 #include "Resource.h"
 
 namespace wind
@@ -16,40 +17,13 @@ namespace wind
     class Buffer : public Resource
     {
     public:
-        Buffer(Device* device, vk::DeviceSize size, vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage);
+        Buffer(Device* device, vk::BufferCreateInfo& bufferInfo, const VmaAllocationCreateInfo& allocInfo);
         ~Buffer() override;
 
-        vk::Buffer GetBuffer() const { return m_allocateBuffer.buffer; }
+        AllocateBuffer GetBuffer() const { return m_allocateBuffer; }
 
     private:
         AllocateBuffer m_allocateBuffer;
         void*          m_mappedData;
     };
-
-    class VertexBuffer : public Buffer
-    {
-    public:
-        VertexBuffer(Device* device, vk::DeviceSize size);
-        ~VertexBuffer() override;
-
-        void UpLoad(void* data, vk::DeviceSize size);
-
-    private:
-    };
-
-    class IndexBuffer : public Buffer
-    {};
-
-    class ReadbackBuffer : public Buffer
-    {};
-
-    class UniformBuffer : public Buffer
-    {};
-
-    class StagingBuffer : public Buffer
-    {};
-
-    class ComputeBuffer : public Buffer
-    {};
-
 } // namespace wind

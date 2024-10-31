@@ -2,9 +2,9 @@
 
 #include <unordered_map>
 
-#include "Core/Vector.h"
 #include "Enum.h"
 #include "Resource.h"
+#include "Core/Vector.h"
 
 namespace wind
 {
@@ -39,36 +39,19 @@ namespace wind
         Shader(Device* device, const BlobData& blob);
         virtual ~Shader();
 
-        void Init() override;
-
         vk::ShaderStageFlagBits GetStage() const { return m_blob.stage; }
         vk::ShaderModule        GetModule() const { return m_blob.module; }
 
     protected:
+        friend class Pipeline;
+
+        void Init();
+
         void GenerateReflectionData();
         void ReflectShader(const BlobData& blob);
 
         ShaderType                                      m_type;
         BlobData                                        m_blob;
         std::unordered_map<std::string, ShaderMetaData> m_reflectionDatas;
-    };
-
-    class RasterShader : public Resource
-    {
-    public:
-        RasterShader(Device* device);
-        ~RasterShader() = default;
-
-        void Load(const std::string& path);
-
-        void PopShaderStageInfo(std::vector<vk::PipelineShaderStageCreateInfo>& stages);
-        void PopPipelineLayoutInfo(vk::PipelineLayoutCreateInfo& layoutInfo);
-
-        RasterShader& operator<<(Shader* shader);
-
-    private:
-        std::vector<Shader*>                  m_shaders; // vertex, fragment, geometry, tessellation etc.
-        wind::vector<vk::DescriptorSetLayout> m_descriptorSetLayouts;
-        wind::vector<vk::DescriptorSet>       m_descriptorSets;
     };
 } // namespace wind

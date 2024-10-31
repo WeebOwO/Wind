@@ -26,6 +26,8 @@ namespace wind
         void Init();
         void Destroy();
 
+        Shader* GetShader(ShaderID id);
+
     private:
         using ShaderMap = std::unordered_map<ShaderID, std::shared_ptr<Shader>>;
 

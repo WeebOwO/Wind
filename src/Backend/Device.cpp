@@ -1,6 +1,5 @@
 #include "Backend/Device.h"
 
-#include "spdlog/spdlog.h"
 #include <VkBootstrap.h>
 
 #include "Backend/Swapchain.h"
@@ -105,6 +104,13 @@ namespace wind
         findQueue(vk::QueueFlagBits::eGraphics, m_mainQueue);
         findQueue(vk::QueueFlagBits::eCompute, m_asyncComputeQueue);
         findQueue(vk::QueueFlagBits::eTransfer, m_transferQueue);
+
+        // create allocator
+        VmaAllocatorCreateInfo allocatorInfo {};
+        allocatorInfo.physicalDevice = m_physicalDevice;
+        allocatorInfo.device         = m_device;
+        allocatorInfo.instance       = m_instance;
+        vmaCreateAllocator(&allocatorInfo, &m_allocator);
 
         return true;
     }

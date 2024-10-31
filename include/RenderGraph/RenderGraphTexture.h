@@ -1,9 +1,12 @@
 #pragma once
 
-namespace wind::rg 
+namespace wind::rg
 {
-    class RenderGraphTexture 
+    class RenderGraphTexture
     {
-        struct Desc {};
+        struct Desc
+        {
+            
+        };
     };
-}
+} // namespace wind::rg

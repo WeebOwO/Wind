@@ -1,9 +1,10 @@
 #pragma once
 
-#include "RenderGraphResource.h"
-#include "Core/NonCopy.h"
 #include "Backend/Stream.h"
+#include "Core/NonCopy.h"
+#include "RenderGraphResource.h"
 #include <type_traits>
+
 
 namespace wind::rg
 {
@@ -57,8 +58,9 @@ namespace wind::rg
     };
 
     template<typename Data, typename Execute>
-    requires std::is_invocable_v<Execute, const RenderGraphResourceRegistry&, Data&, CommandStream&>
-    class RenderGraphPassConcrete : public RenderGraphPass<Data>
+    requires std::
+        is_invocable_v<Execute, const RenderGraphResourceRegistry&, Data&, CommandStream&> class RenderGraphPassConcrete
+        : public RenderGraphPass<Data>
     {
     private:
         friend class RenderGraph;
