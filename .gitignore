@@ -1,4 +1,4 @@
-#build arti
+# build arti
 build/
 .cache/
 .xmake/
@@ -7,4 +7,7 @@ dist/
 compile_commands.json
 vsxmake2022/
 VS2022.bat
-#dependencies
+# dependencies
+
+# auto generate file
+xmake/Config.h

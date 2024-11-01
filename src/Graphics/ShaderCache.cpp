@@ -5,7 +5,6 @@
 #include "Backend/Shader.h"
 #include "Core/IO.h"
 #include "Core/Path.h"
-#include <cstdint>
 
 namespace wind
 {
