@@ -4,7 +4,6 @@
 
 #include "Enum.h"
 #include "Resource.h"
-#include "Core/Vector.h"
 
 namespace wind
 {
@@ -42,8 +41,10 @@ namespace wind
         vk::ShaderStageFlagBits GetStage() const { return m_blob.stage; }
         vk::ShaderModule        GetModule() const { return m_blob.module; }
 
-    protected:
-        friend class Pipeline;
+        auto GetReflectionData() const { return m_reflectionDatas; }
+
+    private:
+        friend class Device;
 
         void Init();
 

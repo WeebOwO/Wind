@@ -2,8 +2,10 @@
 
 #include <memory>
 
-#include "Backend/Device.h"
 #include "View.h"
+
+#include "Backend/Device.h"
+#include "RenderGraph/RGAllocator.h"
 
 namespace wind
 {
@@ -31,11 +33,12 @@ namespace wind
         void Render();
 
     private:
-        Device*                      m_device; // non owning
-        const View*                  m_view;   // non owning
-        std::shared_ptr<Swapchain>   m_swapchain;
-        std::unique_ptr<PSOCache>    m_psoCache;
-        std::unique_ptr<ShaderCache> m_shaderCache;
-        std::thread::id              m_renderThread;
+        Device*                                   m_device; // non owning
+        const View*                               m_view;   // non owning
+        std::thread::id                           m_renderThread;
+        std::shared_ptr<Swapchain>                m_swapchain;
+        std::unique_ptr<PSOCache>                 m_psoCache;
+        std::unique_ptr<ShaderCache>              m_shaderCache;
+        std::unique_ptr<rg::RenderGraphAllocator> m_rgAllocator;
     };
 } // namespace wind

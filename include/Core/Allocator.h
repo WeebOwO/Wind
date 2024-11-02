@@ -8,11 +8,11 @@ namespace wind
         template<typename T>
         T* Allocate(size_t count, size_t align = alignof(T))
         {
-            return static_cast<T*>(Allocate(sizeof(T) * count));
+            return static_cast<T*>(AllocImpl(sizeof(T) * count, align));
         }
 
     private:
-        virtual void* Allocate(size_t size) = 0;
+        virtual void* AllocImpl(size_t size, size_t align) = 0;
     };
 
     class LinearAllocator : public Allocator
@@ -21,9 +21,11 @@ namespace wind
         LinearAllocator(size_t size);
         ~LinearAllocator();
 
-        
     private:
+        void* AllocImpl(size_t size, size_t align) override;
+
         void*  m_memory;
         size_t m_size;
+        size_t m_offset;
     };
 } // namespace wind

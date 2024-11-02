@@ -1,12 +1,17 @@
 #pragma once
 
+#include <string>
+
 namespace wind::rg
 {
-    class RenderGraphTexture
+    struct RenderGraphTexture
     {
-        struct Desc
+        struct Descriptor
         {
-            
+            int value;
         };
+
+        Descriptor  desc;
+        std::string name;
     };
 } // namespace wind::rg

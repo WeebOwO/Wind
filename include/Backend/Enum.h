@@ -6,7 +6,8 @@
 namespace wind
 {
     // mainly copy from raptor engine
-    static const uint32_t kInvalidIndex = 0xffffffff;
+    static constexpr uint32_t kInvalidIndex     = 0xffffffff;
+    static constexpr uint32_t kMaxRenderTargets = 8;
 
     enum class ResourceUsageType
     {

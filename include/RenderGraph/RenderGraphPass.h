@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Backend/Stream.h"
-#include "Core/NonCopy.h"
-#include "RenderGraphResource.h"
+#include "RenderGraphID.h"
 #include <type_traits>
 
+#include "Backend/Stream.h"
+#include "Core/NonCopy.h"
+#include "ResourceRegistry.h"
 
 namespace wind::rg
 {
@@ -17,7 +18,7 @@ namespace wind::rg
         virtual ~RenderGraphPassExecutor() noexcept = default;
 
     protected:
-        virtual void Execute(const RenderGraphResourceRegistry& registry, CommandStream& stream) noexcept = 0;
+        virtual void Execute(const ResourceRegistry& registry, CommandStream& stream) noexcept = 0;
 
     private:
         friend class RenderGraph;
@@ -35,6 +36,7 @@ namespace wind::rg
     private:
         friend class PassNode;
         friend class RenderGraph;
+        friend class RenderPassNode;
 
         PassNode* m_node = nullptr;
     };
@@ -54,25 +56,24 @@ namespace wind::rg
 
     private:
         friend class RenderGraph;
-        void Execute(const RenderGraphResourceRegistry& registry, CommandStream& stream) noexcept override {}
+        void Execute(const ResourceRegistry& registry, CommandStream& stream) noexcept override {}
     };
 
     template<typename Data, typename Execute>
-    requires std::
-        is_invocable_v<Execute, const RenderGraphResourceRegistry&, Data&, CommandStream&> class RenderGraphPassConcrete
+    requires std::is_invocable_v<Execute, const ResourceRegistry&, Data&, CommandStream&> 
+    class RenderGraphPassConcrete
         : public RenderGraphPass<Data>
     {
-    private:
         friend class RenderGraph;
 
-        explicit RenderGraphPassConcrete(Execute&& execute) noexcept : m_execute(std::forward<Execute>(execute)) {}
+        explicit RenderGraphPassConcrete(Execute&& execute) noexcept 
+        : m_execute(std::forward<Execute>(execute)) {}
 
-        void ExecuteImpl(const RenderGraphResourceRegistry& registry, CommandStream& stream) noexcept override final
+        void ExecuteImpl(const ResourceRegistry& registry, CommandStream& stream) noexcept
         {
             m_execute(registry, this->m_data, stream);
         }
 
         Execute m_execute;
     };
-
 }; // namespace wind::rg

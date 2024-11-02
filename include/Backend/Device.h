@@ -4,9 +4,7 @@
 #include <thread>
 
 #include "Buffer.h"
-#include "Pipeline.h"
 #include "Resource.h"
-#include "Shader.h"
 
 #include "Core/NonCopy.h"
 #include "Core/Vector.h"
@@ -42,18 +40,14 @@ namespace wind
         vk::SurfaceKHR     GetSurface() { return m_surface; }
         vk::PhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
 
-        // some native create functions
-        std::shared_ptr<Swapchain> CreateSwapchain(const SwapchainCreateInfo& createInfo);
-        std::shared_ptr<Shader>    CreateShader(const BlobData& blob);
-
-        // buffer create interface
-        std::shared_ptr<Buffer> CreateBuffer(vk::BufferCreateInfo&          bufferInfo,
-                                             const VmaAllocationCreateInfo& allocInfo);
-
-        // pipeline create interface
-        std::shared_ptr<Pipeline> CreatePipeline(PipelineType type, const wind::vector<Shader*>& shaders);
-
-        void ExecuteStream(CommandStream* stream);
+        // all resources should be created through this function,
+        // rathern than directly new from target resource constructor
+        template<typename T, typename... Args>
+        [[nodiscard]] std::shared_ptr<T> CreateResource(
+            Args&&... args) requires std::is_constructible_v<T, Device*, Args...>&& std::derived_from<T, Resource>
+        {
+            return std::make_shared<T>(this, std::forward<Args>(args)...);
+        }
 
     private:
         bool Init();
@@ -74,13 +68,6 @@ namespace wind
             vk::Queue queue       = nullptr;
             int       familyIndex = -1;
         };
-
-        template<typename T, typename... Args>
-        [[nodiscard]] std::shared_ptr<T> CreateResource(
-            Args&&... args) requires std::is_constructible_v<T, Device*, Args...>&& std::derived_from<T, Resource>
-        {
-            return std::make_shared<T>(this, std::forward<Args>(args)...);
-        }
 
         Window*            m_window;
         vk::Device         m_device;

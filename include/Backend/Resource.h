@@ -28,6 +28,8 @@ namespace wind
         ResourceState m_state  = ResourceState::UnDefined;
 
     protected:
+        friend class Device;
+
         explicit Resource(Device* device, Tag tag) : m_device(device), m_tag(tag) { Init(); }
 
         virtual ~Resource() { Destroy(); }

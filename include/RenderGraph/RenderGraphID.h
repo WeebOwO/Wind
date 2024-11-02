@@ -6,9 +6,6 @@
 // come from filament engine
 namespace wind::rg
 {
-    template<typename T>
-    class RenderGraphID;
-
     class RenderGraphHandle
     {
     public:
@@ -37,7 +34,9 @@ namespace wind::rg
 
     private:
         template<typename T>
-        friend class FrameGraphId;
+        friend class RenderGraphID;
+        friend class BlackBoard;
+        friend class RenderGraph;
 
         RenderGraphHandle() noexcept = default;
         explicit RenderGraphHandle(Index index) noexcept : index(index) {}

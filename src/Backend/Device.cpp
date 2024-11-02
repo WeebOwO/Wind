@@ -115,14 +115,6 @@ namespace wind
         return true;
     }
 
-    // some interface to create functions impl
-    std::shared_ptr<Swapchain> Device::CreateSwapchain(const SwapchainCreateInfo& createInfo)
-    {
-        return CreateResource<Swapchain>(createInfo);
-    }
-
-    std::shared_ptr<Shader> Device::CreateShader(const BlobData& blob) { return CreateResource<Shader>(blob); }
-
     void Device::Destroy()
     {
         m_device.destroy();
