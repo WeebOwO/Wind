@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Math.h"
-#include "Core/Vector.h"
 #include "Guard.h"
 
 namespace wind
@@ -16,6 +15,9 @@ namespace wind
     struct StaticMeshVertex
     {
         glm::vec3 position;
+
+        static std::vector<vk::VertexInputBindingDescription>   s_bindingDescriptions;
+        static std::vector<vk::VertexInputAttributeDescription> s_attributeDescriptions;
     };
 
     // utility function to initialize vertex input state

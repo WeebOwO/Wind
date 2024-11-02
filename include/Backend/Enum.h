@@ -74,6 +74,12 @@ namespace wind
         Count
     };
 
+    enum class BlendMode 
+    {
+        Opaque,
+        AlphaBlend
+    };
+
     enum class PassType : uint8_t
     {
         Default = 0,

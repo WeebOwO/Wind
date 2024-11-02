@@ -7,13 +7,14 @@
 
 namespace wind
 {
-    std::unordered_map<PipelineID, std::shared_ptr<Pipeline>> s_pipelines;
-
-    PSOCache::PSOCache(Device* device, ShaderCache* cache) : m_device(device), m_shaderCache(cache) { Init(); }
-    PSOCache::~PSOCache() { Destroy(); }
+    PSOCache::PSOCache(Device* device, ShaderCache* cache) : m_device(device), m_shaderCache(cache) {}
+    PSOCache::~PSOCache() {}
 
     void PSOCache::Init()
     {
+        // init pipeline layout
+        m_defaultLayout = m_device->GetDevice().createPipelineLayout(vk::PipelineLayoutCreateInfo {});
+
         for (int i = 0; i < PipelineID::Count; ++i)
         {
             CompileToPSO(static_cast<PipelineID>(i));
@@ -22,13 +23,29 @@ namespace wind
 
     void PSOCache::CompileToPSO(PipelineID id)
     {
-        switch (id)
+        PipelineBuilder builder(m_device);
+
+        if (id == PipelineID::Lighting)
         {
-            case PipelineID::Lighting: {
-                break;
-            }
+            Shader* vs = m_shaderCache->GetShader(ShaderID::VS_Default);
+            Shader* ps = m_shaderCache->GetShader(ShaderID::PS_Default);
+
+            std::vector<Shader*> shaders = {vs, ps};
+
+            builder.ApplyDefaultState()
+                .SetBlendMode(BlendMode::Opaque)
+                .SetShaders(shaders)
+                .SetLayout(m_defaultLayout)
+                .SetVertexLayout(VertexLayoutType::StaticMesh)
+                .SetPassType(PassType::Lighting);
+
+            m_pipelines[id] = builder.Build();
         }
     }
 
-    void PSOCache::Destroy() { s_pipelines.clear(); }
+    void PSOCache::Destroy()
+    {
+        m_device->GetDevice().destroyPipelineLayout(m_defaultLayout);
+        m_pipelines.clear();
+    }
 } // namespace wind

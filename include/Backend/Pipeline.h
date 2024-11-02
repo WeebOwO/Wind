@@ -1,14 +1,54 @@
 #pragma once
 
-#include "Enum.h"
+#include <span>
 
+#include "Enum.h"
 #include "Resource.h"
 #include "Shader.h"
-#include "vulkan/vulkan_handles.hpp"
-#include "vulkan/vulkan_structs.hpp"
+#include "VertexLayout.h"
 
 namespace wind
 {
+    class Pipeline;
+
+    class PipelineBuilder
+    {
+    public:
+        PipelineBuilder(Device* device);
+
+        PipelineBuilder& SetShaders(const std::span<Shader*>& shaders);
+        PipelineBuilder& SetVertexLayout(VertexLayoutType vertexLayout);
+        PipelineBuilder& SetPassType(PassType passType);
+        PipelineBuilder& SetBlendMode(BlendMode blendMode);
+        PipelineBuilder& SetLayout(vk::PipelineLayout layout);
+
+        std::shared_ptr<Pipeline> Build();
+
+        PipelineBuilder& ApplyDefaultState();
+
+    private:
+        struct NativePipeInfo
+        {
+            vk::GraphicsPipelineCreateInfo           pipelineCI;
+            vk::PipelineInputAssemblyStateCreateInfo inputAssemblyStateCI;
+            vk::PipelineRasterizationStateCreateInfo rasterizationStateCI;
+            vk::PipelineColorBlendStateCreateInfo    colorBlendStateCI;
+            vk::PipelineDepthStencilStateCreateInfo  depthStencilStateCI;
+            vk::PipelineMultisampleStateCreateInfo   multisampleStateCI;
+            vk::PipelineViewportStateCreateInfo      viewportStateCI;
+            vk::PipelineDynamicStateCreateInfo       dynamicStateCI;
+            vk::PipelineVertexInputStateCreateInfo   vertexInputStateCI;
+            vk::PipelineRenderingCreateInfo          renderInfoKHR;
+
+            std::vector<vk::PipelineShaderStageCreateInfo>     shaderStages;
+            std::vector<vk::PipelineColorBlendAttachmentState> colorBlendAttachments;
+            std::vector<vk::DynamicState>                      dynamicStates;
+        };
+
+        NativePipeInfo m_pipeInfo;
+        Device*        m_device;
+    };
+
     class Pipeline : public Resource
     {
     public:

@@ -32,9 +32,25 @@ namespace wind
                                                       VkDebugUtilsMessageTypeFlagsEXT             messageType,
                                                       const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                                       void* pUserData) -> VkBool32 {
-                                   auto severity = vkb::to_string_message_severity(messageSeverity);
-                                   auto type     = vkb::to_string_message_type(messageType);
-                                   printf("[%s: %s] %s\n", severity, type, pCallbackData->pMessage);
+                                   // use wind log
+                                   switch (messageSeverity)
+                                   {
+                                       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+                                           WIND_CORE_TRACE("{}", pCallbackData->pMessage);
+                                           break;
+                                       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+                                           WIND_CORE_INFO("{}", pCallbackData->pMessage);
+                                           break;
+                                       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+                                           WIND_CORE_WARN("{}", pCallbackData->pMessage);
+                                           break;
+                                       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+                                           WIND_CORE_ERROR("{}", pCallbackData->pMessage);
+                                           break;
+                                       default:
+                                           break;
+                                   }
+
                                    return VK_FALSE;
                                })
                                .build();

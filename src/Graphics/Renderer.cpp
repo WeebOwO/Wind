@@ -27,9 +27,8 @@ namespace wind
 
     Renderer::~Renderer()
     {
-        m_psoCache.reset();
-        m_shaderCache.reset();
-        m_swapchain.reset();
+        m_shaderCache->Destroy();
+        m_psoCache->Destroy();
     }
 
     std::unique_ptr<Renderer> Renderer::Craete(Device* device, const SwapchainCreateInfo& createInfo)

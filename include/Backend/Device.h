@@ -43,8 +43,9 @@ namespace wind
         // all resources should be created through this function,
         // rathern than directly new from target resource constructor
         template<typename T, typename... Args>
+        requires std::is_constructible_v<T, Device*, Args...> && std::derived_from<T, Resource>
         [[nodiscard]] std::shared_ptr<T> CreateResource(
-            Args&&... args) requires std::is_constructible_v<T, Device*, Args...>&& std::derived_from<T, Resource>
+            Args&&... args) 
         {
             return std::make_shared<T>(this, std::forward<Args>(args)...);
         }

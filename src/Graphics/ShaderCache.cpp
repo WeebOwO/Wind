@@ -74,7 +74,7 @@ namespace wind
         }
     }
 
-    void ShaderCache::Destroy() {}
+    void ShaderCache::Destroy() { m_shaders.clear(); }
 
     Shader* ShaderCache::GetShader(ShaderID id) { return m_shaders[id].get(); }
 } // namespace wind

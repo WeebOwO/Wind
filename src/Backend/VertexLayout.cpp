@@ -2,25 +2,22 @@
 
 namespace wind
 {
+    std::vector<vk::VertexInputBindingDescription> StaticMeshVertex::s_bindingDescriptions = 
+    {
+        vk::VertexInputBindingDescription(0, sizeof(StaticMeshVertex), vk::VertexInputRate::eVertex)
+    };
+
+    std::vector<vk::VertexInputAttributeDescription> StaticMeshVertex::s_attributeDescriptions = 
+    {
+        vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32B32Sfloat, offsetof(StaticMeshVertex, position))
+    };
+
     void InitVertexInputState(VertexLayoutType type, vk::PipelineVertexInputStateCreateInfo& vertexInputState)
     {
         if (type == VertexLayoutType::StaticMesh)
         {
-            // vertex binding
-            vk::VertexInputBindingDescription bindingDescription;
-            bindingDescription.setBinding(0)
-                .setStride(sizeof(StaticMeshVertex))
-                .setInputRate(vk::VertexInputRate::eVertex);
-
-            // vertex attribute
-            vk::VertexInputAttributeDescription attributeDescription;
-            attributeDescription.setBinding(0)
-                .setLocation(0)
-                .setFormat(vk::Format::eR32G32B32Sfloat)
-                .setOffset(offsetof(StaticMeshVertex, position));
-
-            vertexInputState.setVertexBindingDescriptions(bindingDescription)
-                .setVertexAttributeDescriptions(attributeDescription);
+            vertexInputState.setVertexBindingDescriptions(StaticMeshVertex::s_bindingDescriptions)
+                            .setVertexAttributeDescriptions(StaticMeshVertex::s_attributeDescriptions);
         }
     };
 } // namespace wind
