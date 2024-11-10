@@ -7,8 +7,8 @@ namespace wind::config
     // store some global render config
     struct RenderConfig
     {
-        uint32_t maxFramesInFlight = 2;
-        uint32_t maxMRTAttachments = 8;
+        uint32_t kmaxFramesInFlight = 2;
+        uint32_t kmaxMRTAttachments = 8;
     };
 
     // store some global render config

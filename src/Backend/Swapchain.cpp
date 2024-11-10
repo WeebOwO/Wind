@@ -23,6 +23,9 @@ namespace wind
 
     Swapchain::Swapchain(Device* device, const SwapchainCreateInfo& createInfo) : Resource(device, Tag::Swapchain)
     {
+        m_width  = createInfo.width;
+        m_height = createInfo.height;
+
         auto physicalDevice = device->GetPhysicalDevice();
         auto vkDevice       = device->GetDevice();
 
@@ -89,6 +92,4 @@ namespace wind
 
         vkDevice.destroySwapchainKHR(m_swapchain);
     }
-
-    void Swapchain::Present() {}
 } // namespace wind

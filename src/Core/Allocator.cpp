@@ -1,12 +1,9 @@
 #include "Core/Allocator.h"
 
-#include <cstdlib>
-
 #include "Core/Log.h"
 
 namespace wind
 {
-#pragma region LinearAllocator
     LinearAllocator::LinearAllocator(size_t size)
     {
         m_memory = malloc(size);
@@ -28,5 +25,4 @@ namespace wind
 
         return ptr;
     }
-#pragma endregion
 } // namespace wind

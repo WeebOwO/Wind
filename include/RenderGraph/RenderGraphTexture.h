@@ -2,16 +2,23 @@
 
 #include <string>
 
+#include "Backend/Image.h"
+
 namespace wind::rg
 {
-    struct RenderGraphTexture
+    class RenderGraphTexture
     {
+    public:
         struct Descriptor
         {
-            int value;
+            uint32_t   width;
+            uint32_t   height;
+            vk::Format format;
         };
 
-        Descriptor  desc;
-        std::string name;
+        Descriptor    desc;
+        std::string   name;
+        vk::Image     image;
+        vk::ImageView view;
     };
 } // namespace wind::rg

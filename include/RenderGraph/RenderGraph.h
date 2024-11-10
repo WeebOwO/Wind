@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ResourceNode.h"
 #include <string>
 
 #include "BlackBoard.h"
@@ -10,6 +9,12 @@
 #include "RenderGraphPass.h"
 #include "RenderGraphResource.h"
 #include "RenderGraphTexture.h"
+#include "ResourceNode.h"
+
+namespace wind
+{
+    struct FrameData;
+}
 
 namespace wind::rg
 {
@@ -44,7 +49,7 @@ namespace wind::rg
             PassNode*    m_passNode;
         };
 
-        RenderGraph(RenderGraphAllocator* allocator);
+        RenderGraph(RenderGraphAllocator* allocator, FrameData* frameData);
         ~RenderGraph();
 
         // add pass interfaces
@@ -65,10 +70,27 @@ namespace wind::rg
             return RenderGraphID<RESOURCE>(AddResourceImpl(resource));
         }
 
+        template<typename RESOURCE>
+        RenderGraphID<RESOURCE>
+        Import(const std::string& name, typename RESOURCE::Descriptor const& desc, const RESOURCE& resource)
+        {
+            VirutalResource* importedResource = new rg::ImportedResource<RESOURCE>(name, desc, resource);
+            return RenderGraphID<RESOURCE>(AddResourceImpl(importedResource));
+        }
+
+        struct Empty
+        {};
+
+        template<typename Execute>
+        void AddNoSetupPass(const std::string& name, Execute&& execute)
+        {
+            AddPass<Empty>(name, [](Builder& builder, Empty&) {}, std::forward<Execute>(execute));
+        };
+
         auto& GetBlackBoard() { return m_blackBoard; }
 
-        void         Execute();
-        RenderGraph& Compile();
+        void Execute();
+        void Compile();
 
     private:
         Builder           AddPassImpl(const std::string& name, RenderGraphPassBase* pass);
@@ -85,6 +107,7 @@ namespace wind::rg
         };
 
         RenderGraphAllocator*         m_allocator;
+        FrameData*                    m_frameData;
         BlackBoard                    m_blackBoard;
         std::vector<PassNode*>        m_passNodes;
         std::vector<ResourceNode>     m_resourceNodes;

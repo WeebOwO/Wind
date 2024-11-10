@@ -63,7 +63,6 @@ namespace wind
         PipelineType         m_type;
         PassType             m_passType;
         vk::Pipeline         m_pipeline;
-        vk::PipelineLayout   m_pipelineLayout;
         vk::Pipeline         m_pipelineCache;
         std::vector<Shader*> m_refShaders;
     };

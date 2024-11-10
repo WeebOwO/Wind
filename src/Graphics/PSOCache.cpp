@@ -13,7 +13,8 @@ namespace wind
     void PSOCache::Init()
     {
         // init pipeline layout
-        m_defaultLayout = m_device->GetDevice().createPipelineLayout(vk::PipelineLayoutCreateInfo {});
+        vk::PipelineLayoutCreateInfo layoutInfo;
+        m_defaultLayout = m_device->GetDevice().createPipelineLayout(layoutInfo);
 
         for (int i = 0; i < PipelineID::Count; ++i)
         {
@@ -45,7 +46,8 @@ namespace wind
 
     void PSOCache::Destroy()
     {
-        m_device->GetDevice().destroyPipelineLayout(m_defaultLayout);
+        auto vkDevice = m_device->GetDevice();
+        vkDevice.destroyPipelineLayout(m_defaultLayout);
         m_pipelines.clear();
     }
 } // namespace wind

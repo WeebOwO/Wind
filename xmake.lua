@@ -6,7 +6,7 @@ add_rules("mode.debug", "mode.release")
 includes("external/slang/")
 includes("xmake/Env.lua")
 
-add_requires("spdlog", "glfw", "vulkansdk", "entt", "vk-bootstrap", "vulkan-memory-allocator", "glm", "shaderc", "vulkansdk", "spirv-cross")
+add_requires("spdlog", "glfw", "vulkansdk", "entt", "vk-bootstrap", "vulkan-memory-allocator", "glm", "shaderc", "vulkansdk", "spirv-cross", "rttr")
 set_policy("package.requires_lock", true)
 
 set_runtimes("MD")

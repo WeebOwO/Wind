@@ -4,6 +4,8 @@
 
 namespace wind
 {
+    constexpr uint32_t kInvalidBackendID = std::numeric_limits<uint32_t>::max();
+
     class Device;
 
     class Resource
@@ -45,5 +47,12 @@ namespace wind
             // todo: add assert here to make sure this is called on the render thread
             m_init = false;
         }
+    };
+
+    template<typename T>
+    class ResourceHandle
+    {
+        using type = T;
+        int id     = kInvalidBackendID;
     };
 } // namespace wind

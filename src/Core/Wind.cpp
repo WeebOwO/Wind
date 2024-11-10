@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "Backend/Swapchain.h"
 #include "Core/Log.h"
+#include "Backend/Swapchain.h"
 #include "JobSystem/JobSystem.h"
 
 namespace wind
@@ -26,9 +26,12 @@ namespace wind
         LoadScene();
         while (!m_window->ShouldClose())
         {
-            m_renderer->Sync();
+            m_renderer->BeginFrame();
             // main game loop here
+            ExecutePlayerLoop();
             m_window->Update();
+
+            m_renderer->EndFrame();
         }
     }
 
@@ -45,7 +48,7 @@ namespace wind
 
         m_device = Device::Create(extensions, m_window.get());
 
-        SwapchainCreateInfo swapchainCreateInfo = {m_window->GetWidth(), m_window->GetHeight(), 2, PresentMode::Fifo};
+        SwapchainCreateInfo swapchainCreateInfo = {m_window->GetWidth(), m_window->GetHeight(), 3, PresentMode::Fifo};
         m_renderer                              = Renderer::Craete(m_device.get(), swapchainCreateInfo);
         // init job system
         JobSystem::Init();
@@ -71,5 +74,11 @@ namespace wind
     void ClientApp::ParseCommandLine(const CommandLineArguments& args)
     {
         WIND_CLIENT_INFO("Parsing command line arguments");
+    }
+
+    void ClientApp::ExecutePlayerLoop() 
+    {
+        // call all the player callbacks
+        
     }
 } // namespace wind

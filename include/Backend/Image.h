@@ -1,8 +1,9 @@
 #pragma once
 
-#include <vk_mem_alloc.h>
 #include "Device.h"
 #include "Resource.h"
+#include <vk_mem_alloc.h>
+
 
 namespace wind
 {
@@ -23,4 +24,6 @@ namespace wind
     protected:
         AllocateImage m_allocateImage;
     };
+
+    using ImageHandle = ResourceHandle<Image>;
 } // namespace wind

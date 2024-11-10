@@ -41,8 +41,6 @@ namespace wind
         vk::ShaderStageFlagBits GetStage() const { return m_blob.stage; }
         vk::ShaderModule        GetModule() const { return m_blob.module; }
 
-        auto GetReflectionData() const { return m_reflectionDatas; }
-
     private:
         friend class Device;
 
@@ -54,5 +52,9 @@ namespace wind
         ShaderType                                      m_type;
         BlobData                                        m_blob;
         std::unordered_map<std::string, ShaderMetaData> m_reflectionDatas;
+
+        // store per material data
+        vk::DescriptorSetLayout m_descriptorSetLayout;
+        vk::DescriptorSet       m_descriptorSet;
     };
 } // namespace wind

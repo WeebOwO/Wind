@@ -10,6 +10,7 @@
 namespace wind
 {
     class Device;
+
     class CommandStream final : public Resource
     {
     public:
@@ -20,8 +21,8 @@ namespace wind
 
         CommandStream& operator<<(Command* command);
 
-        void Execute(void* data);
-
+        void Execute();
+        
     private:
         std::vector<Command*> m_commands;
     };

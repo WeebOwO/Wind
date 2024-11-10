@@ -13,7 +13,7 @@ namespace wind
 
         Scene*  GetScene() const;
         Camera* GetCamera() const;
-    
+
     private:
         Camera* m_camera;
         Scene*  m_scene;

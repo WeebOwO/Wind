@@ -77,7 +77,8 @@ namespace wind
     enum class BlendMode 
     {
         Opaque,
-        AlphaBlend
+        AlphaBlend,
+        Additive,
     };
 
     enum class PassType : uint8_t

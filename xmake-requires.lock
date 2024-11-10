@@ -3,14 +3,6 @@
         version = "1.0"
     },
     ["windows|x64"] = {
-        ["cmake >=3.17.2#31fecfc4"] = {
-            repo = {
-                branch = "master",
-                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
-                url = "https://gitee.com/tboox/xmake-repo.git"
-            },
-            version = "3.30.3"
-        },
         ["cmake#31fecfc4"] = {
             repo = {
                 branch = "master",
@@ -66,6 +58,14 @@
                 url = "https://gitee.com/tboox/xmake-repo.git"
             },
             version = "3.12.3"
+        },
+        ["rttr#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "618692599a9a55abdf70badea2ccb6a6f1a2e8ed",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "0.9.7"
         },
         ["shaderc#31fecfc4"] = {
             repo = {

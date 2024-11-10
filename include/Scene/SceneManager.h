@@ -17,7 +17,7 @@ namespace wind
     public:
         SceneHandle() = default;
         SceneHandle(uint32_t index) : Handle(index) {}
-        
+
     private:
         void Init() override;
         void Destroy() override;
@@ -35,6 +35,7 @@ namespace wind
         virtual ~SceneManager() = default;
 
         SceneHandle CreateScene(const SceneCreateInfo& createInfo);
+        void        DestroyScene(SceneHandle& handle);
 
     private:
         wind::vector<Scene*> m_scenes;

@@ -3,12 +3,14 @@
 #include "Backend/Device.h"
 #include "Backend/Enum.h"
 #include "Backend/Pipeline.h"
+#include "Core/UUID.h"
 
 namespace wind
 {
     class ShaderCache;
     class PSOCache;
 
+    // store predefined pipeline id
     enum PipelineID : uint32_t
     {
         Lighting = 0,
@@ -24,6 +26,9 @@ namespace wind
 
         void Init();
         void Destroy();
+
+        // todo: add this to material system
+        void GetPipelineByUUID(UUID uuid) const; 
 
     private:
         void CompileToPSO(PipelineID id);

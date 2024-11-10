@@ -5,6 +5,8 @@
 
 namespace wind
 {
+    static std::vector<vk::DynamicState> kdynamicStates = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
+
     PipelineBuilder::PipelineBuilder(Device* device) : m_device(device) {}
 
     PipelineBuilder& PipelineBuilder::ApplyDefaultState()
@@ -29,9 +31,8 @@ namespace wind
         m_pipeInfo.viewportStateCI.setViewportCount(1).setScissorCount(1).setPViewports(nullptr).setPScissors(nullptr);
 
         // dynamic state
-        std::vector<vk::DynamicState> dynamicStates = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-        m_pipeInfo.dynamicStateCI.setPDynamicStates(dynamicStates.data())
-            .setDynamicStateCount(static_cast<uint32_t>(dynamicStates.size()));
+        m_pipeInfo.dynamicStateCI.setPDynamicStates(kdynamicStates.data())
+            .setDynamicStateCount(static_cast<uint32_t>(kdynamicStates.size()));
 
         // depth stencil state
         m_pipeInfo.depthStencilStateCI.setDepthTestEnable(true)
@@ -148,7 +149,9 @@ namespace wind
             .setPViewportState(&m_pipeInfo.viewportStateCI)
             .setPNext(&m_pipeInfo.renderInfoKHR);
 
-        return m_device->CreateResource<Pipeline>(m_pipeInfo.pipelineCI);
+        auto pipeline = m_device->CreateResource<Pipeline>(m_pipeInfo.pipelineCI);
+
+        return pipeline;
     }
 
     Pipeline::Pipeline(Device* device, const vk::GraphicsPipelineCreateInfo& createInfo) :

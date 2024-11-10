@@ -1,9 +1,11 @@
 #include "RenderGraph/RenderGraph.h"
+
+#include "Graphics/Renderer.h"
 #include "RenderGraph/RenderGraphID.h"
 
 namespace wind::rg
 {
-    RenderGraph::RenderGraph(RenderGraphAllocator* allocator) : m_allocator(allocator) {}
+    RenderGraph::RenderGraph(RenderGraphAllocator* allocator, FrameData* frameData) : m_allocator(allocator) {}
 
     RenderGraph::~RenderGraph()
     {
@@ -31,5 +33,15 @@ namespace wind::rg
         RenderGraphHandle handle(m_resources.size());
         m_resources.push_back(resource);
         return handle;
+    }
+
+    void RenderGraph::Compile() 
+    {
+        // TODO: compile the render graph into topological order
+    }
+
+    void RenderGraph::Execute() 
+    {
+        
     }
 } // namespace wind::rg

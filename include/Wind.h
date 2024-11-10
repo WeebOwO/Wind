@@ -29,6 +29,8 @@ namespace wind
         static std::unique_ptr<Application> Create(const CommandLineArguments& args,
                                                    const WindowCreateInfo&     windowCreateInfo);
 
+        void ExecutePlayerLoop();
+        
     private:
         void LoadScene();
         void ParseCommandLine(const CommandLineArguments& args) override;
