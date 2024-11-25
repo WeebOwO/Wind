@@ -1,9 +1,11 @@
 #pragma once
 
+#include <optional>
 #include <queue>
 #include <thread>
 
 #include "Buffer.h"
+#include "Command.h"
 #include "Resource.h"
 
 #include "Core/NonCopy.h"
@@ -43,12 +45,14 @@ namespace wind
         // all resources should be created through this function,
         // rathern than directly new from target resource constructor
         template<typename T, typename... Args>
-        requires std::is_constructible_v<T, Device*, Args...> && std::derived_from<T, Resource>
-        [[nodiscard]] std::shared_ptr<T> CreateResource(
-            Args&&... args) 
+        requires std::is_constructible_v<T, Device*, Args...>&&
+                 std::derived_from<T, Resource> [[nodiscard]] std::shared_ptr<T>
+                 CreateResource(Args&&... args)
         {
             return std::make_shared<T>(this, std::forward<Args>(args)...);
         }
+
+        uint32_t GetQueueFamilyIndex(RenderCommandQueueType queueType);
 
     private:
         bool Init();

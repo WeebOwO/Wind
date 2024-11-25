@@ -6,11 +6,13 @@
 
 namespace wind::rg
 {
-    class RenderGraphTexture
+    struct RenderGraphTexture
     {
-    public:
+        RenderGraphTexture() noexcept = default;
+
         struct Descriptor
         {
+            Descriptor() : width(0), height(0), format(vk::Format::eUndefined) {}
             uint32_t   width;
             uint32_t   height;
             vk::Format format;

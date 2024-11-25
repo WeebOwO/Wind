@@ -28,7 +28,8 @@ namespace wind
         void Destroy();
 
         // todo: add this to material system
-        void GetPipelineByUUID(UUID uuid) const; 
+        void GetPipelineByUUID(UUID uuid) const;
+        auto GetPipeline(PipelineID id) const { return m_pipelines.at(id); }
 
     private:
         void CompileToPSO(PipelineID id);

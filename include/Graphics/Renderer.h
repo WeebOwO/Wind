@@ -63,7 +63,7 @@ namespace wind
 
     private:
         void       CreateFrameData();
-        FrameData& GetCurrentFrame();
+        FrameData& GetCurrentFrameData();
 
         Device*                                   m_device; // non owning
         const View*                               m_view;   // non owning

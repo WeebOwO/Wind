@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Guard.h"
 #include <cstdint>
 
 namespace wind
@@ -20,9 +21,11 @@ namespace wind
         Draw = 0,
         DrawIndirect,
         Dispatch,
+        MeshDrawCommand,
         DispatchIndirect,
         UpdateBuffer,
         UpdateTexture,
+        ClearColor,
         Count
     };
 
@@ -61,5 +64,10 @@ namespace wind
         uint32_t groupCountX = 0;
         uint32_t groupCountY = 0;
         uint32_t groupCountZ = 0;
+    };
+
+    struct ColorClearCommand : public CommandImpl<RenderCommandType::ClearColor, RenderCommandQueueType::Graphics>
+    {
+        vk::ClearColorValue color;
     };
 } // namespace wind

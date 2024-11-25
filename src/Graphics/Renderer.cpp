@@ -5,6 +5,7 @@
 #include "Graphics/RenderConfig.h"
 #include "Graphics/ShaderCache.h"
 
+#include "RenderGraph/PassDesc.h"
 #include "RenderGraph/RenderGraph.h"
 #include "RenderGraph/RenderGraphID.h"
 #include "RenderGraph/RenderGraphTexture.h"
@@ -54,7 +55,7 @@ namespace wind
     {
         // sync with the swapchain
         auto       vkDevice = m_device->GetDevice();
-        FrameData& frame    = GetCurrentFrame();
+        FrameData& frame    = GetCurrentFrameData();
 
         auto result = vkDevice.waitForFences(frame.inFlight, true, UINT64_MAX);
         if (result != vk::Result::eSuccess)
@@ -74,7 +75,7 @@ namespace wind
     {
         // sync with the swapchain
         auto       vkDevice = m_device->GetDevice();
-        FrameData& frame    = GetCurrentFrame();
+        FrameData& frame    = GetCurrentFrameData();
 
         // submit the command buffer
         m_frameCounter++;
@@ -83,7 +84,8 @@ namespace wind
     void Renderer::Render()
     {
         // render the scene
-        RenderGraph renderGraph(m_rgAllocator.get(), &GetCurrentFrame());
+        auto&       currentFrameData = GetCurrentFrameData();
+        RenderGraph renderGraph(m_rgAllocator.get(), &currentFrameData);
 
         struct RenderData
         {
@@ -95,16 +97,41 @@ namespace wind
         backBuffer.desc.height = m_swapchain->GetHeight();
         backBuffer.desc.format = m_swapchain->GetFormat();
 
-        backBuffer.view  = m_swapchain->GetImageView(GetCurrentFrame().swapChainImageIndex);
-        backBuffer.image = m_swapchain->GetImage(GetCurrentFrame().swapChainImageIndex);
+        backBuffer.view  = m_swapchain->GetImageView(currentFrameData.swapChainImageIndex);
+        backBuffer.image = m_swapchain->GetImage(currentFrameData.swapChainImageIndex);
 
-        renderGraph.Import("BackBuffer", backBuffer.desc, backBuffer);
+        auto backBufferHandle = renderGraph.Import("BackBuffer", backBuffer.desc, backBuffer);
         // import the import resource
 
-        renderGraph.AddNoSetupPass("MainDraw", [](const ResourceRegistry&, auto&, CommandStream&) 
-        {
-            
-        });
+        // present pass
+        renderGraph.AddPass<RenderData>(
+            "Present",
+            [&](RenderGraph::Builder& builder, RenderData& data) {
+                data.color = backBufferHandle;
+                RenderPassDesc::Descriptor descriptor {
+                    .attachments =
+                        {
+                            .color = {data.color},
+                        },
+                    .viewPort =
+                        {
+                            .x        = 0.0f,
+                            .y        = 0.0f,
+                            .width    = static_cast<float>(m_swapchain->GetWidth()),
+                            .height   = static_cast<float>(m_swapchain->GetHeight()),
+                            .minDepth = 0.0f,
+                            .maxDepth = 1.0f,
+                        },
+                };
+
+                builder.DeclareRenderPass("Present", descriptor);
+            },
+            [&](const ResourceRegistry& registry, RenderData& data, CommandStream& stream) {
+                auto backBuffer = registry.Get(data.color);
+                auto pipeline   = m_psoCache->GetPipeline(PipelineID::Lighting);
+
+                stream.BindPipeline(*pipeline);
+            });
 
         renderGraph.Compile();
         return;
@@ -136,7 +163,7 @@ namespace wind
         });
     }
 
-    FrameData& Renderer::GetCurrentFrame()
+    FrameData& Renderer::GetCurrentFrameData()
     {
         return m_frames[m_frameCounter % config::GetRenderConfig().kmaxFramesInFlight];
     }

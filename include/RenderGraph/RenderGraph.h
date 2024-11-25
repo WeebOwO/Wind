@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Backend/Device.h"
+#include "RenderGraph/RenderGraphID.h"
 #include <string>
 
 #include "BlackBoard.h"
@@ -30,7 +32,7 @@ namespace wind::rg
             Builder(const Builder&)            = delete;
             Builder& operator=(const Builder&) = delete;
 
-            uint32_t                          DeclareRenderPass(const std::string& name, const RenderPassDesc& desc);
+            uint32_t DeclareRenderPass(const std::string& name, const RenderPassDesc::Descriptor& desc);
             RenderGraphID<RenderGraphTexture> DeclareRenderPass(RenderGraphID<RenderGraphTexture> color,
                                                                 uint32_t*                         index = nullptr);
 
@@ -89,8 +91,11 @@ namespace wind::rg
 
         auto& GetBlackBoard() { return m_blackBoard; }
 
-        void Execute();
+        void Execute(Device& device);
         void Compile();
+
+        // get resource from handle
+        VirutalResource* GetResource(RenderGraphHandle handle) const;
 
     private:
         Builder           AddPassImpl(const std::string& name, RenderGraphPassBase* pass);

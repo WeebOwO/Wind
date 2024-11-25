@@ -1,6 +1,7 @@
 #include "RenderGraph/RenderGraph.h"
 
 #include "Graphics/Renderer.h"
+#include "RenderGraph/PassNode.h"
 #include "RenderGraph/RenderGraphID.h"
 
 namespace wind::rg
@@ -28,6 +29,12 @@ namespace wind::rg
         return Builder(*this, node);
     }
 
+    uint32_t RenderGraph::Builder::DeclareRenderPass(const std::string& name, const RenderPassDesc::Descriptor& desc)
+    {
+        RenderPassNode* node = static_cast<RenderPassNode*>(m_passNode);
+        return node->DeclareRenderPass(name, desc);
+    }
+
     RenderGraphHandle RenderGraph::AddResourceImpl(VirutalResource* resource)
     {
         RenderGraphHandle handle(m_resources.size());
@@ -35,13 +42,24 @@ namespace wind::rg
         return handle;
     }
 
-    void RenderGraph::Compile() 
+    void RenderGraph::Compile()
     {
         // TODO: compile the render graph into topological order
     }
 
-    void RenderGraph::Execute() 
+    void RenderGraph::Execute(Device& device)
     {
-        
+        // execute the render graph
+        auto stream = device.CreateResource<CommandStream>(RenderCommandQueueType::Graphics);
+
+        for (auto passNode : m_passNodes)
+        {
+            ResourceRegistry registry(*this, *passNode);
+            passNode->Execute(registry, *stream);
+        }
+
+        return;
     }
+
+    VirutalResource* RenderGraph::GetResource(RenderGraphHandle handle) const { return m_resources[handle.index]; }
 } // namespace wind::rg

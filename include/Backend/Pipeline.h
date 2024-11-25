@@ -57,6 +57,8 @@ namespace wind
 
         virtual ~Pipeline();
 
+        auto GetNativePipeline() const { return m_pipeline; }
+
     private:
         friend class Device;
 

@@ -26,8 +26,8 @@ namespace wind::rg
 
         struct Descriptor
         {
-            Attachments  attachments;
-            vk::Viewport viewPort;
+            Attachments  attachments {};
+            vk::Viewport viewPort {};
         };
     };
 

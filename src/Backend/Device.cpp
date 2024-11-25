@@ -5,6 +5,7 @@
 #include "Backend/Swapchain.h"
 #include "Core/Log.h"
 #include "GLFW/glfw3.h"
+#include <optional>
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
@@ -129,6 +130,22 @@ namespace wind
         vmaCreateAllocator(&allocatorInfo, &m_allocator);
 
         return true;
+    }
+
+    uint32_t Device::GetQueueFamilyIndex(RenderCommandQueueType queueType)
+    {
+        
+        switch (queueType)
+        {
+            case RenderCommandQueueType::Graphics:
+                return m_mainQueue.familyIndex;
+            case RenderCommandQueueType::Compute:
+                return m_asyncComputeQueue.familyIndex;
+            case RenderCommandQueueType::Copy:
+                return m_transferQueue.familyIndex;
+            default:
+                return UINT32_MAX;
+        }
     }
 
     void Device::Destroy()

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Backend/Pipeline.h"
 #include <vector>
 
 #include "Command.h"
-#include "Resource.h"
-
 #include "Core/NonCopy.h"
+#include "Resource.h"
 
 namespace wind
 {
@@ -16,14 +16,22 @@ namespace wind
     public:
         NON_COPYABLE(CommandStream);
 
-        CommandStream(Device* device) : Resource(device, Tag::CommandStream) {};
-        ~CommandStream();
+        CommandStream(Device* device, RenderCommandQueueType queueType);
+        ~CommandStream() noexcept;
 
-        CommandStream& operator<<(Command* command);
+        vk::CommandBuffer GetCommandBuffer() { return m_commandBuffer; }
 
-        void Execute();
+        void BeginRendering(const vk::RenderingInfo& info);
+        void EndRendering();
+
+        void BindPipeline(const Pipeline& pipeline);
         
     private:
-        std::vector<Command*> m_commands;
+        void Init();
+        void Destroy();
+
+        vk::CommandBuffer      m_commandBuffer;
+        vk::CommandPool        m_commandPool;
+        RenderCommandQueueType m_queueType;
     };
 } // namespace wind
