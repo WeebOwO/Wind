@@ -9,11 +9,11 @@ namespace wind
 
     enum class RenderCommandQueueType : uint8_t
     {
-        None     = 0x00,
-        Copy     = 0x01,
-        Compute  = 0x02,
-        Graphics = 0x04,
-        All      = Copy | Compute | Graphics
+        None         = 0x00,
+        Copy         = 0x01,
+        AsyncCompute = 0x02,
+        Graphics     = 0x04,
+        All          = Copy | AsyncCompute | Graphics
     };
 
     enum class RenderCommandType
@@ -51,6 +51,15 @@ namespace wind
         uint32_t firstInstance = 0;
     };
 
+    struct DrawIndexCommand : public CommandImpl<RenderCommandType::Draw, RenderCommandQueueType::Graphics>
+    {
+        uint32_t indexCount    = 0;
+        uint32_t instanceCount = 0;
+        uint32_t firstIndex    = 0;
+        uint32_t vertexOffset  = 0;
+        uint32_t firstInstance = 0;
+    };
+
     struct DrawIndirectCommand : public CommandImpl<RenderCommandType::DrawIndirect, RenderCommandQueueType::Graphics>
     {
         uint32_t vertexCount   = 0;
@@ -59,7 +68,7 @@ namespace wind
         uint32_t firstInstance = 0;
     };
 
-    struct DispatchCommand : public CommandImpl<RenderCommandType::Dispatch, RenderCommandQueueType::Compute>
+    struct DispatchCommand : public CommandImpl<RenderCommandType::Dispatch, RenderCommandQueueType::AsyncCompute>
     {
         uint32_t groupCountX = 0;
         uint32_t groupCountY = 0;

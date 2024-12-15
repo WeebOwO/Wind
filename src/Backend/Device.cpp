@@ -139,7 +139,7 @@ namespace wind
         {
             case RenderCommandQueueType::Graphics:
                 return m_mainQueue.familyIndex;
-            case RenderCommandQueueType::Compute:
+            case RenderCommandQueueType::AsyncCompute:
                 return m_asyncComputeQueue.familyIndex;
             case RenderCommandQueueType::Copy:
                 return m_transferQueue.familyIndex;

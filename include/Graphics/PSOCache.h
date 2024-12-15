@@ -21,6 +21,8 @@ namespace wind
     class PSOCache
     {
     public:
+        using PipelineMaps = std::unordered_map<PipelineID, std::shared_ptr<Pipeline>>;
+
         PSOCache(Device* device, ShaderCache* shaderCache);
         ~PSOCache();
 
@@ -29,15 +31,15 @@ namespace wind
 
         // todo: add this to material system
         void GetPipelineByUUID(UUID uuid) const;
-        auto GetPipeline(PipelineID id) const { return m_pipelines.at(id); }
+        auto GetPipeline(PipelineID id) const { return m_Pipelines.at(id); }
 
     private:
         void CompileToPSO(PipelineID id);
         void GetShaderInfo(ShadingModel shadingModel);
 
-        Device*                                                   m_device;
-        ShaderCache*                                              m_shaderCache;
-        std::unordered_map<PipelineID, std::shared_ptr<Pipeline>> m_pipelines;
-        vk::PipelineLayout                                        m_defaultLayout;
+        Device*            m_Device;
+        ShaderCache*       m_ShaderCache;
+        PipelineMaps       m_Pipelines;
+        vk::PipelineLayout m_DefaultLayout;
     };
 } // namespace wind

@@ -42,6 +42,14 @@ namespace wind
         vk::SurfaceKHR     GetSurface() { return m_surface; }
         vk::PhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
 
+        vk::Queue GetQueue(RenderCommandQueueType queueType) 
+        {
+            return queueType == RenderCommandQueueType::Graphics ? m_mainQueue.queue :
+                   queueType == RenderCommandQueueType::AsyncCompute ? m_asyncComputeQueue.queue :
+                   queueType == RenderCommandQueueType::Copy ? m_transferQueue.queue :
+                   nullptr;
+        }
+
         // all resources should be created through this function,
         // rathern than directly new from target resource constructor
         template<typename T, typename... Args>

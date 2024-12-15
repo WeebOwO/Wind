@@ -24,6 +24,7 @@ namespace wind::rg
             RenderGraphID<RenderGraphTexture> texture = passDescriptor.attachments.textures[i];
             if (texture)
             {
+                
             };
         }
 

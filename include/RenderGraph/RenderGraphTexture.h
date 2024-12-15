@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RenderGraph/RGAllocator.h"
 #include <string>
 
 #include "Backend/Image.h"
@@ -17,6 +18,11 @@ namespace wind::rg
             uint32_t   height;
             vk::Format format;
         };
+
+        // craete the resource
+        void Create(rg::RenderGraphAllocator* allocator, 
+                    const std::string& name, 
+                    const Descriptor& descriptor);
 
         Descriptor    desc;
         std::string   name;

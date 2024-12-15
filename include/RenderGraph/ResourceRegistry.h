@@ -24,6 +24,13 @@ namespace wind::rg
             return static_cast<const Resource<RESOURCE>&>(GetResource(resourceID)).resource;
         }
 
+        template<typename PassType>
+        requires std::is_base_of_v<PassNode, PassType>
+        PassType* GetPass() const
+        {
+            return reinterpret_cast<PassType*>(&m_node);
+        }
+
     private:
         VirutalResource& GetResource(RenderGraphHandle handle) const;
 

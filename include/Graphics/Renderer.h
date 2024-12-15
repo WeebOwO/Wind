@@ -6,6 +6,7 @@
 #include "View.h"
 
 #include "Backend/Device.h"
+#include "Backend/Stream.h"
 #include "RenderGraph/RGAllocator.h"
 
 namespace wind
@@ -35,11 +36,13 @@ namespace wind
 
     struct FrameData
     {
-        vk::Semaphore imageAvailable;
-        vk::Semaphore renderFinished;
-        vk::Fence     inFlight;
-        DeletionQueue deletionQueue;
-        uint32_t      swapChainImageIndex;
+        vk::Semaphore    imageAvailable;
+        vk::Semaphore    renderFinished;
+        vk::Fence        inFlight;
+        DeletionQueue    deletionQueue;
+        uint32_t         swapChainImageIndex;
+        CommandStreamRef commandStream;
+        DeletionQueue    frameDeletionQueue;
     };
 
     // convert a scene and camera view to a renderable image

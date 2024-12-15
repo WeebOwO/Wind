@@ -1,5 +1,6 @@
 #include "RenderGraph/RenderGraph.h"
 
+#include "Backend/Stream.h"
 #include "Graphics/Renderer.h"
 #include "RenderGraph/PassNode.h"
 #include "RenderGraph/RenderGraphID.h"
@@ -47,17 +48,15 @@ namespace wind::rg
         // TODO: compile the render graph into topological order
     }
 
-    void RenderGraph::Execute(Device& device)
+    void RenderGraph::Execute(CommandStream& stream)
     {
         // execute the render graph
-        auto stream = device.CreateResource<CommandStream>(RenderCommandQueueType::Graphics);
-
         for (auto passNode : m_passNodes)
         {
             ResourceRegistry registry(*this, *passNode);
-            passNode->Execute(registry, *stream);
+            passNode->Execute(registry, stream);
         }
-
+        
         return;
     }
 

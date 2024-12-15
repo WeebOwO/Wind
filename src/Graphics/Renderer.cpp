@@ -1,5 +1,7 @@
 #include "Graphics/Renderer.h"
 
+#include "Backend/Command.h"
+#include "Backend/Stream.h"
 #include "Backend/Swapchain.h"
 #include "Graphics/PSOCache.h"
 #include "Graphics/RenderConfig.h"
@@ -102,26 +104,26 @@ namespace wind
 
         auto backBufferHandle = renderGraph.Import("BackBuffer", backBuffer.desc, backBuffer);
         // import the import resource
-
-        // present pass
+    
+        // present pass 
         renderGraph.AddPass<RenderData>(
             "Present",
             [&](RenderGraph::Builder& builder, RenderData& data) {
                 data.color = backBufferHandle;
                 RenderPassDesc::Descriptor descriptor {
                     .attachments =
-                        {
-                            .color = {data.color},
-                        },
+                    {
+                        .color = {data.color},
+                    },
                     .viewPort =
-                        {
-                            .x        = 0.0f,
-                            .y        = 0.0f,
-                            .width    = static_cast<float>(m_swapchain->GetWidth()),
-                            .height   = static_cast<float>(m_swapchain->GetHeight()),
-                            .minDepth = 0.0f,
-                            .maxDepth = 1.0f,
-                        },
+                    {
+                        .x        = 0.0f,
+                        .y        = 0.0f,
+                        .width    = static_cast<float>(m_swapchain->GetWidth()),
+                        .height   = static_cast<float>(m_swapchain->GetHeight()),
+                        .minDepth = 0.0f,
+                        .maxDepth = 1.0f,
+                    },
                 };
 
                 builder.DeclareRenderPass("Present", descriptor);
@@ -130,10 +132,13 @@ namespace wind
                 auto backBuffer = registry.Get(data.color);
                 auto pipeline   = m_psoCache->GetPipeline(PipelineID::Lighting);
 
+                RenderPassNode* passNode = registry.GetPass<RenderPassNode>();
+                stream.BeginRendering(passNode->GetRenderingInfo());
                 stream.BindPipeline(*pipeline);
             });
 
         renderGraph.Compile();
+        renderGraph.Execute(*currentFrameData.commandStream);
         return;
     }
 
@@ -148,6 +153,7 @@ namespace wind
             frame.imageAvailable = vkDevice.createSemaphore({});
             frame.renderFinished = vkDevice.createSemaphore({});
             frame.inFlight       = vkDevice.createFence({.flags = vk::FenceCreateFlagBits::eSignaled});
+            frame.commandStream  = m_device->CreateResource<CommandStream>(RenderCommandQueueType::Graphics, StreamMode::eImmdiately);
         }
 
         // push the deletion queue to the main deletion queue

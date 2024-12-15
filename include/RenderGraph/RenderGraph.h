@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Backend/Device.h"
-#include "RenderGraph/RenderGraphID.h"
 #include <string>
 
 #include "BlackBoard.h"
@@ -37,7 +35,7 @@ namespace wind::rg
                                                                 uint32_t*                         index = nullptr);
 
             template<typename RESOURCE>
-            RenderGraphID<RESOURCE> Create(const std::string& name, const RESOURCE::Descriptor& desc)
+            RenderGraphID<RESOURCE> Create(const std::string& name, const typename RESOURCE::Descriptor& desc)
             {
                 return m_renderGraph.Create<RESOURCE>(name, desc);
             }
@@ -66,7 +64,7 @@ namespace wind::rg
 
         // resource create interfaces
         template<typename RESOURCE>
-        RenderGraphID<RESOURCE> Create(const std::string& name, const RESOURCE::Descriptor& desc)
+        RenderGraphID<RESOURCE> Create(const std::string& name, const typename RESOURCE::Descriptor& desc)
         {
             VirutalResource* resource = new rg::Resource<RESOURCE>(name, desc);
             return RenderGraphID<RESOURCE>(AddResourceImpl(resource));
@@ -91,7 +89,7 @@ namespace wind::rg
 
         auto& GetBlackBoard() { return m_blackBoard; }
 
-        void Execute(Device& device);
+        void Execute(CommandStream& commandStream);
         void Compile();
 
         // get resource from handle
