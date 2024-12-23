@@ -46,6 +46,7 @@ namespace wind::rg
     void RenderGraph::Compile()
     {
         // TODO: compile the render graph into topological order
+        
     }
 
     void RenderGraph::Execute(CommandStream& stream)
@@ -60,5 +61,8 @@ namespace wind::rg
         return;
     }
 
-    VirutalResource* RenderGraph::GetResource(RenderGraphHandle handle) const { return m_resources[handle.index]; }
+    VirutalResource* RenderGraph::GetResource(RenderGraphHandle handle) const 
+    { 
+        return m_resources[handle.index]; 
+    }
 } // namespace wind::rg

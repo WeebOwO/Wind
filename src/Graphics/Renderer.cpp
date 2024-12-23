@@ -105,9 +105,11 @@ namespace wind
         auto backBufferHandle = renderGraph.Import("BackBuffer", backBuffer.desc, backBuffer);
         // import the import resource
     
+        Scene* renderScene = m_view->renderScene;
+
         // present pass 
         renderGraph.AddPass<RenderData>(
-            "Present",
+            "MainDraw",
             [&](RenderGraph::Builder& builder, RenderData& data) {
                 data.color = backBufferHandle;
                 RenderPassDesc::Descriptor descriptor {

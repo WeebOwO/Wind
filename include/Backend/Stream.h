@@ -1,14 +1,11 @@
 #pragma once
 
-#include "Backend/Command.h"
-#include "Backend/Pipeline.h"
-#include "vulkan/vulkan_handles.hpp"
-#include <queue>
 #include <vector>
 
 #include "Command.h"
+#include "Pipeline.h"
+#include "Buffer.h"
 #include "Core/NonCopy.h"
-#include "Resource.h"
 
 namespace wind
 {
@@ -41,6 +38,9 @@ namespace wind
         void RegisterWaitDependency(vk::Semaphore semaphore);
         void RegisterSignalDependency(vk::Semaphore semaphore);
         
+        void BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding);
+        void BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, vk::IndexType indexType);
+
     private:
         void Init();
         void Destroy();

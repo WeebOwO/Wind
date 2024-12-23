@@ -24,7 +24,7 @@ namespace wind
 
         Entity CreateEntity(const std::string& name = "None");
         void   DestroyEntity(Entity entity);
-
+        
     private:
         friend class Entity;
 

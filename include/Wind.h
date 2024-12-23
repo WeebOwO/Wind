@@ -30,7 +30,7 @@ namespace wind
                                                    const WindowCreateInfo&     windowCreateInfo);
 
         void ExecutePlayerLoop();
-        
+
     private:
         void LoadScene();
         void ParseCommandLine(const CommandLineArguments& args) override;

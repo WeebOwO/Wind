@@ -1,5 +1,6 @@
 #include "Wind.h"
 
+#include "Scene/Scene.h"
 #include <memory>
 
 #include "Core/Log.h"
@@ -35,7 +36,11 @@ namespace wind
         }
     }
 
-    void ClientApp::LoadScene() { WIND_CLIENT_INFO("Loading scene"); }
+    void ClientApp::LoadScene() 
+    { 
+        WIND_CLIENT_INFO("Loading scene"); 
+        
+    }
 
     void ClientApp::Init()
     {

@@ -26,4 +26,6 @@ namespace wind
         AllocateBuffer m_allocateBuffer;
         void*          m_mappedData;
     };
+
+    using BufferRef = std::shared_ptr<Buffer>;
 } // namespace wind

@@ -2,8 +2,6 @@
 
 #include "Backend/Stream.h"
 #include "Backend/Device.h"
-#include "vulkan/vulkan_enums.hpp"
-#include "vulkan/vulkan_handles.hpp"
 
 namespace wind
 {
@@ -82,5 +80,17 @@ namespace wind
         vk::Queue queue = m_device->GetQueue(m_QueueType);
 
         queue.submit(m_SubmitInfo, nullptr);
+    }
+
+    void CommandStream::BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding)
+    {
+        vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
+        m_CommandBuffer.bindVertexBuffers(binding, {vkBuffer}, {offset});
+    }
+
+    void CommandStream::BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, vk::IndexType indexType)
+    {
+        vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
+        m_CommandBuffer.bindIndexBuffer(vkBuffer, offset, indexType);
     }
 } // namespace wind

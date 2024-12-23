@@ -106,7 +106,7 @@ namespace wind
 
         // create queue
         auto       queueProps = m_physicalDevice.getQueueFamilyProperties();
-        const auto findQueue  = [&](vk::QueueFlags flag, GPUQueue queue) {
+        const auto findQueue  = [&](vk::QueueFlags flag, GPUQueue& queue) {
             for (uint32_t i = 0; i < queueProps.size(); i++)
             {
                 if (queueProps[i].queueFlags & flag && queue.queue == nullptr)

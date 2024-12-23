@@ -4,7 +4,6 @@
 #include <string>
 
 #include "Core/Handle.h"
-#include "Core/Singleton.h"
 #include "Core/Vector.h"
 
 namespace wind
@@ -28,7 +27,7 @@ namespace wind
         std::string sceneName;
     };
 
-    class SceneManager : public Singleton<SceneManager>
+    class SceneManager
     {
     public:
         SceneManager()          = default;

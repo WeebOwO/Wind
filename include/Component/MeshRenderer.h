@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core/Component.h"
+#include "Backend/Stream.h"
+#include "Resource/Mesh.h"
 
 namespace wind
 {
@@ -10,8 +12,9 @@ namespace wind
         MeshRenderer(const std::string& name) : Component(name) {}
         virtual ~MeshRenderer() = default;
 
+        void Draw(CommandStreamRef commandStream);
+
     private:
-        // Mesh* m_mesh;
-        // Material* m_material;
+        std::shared_ptr<Mesh> m_Mesh;
     };
 }; // namespace wind

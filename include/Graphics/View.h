@@ -5,17 +5,9 @@
 namespace wind
 {
     class Scene;
-    class View
+    struct View
     {
-    public:
-        View& SetCamera(Camera* camera);
-        View& SetScene(Scene* scene);
-
-        Scene*  GetScene() const;
-        Camera* GetCamera() const;
-
-    private:
-        Camera* m_camera;
-        Scene*  m_scene;
+        Camera* renderCamera;
+        Scene*  renderScene;
     };
 } // namespace wind
