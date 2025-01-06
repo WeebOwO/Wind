@@ -32,6 +32,7 @@ namespace wind
         Device(const DeviceExtensions& extensions, Window* window);
         ~Device();
 
+        void WaitIdle() { m_device.waitIdle(); }
         static std::unique_ptr<Device> Create(const DeviceExtensions& extensions, Window* window);
 
         auto& GetAllocator() { return m_allocator; }

@@ -43,6 +43,7 @@ namespace wind
         void RegisterWaitDependency(vk::Semaphore semaphore);
         void RegisterWaitDependency(vk::PipelineStageFlags waitStage);
         void RegisterSignalDependency(vk::Semaphore semaphore);
+        void RegisterSignalFence(vk::Fence fence);
 
         void BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding);
         void BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, vk::IndexType indexType);
@@ -66,6 +67,9 @@ namespace wind
         std::vector<vk::PipelineStageFlags> m_WaitStagesQueue;
 
         vk::SubmitInfo m_SubmitInfo;
+
+        bool      m_NeedFence;
+        vk::Fence m_Fence;
     };
 
     using CommandStreamRef = std::shared_ptr<CommandStream>;

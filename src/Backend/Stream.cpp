@@ -83,6 +83,12 @@ namespace wind
         m_WaitStagesQueue.push_back(waitStage);
     }
 
+    void CommandStream::RegisterSignalFence(vk::Fence fence)
+    {
+        m_Fence     = fence;
+        m_NeedFence = true;
+    }
+
     void CommandStream::Flush()
     {
         auto vkDevice = m_device->GetDevice();
@@ -96,7 +102,20 @@ namespace wind
             .setSignalSemaphores(m_SignalSemQueue);
 
         vk::Queue queue = m_device->GetQueue(m_QueueType);
-        queue.submit(m_SubmitInfo, nullptr);
+
+        if (m_NeedFence)
+        {
+            queue.submit(m_SubmitInfo, m_Fence);
+        }
+        else
+        {
+            queue.submit(m_SubmitInfo, nullptr);
+        }
+
+        m_NeedFence = false;
+        m_WaitSemQueue.clear();
+        m_SignalSemQueue.clear();
+        m_WaitStagesQueue.clear();
     }
 
     void

@@ -45,6 +45,7 @@ namespace wind
 
     Renderer::~Renderer()
     {
+        m_device->WaitIdle();
         m_shaderCache->Destroy();
         m_psoCache->Destroy();
         m_mainDelelteQueue.Flush();
@@ -73,6 +74,9 @@ namespace wind
         // acquire the next image
         frame.swapChainImageIndex =
             vkDevice.acquireNextImageKHR(m_swapchain->GetSwapchain(), UINT64_MAX, frame.imageAvailable, nullptr).value;
+
+        frame.commandStream->Reset();
+        frame.commandStream->RegisterSignalFence(frame.inFlight);
     }
 
     void Renderer::EndFrame()
@@ -91,6 +95,9 @@ namespace wind
         transitionCommand.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
         // transition the image layout
         frame.commandStream->TransitionImageLayout(transitionCommand);
+        frame.commandStream->EndRecording();
+
+        frame.commandStream->Flush();
 
         // present the image
         vk::PresentInfoKHR presentInfo;
@@ -107,8 +114,6 @@ namespace wind
         {
             WIND_CORE_ERROR("failed to present image");
         }
-
-        frame.commandStream->Flush();
         // submit the command buffer
         m_frameCounter++;
     }
