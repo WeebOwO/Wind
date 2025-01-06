@@ -33,22 +33,19 @@ namespace wind
 
         static std::unique_ptr<Renderer> Craete(Device* device, const SwapchainCreateInfo& createInfo);
 
-        // we need set the view and scene data before rendering
-        Renderer& SetViewData(const View& view);
-
         // sync with the renderer
         void BeginFrame();
         void EndFrame();
 
         // render the scene in a given view
-        void Render();
+        void Render(const View& view);
 
     private:
         void       CreateFrameData();
         FrameData& GetCurrentFrameData();
 
         Device*                                   m_device; // non owning
-        const View*                               m_view;   // non owning
+        View                                      m_view;
         std::thread::id                           m_renderThread;
         std::shared_ptr<Swapchain>                m_swapchain;
         std::unique_ptr<PSOCache>                 m_psoCache;

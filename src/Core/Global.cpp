@@ -3,7 +3,7 @@
 
 namespace wind::global
 {
-    static SceneManager* sceneManager;
+    SceneManager* sceneManager;
     static DeletionQueue deletionQueue;
 
     template<typename T, typename... Args>

@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Command.h"
-#include "Pipeline.h"
 #include "Buffer.h"
+#include "Command.h"
 #include "Core/NonCopy.h"
+#include "Pipeline.h"
 
 namespace wind
 {
@@ -26,20 +26,31 @@ namespace wind
         ~CommandStream() noexcept;
 
         vk::CommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
+        
+        void BeginRecording();
+        void EndRecording();
+
+        void Reset();
 
         void BeginRendering(const vk::RenderingInfo& info);
         void EndRendering();
 
         void BindPipeline(const Pipeline& pipeline);
-        
+
         void DrawIndex(const DrawIndexCommand& command);
         void Flush();
 
         void RegisterWaitDependency(vk::Semaphore semaphore);
+        void RegisterWaitDependency(vk::PipelineStageFlags waitStage);
         void RegisterSignalDependency(vk::Semaphore semaphore);
-        
+
         void BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding);
         void BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, vk::IndexType indexType);
+
+        void ClearColor(const ColorClearCommand& command);
+        void ClearDepthStencil(const DepthStencilClearCommand& command);
+
+        void TransitionImageLayout(const ImageLayoutTransitionCommand& command);
 
     private:
         void Init();
@@ -50,9 +61,11 @@ namespace wind
         vk::CommandPool        m_CommandPool;
         RenderCommandQueueType m_QueueType;
 
-        std::vector<vk::Semaphore> m_WaitQueue;
-        std::vector<vk::Semaphore> m_SignalQueue;
-        vk::SubmitInfo             m_SubmitInfo;
+        std::vector<vk::Semaphore>          m_WaitSemQueue;
+        std::vector<vk::Semaphore>          m_SignalSemQueue;
+        std::vector<vk::PipelineStageFlags> m_WaitStagesQueue;
+
+        vk::SubmitInfo m_SubmitInfo;
     };
 
     using CommandStreamRef = std::shared_ptr<CommandStream>;

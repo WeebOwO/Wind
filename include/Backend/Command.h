@@ -26,6 +26,7 @@ namespace wind
         UpdateBuffer,
         UpdateTexture,
         ClearColor,
+        ClearDepthStencil,
         Count
     };
 
@@ -39,8 +40,6 @@ namespace wind
     {
         static constexpr RenderCommandType      type      = CommandType;
         static constexpr RenderCommandQueueType queueType = QueueType;
-
-        CommandImpl() { this->type = type; }
     };
 
     struct DrawCommand : public CommandImpl<RenderCommandType::Draw, RenderCommandQueueType::Graphics>
@@ -78,5 +77,22 @@ namespace wind
     struct ColorClearCommand : public CommandImpl<RenderCommandType::ClearColor, RenderCommandQueueType::Graphics>
     {
         vk::ClearColorValue color;
+        vk::Rect2D          renderArea;
+    };
+
+    struct DepthStencilClearCommand
+        : public CommandImpl<RenderCommandType::ClearDepthStencil, RenderCommandQueueType::Graphics>
+    {
+        vk::ClearDepthStencilValue depthStencil;
+        vk::Rect2D                 renderArea;
+    };
+
+    struct ImageLayoutTransitionCommand : public CommandImpl<RenderCommandType::UpdateTexture, RenderCommandQueueType::Graphics>
+    {
+        vk::ImageLayout           oldLayout;
+        vk::ImageLayout           newLayout;
+        vk::Image                 image;
+        vk::ImageSubresourceRange subresourceRange;
+        vk::ImageAspectFlags      aspectMask;
     };
 } // namespace wind

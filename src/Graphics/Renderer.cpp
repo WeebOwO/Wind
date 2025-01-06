@@ -3,6 +3,7 @@
 #include "Backend/Command.h"
 #include "Backend/Stream.h"
 #include "Backend/Swapchain.h"
+#include "Core/Log.h"
 #include "Graphics/PSOCache.h"
 #include "Graphics/RenderConfig.h"
 #include "Graphics/ShaderCache.h"
@@ -16,6 +17,13 @@ using namespace wind::rg;
 
 namespace wind
 {
+    static void ResetFrameData(FrameData& frame)
+    {
+        frame.deletionQueue.Flush();
+        frame.frameDeletionQueue.Flush();
+        frame.commandStream->Reset();
+    }
+
     Renderer::Renderer(Device* device, const SwapchainCreateInfo& createInfo) : m_device(device)
     {
         // create swapchain
@@ -47,12 +55,6 @@ namespace wind
         return std::make_unique<Renderer>(device, createInfo);
     }
 
-    Renderer& Renderer::SetViewData(const View& view)
-    {
-        m_view = &view;
-        return *this;
-    }
-
     void Renderer::BeginFrame()
     {
         // sync with the swapchain
@@ -79,15 +81,53 @@ namespace wind
         auto       vkDevice = m_device->GetDevice();
         FrameData& frame    = GetCurrentFrameData();
 
+        // transition the image layout
+        auto backBuffer = m_swapchain->GetImage(frame.swapChainImageIndex);
+        ImageLayoutTransitionCommand transitionCommand;
+        transitionCommand.image            = backBuffer;
+        transitionCommand.oldLayout        = vk::ImageLayout::eColorAttachmentOptimal;
+        transitionCommand.newLayout        = vk::ImageLayout::ePresentSrcKHR;
+        transitionCommand.aspectMask       = vk::ImageAspectFlagBits::eColor;
+        transitionCommand.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+        // transition the image layout
+        frame.commandStream->TransitionImageLayout(transitionCommand);
+
+        // present the image
+        vk::PresentInfoKHR presentInfo;
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores    = &frame.renderFinished;
+        presentInfo.swapchainCount     = 1;
+        presentInfo.pSwapchains        = m_swapchain->GetSwapchainPtr();
+        presentInfo.pImageIndices      = &frame.swapChainImageIndex;
+
+        auto presentQueue  = m_device->GetQueue(RenderCommandQueueType::Graphics);
+        auto presentResult = presentQueue.presentKHR(presentInfo);
+
+        if (presentResult != vk::Result::eSuccess)
+        {
+            WIND_CORE_ERROR("failed to present image");
+        }
+
+        frame.commandStream->Flush();
         // submit the command buffer
         m_frameCounter++;
     }
 
-    void Renderer::Render()
+    void Renderer::Render(const View& view)
     {
+        m_view = view;
+
         // render the scene
         auto&       currentFrameData = GetCurrentFrameData();
         RenderGraph renderGraph(m_rgAllocator.get(), &currentFrameData);
+
+        auto& blackBoard = renderGraph.GetBlackBoard();
+
+        auto commandStream = currentFrameData.commandStream;
+
+        commandStream->RegisterWaitDependency(currentFrameData.imageAvailable);
+        commandStream->RegisterWaitDependency(vk::PipelineStageFlagBits::eColorAttachmentOutput);
+        commandStream->RegisterSignalDependency(currentFrameData.renderFinished);
 
         struct RenderData
         {
@@ -98,49 +138,64 @@ namespace wind
         backBuffer.desc.width  = m_swapchain->GetWidth();
         backBuffer.desc.height = m_swapchain->GetHeight();
         backBuffer.desc.format = m_swapchain->GetFormat();
+        backBuffer.desc.initialLayout = vk::ImageLayout::eColorAttachmentOptimal;
 
         backBuffer.view  = m_swapchain->GetImageView(currentFrameData.swapChainImageIndex);
         backBuffer.image = m_swapchain->GetImage(currentFrameData.swapChainImageIndex);
 
-        auto backBufferHandle = renderGraph.Import("BackBuffer", backBuffer.desc, backBuffer);
+        auto backBufferHandle = renderGraph.Import(rg::kBackBufferName, backBuffer.desc, backBuffer);
         // import the import resource
-    
-        Scene* renderScene = m_view->renderScene;
+        blackBoard.Put(rg::kBackBufferName, backBufferHandle);
 
-        // present pass 
-        renderGraph.AddPass<RenderData>(
-            "MainDraw",
-            [&](RenderGraph::Builder& builder, RenderData& data) {
-                data.color = backBufferHandle;
-                RenderPassDesc::Descriptor descriptor {
-                    .attachments =
-                    {
-                        .color = {data.color},
-                    },
-                    .viewPort =
-                    {
-                        .x        = 0.0f,
-                        .y        = 0.0f,
-                        .width    = static_cast<float>(m_swapchain->GetWidth()),
-                        .height   = static_cast<float>(m_swapchain->GetHeight()),
-                        .minDepth = 0.0f,
-                        .maxDepth = 1.0f,
-                    },
-                };
+        Scene* renderScene = m_view.renderScene;
+        commandStream->BeginRecording();
+        // present pass
 
-                builder.DeclareRenderPass("Present", descriptor);
-            },
-            [&](const ResourceRegistry& registry, RenderData& data, CommandStream& stream) {
-                auto backBuffer = registry.Get(data.color);
-                auto pipeline   = m_psoCache->GetPipeline(PipelineID::Lighting);
+        renderGraph
+            .AddPass<RenderData>(
+                "MainDraw",
+                [&](RenderGraph::Builder& builder, RenderData& data) {
+                    data.color = backBufferHandle;
+                    RenderPassDesc::Descriptor descriptor {
+                        .attachments =
+                            {
+                                .color = {data.color},
+                            },
+                        .viewPort =
+                            {
+                                .x        = 0.0f,
+                                .y        = 0.0f,
+                                .width    = static_cast<float>(m_swapchain->GetWidth()),
+                                .height   = static_cast<float>(m_swapchain->GetHeight()),
+                                .minDepth = 0.0f,
+                                .maxDepth = 1.0f,
+                            },
+                    };
 
-                RenderPassNode* passNode = registry.GetPass<RenderPassNode>();
-                stream.BeginRendering(passNode->GetRenderingInfo());
-                stream.BindPipeline(*pipeline);
-            });
+                    builder.DeclareRenderPass("ClearColor", descriptor);
+                },
+                [&](const ResourceRegistry& registry, RenderData& data, CommandStream& stream) {
+                    auto backBuffer = registry.Get(data.color);
+                    auto pipeline   = m_psoCache->GetPipeline(PipelineID::Lighting);
+
+                    ImageLayoutTransitionCommand transitionCommand;
+                    transitionCommand.image            = backBuffer.image;
+                    transitionCommand.oldLayout        = vk::ImageLayout::eUndefined;
+                    transitionCommand.newLayout        = vk::ImageLayout::eColorAttachmentOptimal;
+                    transitionCommand.aspectMask       = vk::ImageAspectFlagBits::eColor;
+                    transitionCommand.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+                    // transition the image layout
+                    stream.TransitionImageLayout(transitionCommand);
+
+                    RenderPassNode* passNode = registry.GetPass<RenderPassNode>();
+                    stream.BeginRendering(passNode->GetRenderingInfo());
+                    stream.EndRendering();
+                })
+            .GetData();
 
         renderGraph.Compile();
         renderGraph.Execute(*currentFrameData.commandStream);
+
         return;
     }
 
@@ -155,7 +210,8 @@ namespace wind
             frame.imageAvailable = vkDevice.createSemaphore({});
             frame.renderFinished = vkDevice.createSemaphore({});
             frame.inFlight       = vkDevice.createFence({.flags = vk::FenceCreateFlagBits::eSignaled});
-            frame.commandStream  = m_device->CreateResource<CommandStream>(RenderCommandQueueType::Graphics, StreamMode::eImmdiately);
+            frame.commandStream =
+                m_device->CreateResource<CommandStream>(RenderCommandQueueType::Graphics, StreamMode::eImmdiately);
         }
 
         // push the deletion queue to the main deletion queue

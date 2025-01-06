@@ -39,6 +39,23 @@ namespace wind
         vkDevice.destroyCommandPool(m_CommandPool);
     }
 
+    void CommandStream::Reset()
+    {
+        vk::Device vkDevice = m_device->GetDevice();
+
+        vkDevice.resetCommandPool(m_CommandPool, vk::CommandPoolResetFlagBits::eReleaseResources);
+    }
+
+    void CommandStream::BeginRecording()
+    {
+        vk::CommandBufferBeginInfo beginInfo = {};
+        beginInfo.flags                      = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+        m_CommandBuffer.begin(beginInfo);
+    }
+
+    void CommandStream::EndRecording() { m_CommandBuffer.end(); }
+
     void CommandStream::BeginRendering(const vk::RenderingInfo& info) { m_CommandBuffer.beginRendering(info); }
 
     void CommandStream::EndRendering() { m_CommandBuffer.endRendering(); }
@@ -51,46 +68,170 @@ namespace wind
         m_CommandBuffer.bindPipeline(bindPoint, pipeline.GetNativePipeline());
     }
 
-    void CommandStream::DrawIndex(const DrawIndexCommand& command) 
+    void CommandStream::DrawIndex(const DrawIndexCommand& command)
     {
-        m_CommandBuffer.drawIndexed(command.indexCount, command.instanceCount, command.firstIndex, command.vertexOffset, command.firstInstance);
+        m_CommandBuffer.drawIndexed(
+            command.indexCount, command.instanceCount, command.firstIndex, command.vertexOffset, command.firstInstance);
     }
 
-    void CommandStream::RegisterSignalDependency(vk::Semaphore semaphore) 
-    { 
-        m_SignalQueue.push_back(semaphore); 
+    void CommandStream::RegisterSignalDependency(vk::Semaphore semaphore) { m_SignalSemQueue.push_back({semaphore}); }
+
+    void CommandStream::RegisterWaitDependency(vk::Semaphore semaphore) { m_WaitSemQueue.push_back(semaphore); }
+
+    void CommandStream::RegisterWaitDependency(vk::PipelineStageFlags waitStage)
+    {
+        m_WaitStagesQueue.push_back(waitStage);
     }
 
-    void CommandStream::RegisterWaitDependency(vk::Semaphore semaphore) 
-    { 
-        m_WaitQueue.push_back(semaphore); 
-    }
-
-    void CommandStream::Flush() 
+    void CommandStream::Flush()
     {
         auto vkDevice = m_device->GetDevice();
 
         m_SubmitInfo.setCommandBufferCount(1)
-                    .setCommandBuffers(m_CommandBuffer)
-                    .setWaitSemaphoreCount(m_WaitQueue.size())
-                    .setWaitSemaphores(m_WaitQueue)
-                    .setSignalSemaphoreCount(m_SignalQueue.size())
-                    .setSignalSemaphores(m_SignalQueue);
-        
-        vk::Queue queue = m_device->GetQueue(m_QueueType);
+            .setCommandBuffers(m_CommandBuffer)
+            .setWaitSemaphoreCount(m_WaitSemQueue.size())
+            .setWaitSemaphores(m_WaitSemQueue)
+            .setWaitDstStageMask(m_WaitStagesQueue)
+            .setSignalSemaphoreCount(m_SignalSemQueue.size())
+            .setSignalSemaphores(m_SignalSemQueue);
 
+        vk::Queue queue = m_device->GetQueue(m_QueueType);
         queue.submit(m_SubmitInfo, nullptr);
     }
 
-    void CommandStream::BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding)
+    void
+    CommandStream::BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding)
     {
         vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
         m_CommandBuffer.bindVertexBuffers(binding, {vkBuffer}, {offset});
     }
 
-    void CommandStream::BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, vk::IndexType indexType)
+    void CommandStream::BindIndexBuffer(BufferRef      buffer,
+                                        vk::DeviceSize offset,
+                                        vk::DeviceSize range,
+                                        vk::IndexType  indexType)
     {
         vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
         m_CommandBuffer.bindIndexBuffer(vkBuffer, offset, indexType);
+    }
+
+    void CommandStream::ClearColor(const ColorClearCommand& command) {}
+
+    void CommandStream::ClearDepthStencil(const DepthStencilClearCommand& command) {}
+
+    void CommandStream::TransitionImageLayout(const ImageLayoutTransitionCommand& command)
+    {
+        if (command.oldLayout == command.newLayout)
+        {
+            return;
+        }
+
+        vk::PipelineStageFlags srcStageMask {vk::PipelineStageFlagBits::eTopOfPipe};
+        vk::PipelineStageFlags dstStageMask {vk::PipelineStageFlagBits::eTopOfPipe};
+        vk::DependencyFlags    dependencyFlags {};
+        vk::AccessFlags        srcMask {};
+        vk::AccessFlags        dstMask {};
+
+        vk::ImageMemoryBarrier barrier = {};
+
+        vk::ImageLayout oldLayout = command.oldLayout;
+        vk::ImageLayout newLayout = command.newLayout;
+
+        typedef vk::ImageLayout    il;
+        typedef vk::AccessFlagBits afb;
+
+        // Is it me, or are these the same?
+        switch (oldLayout)
+        {
+            case il::eUndefined:
+                break;
+            case il::eGeneral:
+                srcMask      = afb::eTransferWrite;
+                srcStageMask = vk::PipelineStageFlagBits::eTransfer;
+                break;
+            case il::eColorAttachmentOptimal:
+                srcMask      = afb::eColorAttachmentWrite;
+                srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+                break;
+            case il::eDepthStencilAttachmentOptimal:
+                srcMask      = afb::eDepthStencilAttachmentWrite;
+                srcStageMask = vk::PipelineStageFlagBits::eEarlyFragmentTests;
+                break;
+            case il::eDepthStencilReadOnlyOptimal:
+                srcMask      = afb::eDepthStencilAttachmentRead;
+                srcStageMask = vk::PipelineStageFlagBits::eEarlyFragmentTests;
+                break;
+            case il::eShaderReadOnlyOptimal:
+                srcMask      = afb::eShaderRead;
+                srcStageMask = vk::PipelineStageFlagBits::eVertexShader;
+                break;
+            case il::eTransferSrcOptimal:
+                srcMask      = afb::eTransferRead;
+                srcStageMask = vk::PipelineStageFlagBits::eTransfer;
+                break;
+            case il::eTransferDstOptimal:
+                srcMask      = afb::eTransferWrite;
+                srcStageMask = vk::PipelineStageFlagBits::eTransfer;
+                break;
+            case il::ePreinitialized:
+                srcMask      = afb::eTransferWrite | afb::eHostWrite;
+                srcStageMask = vk::PipelineStageFlagBits::eTransfer | vk::PipelineStageFlagBits::eHost;
+                break;
+            case il::ePresentSrcKHR:
+                srcMask = afb::eMemoryRead;
+                break;
+        }
+
+        switch (newLayout)
+        {
+            case il::eUndefined:
+                break;
+            case il::eGeneral:
+                dstMask      = afb::eTransferWrite;
+                dstStageMask = vk::PipelineStageFlagBits::eTransfer;
+                break;
+            case il::eColorAttachmentOptimal:
+                dstMask      = afb::eColorAttachmentWrite;
+                dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+                break;
+            case il::eDepthStencilAttachmentOptimal:
+                dstMask      = afb::eDepthStencilAttachmentWrite;
+                dstStageMask = vk::PipelineStageFlagBits::eEarlyFragmentTests;
+                break;
+            case il::eDepthStencilReadOnlyOptimal:
+                dstMask      = afb::eDepthStencilAttachmentRead;
+                dstStageMask = vk::PipelineStageFlagBits::eEarlyFragmentTests;
+                break;
+            case il::eShaderReadOnlyOptimal:
+                dstMask      = afb::eShaderRead;
+                dstStageMask = vk::PipelineStageFlagBits::eVertexShader;
+                break;
+            case il::eTransferSrcOptimal:
+                dstMask      = afb::eTransferRead;
+                dstStageMask = vk::PipelineStageFlagBits::eTransfer;
+                break;
+            case il::eTransferDstOptimal:
+                dstMask      = afb::eTransferWrite;
+                dstStageMask = vk::PipelineStageFlagBits::eTransfer;
+                break;
+            case il::ePreinitialized:
+                dstMask      = afb::eTransferWrite;
+                dstStageMask = vk::PipelineStageFlagBits::eTransfer;
+                break;
+            case il::ePresentSrcKHR:
+                dstMask = afb::eMemoryRead;
+                break;
+        }
+
+        barrier.setOldLayout(oldLayout)
+            .setNewLayout(newLayout)
+            .setSrcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED)
+            .setDstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED)
+            .setImage(command.image)
+            .setSubresourceRange(command.subresourceRange)
+            .setSrcAccessMask(srcMask)
+            .setDstAccessMask(dstMask);
+
+        m_CommandBuffer.pipelineBarrier(srcStageMask, dstStageMask, dependencyFlags, nullptr, nullptr, barrier);
     }
 } // namespace wind

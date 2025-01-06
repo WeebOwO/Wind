@@ -22,6 +22,8 @@ namespace wind::rg
     class RenderGraphAllocator;
     class RenderGraphPassExecutor;
 
+    constexpr std::string kBackBufferName = "BackBuffer";
+
     class RenderGraph
     {
     public:
@@ -93,7 +95,14 @@ namespace wind::rg
         void Compile();
 
         // get resource from handle
-        VirutalResource* GetResource(RenderGraphHandle handle) const;
+        VirutalResource*      GetResource(RenderGraphHandle handle) const;
+        RenderGraphAllocator* GetAllocator() { return m_allocator; }
+
+        template<typename RESOURCE>
+        const RESOURCE& Get(RenderGraphID<RESOURCE> resourceID) const
+        {
+            return static_cast<const Resource<RESOURCE>&>(GetResource(resourceID)).resource;
+        }
 
     private:
         Builder           AddPassImpl(const std::string& name, RenderGraphPassBase* pass);

@@ -16,10 +16,6 @@ namespace wind
     public:
         SceneHandle() = default;
         SceneHandle(uint32_t index) : Handle(index) {}
-
-    private:
-        void Init() override;
-        void Destroy() override;
     };
 
     struct SceneCreateInfo
@@ -36,7 +32,12 @@ namespace wind
         SceneHandle CreateScene(const SceneCreateInfo& createInfo);
         void        DestroyScene(SceneHandle& handle);
 
+        Scene* GetActiveScene();
+
+        Scene* GetScene(SceneHandle handle);
+        Scene* GetScene(const std::string& sceneName);
+
     private:
-        wind::vector<Scene*> m_scenes;
+        wind::vector<Scene*> m_Scenes;
     };
 } // namespace wind

@@ -10,6 +10,8 @@ namespace wind::rg
         RenderGraphAllocator(Device* device);
         ~RenderGraphAllocator();
 
+        uint32_t allocateResource();
+
     private:
         Device* m_device;
     };

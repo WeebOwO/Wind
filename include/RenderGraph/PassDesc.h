@@ -32,5 +32,7 @@ namespace wind::rg
     };
 
     struct ComputePassDesc
-    {};
+    {
+        
+    };
 } // namespace wind

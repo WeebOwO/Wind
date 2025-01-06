@@ -45,8 +45,11 @@ namespace wind::rg
 
     void RenderGraph::Compile()
     {
-        // TODO: compile the render graph into topological order
-        
+        for(auto passNode : m_passNodes)
+        {
+            ResourceRegistry registry(*this, *passNode);
+            passNode->Prepare(registry);
+        }
     }
 
     void RenderGraph::Execute(CommandStream& stream)
@@ -57,7 +60,6 @@ namespace wind::rg
             ResourceRegistry registry(*this, *passNode);
             passNode->Execute(registry, stream);
         }
-        
         return;
     }
 

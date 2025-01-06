@@ -15,8 +15,6 @@ namespace wind
         template<size_t N>
         using TypeAt = typename std::tuple_element<N, Structure>::type;
 
-        
-
     private:
         static constexpr const size_t kArrayCount = sizeof...(Types);
     };

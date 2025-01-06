@@ -11,3 +11,4 @@ VS2022.bat
 
 # auto generate file
 xmake/Config.h
+.vscode/

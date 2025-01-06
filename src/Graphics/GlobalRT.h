@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cstdint>
+
 namespace wind 
 {
-    enum RTID : uint32_t
+    enum RTID : uint8_t
     {
         SceneColor = 0,
         SceneDepth = 1,

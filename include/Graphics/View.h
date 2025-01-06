@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Graphics/Camera.h"
 
 namespace wind
@@ -7,7 +9,7 @@ namespace wind
     class Scene;
     struct View
     {
-        Camera* renderCamera;
-        Scene*  renderScene;
+        Camera*                 camera;
+        Scene*                  renderScene;
     };
 } // namespace wind

@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "RGAllocator.h"
+
 namespace wind::rg
 {
     struct VirutalResource
@@ -10,6 +12,7 @@ namespace wind::rg
         virtual ~VirutalResource() noexcept = default;
 
         virtual bool IsImported() const { return false; }
+        virtual void Create(RenderGraphAllocator* allocator) {}
 
         std::string name;
     };
@@ -24,6 +27,11 @@ namespace wind::rg
         Resource(const std::string& name, const Descriptor& desc) : VirutalResource(name), desc(desc) {}
 
         ~Resource() noexcept override = default;
+
+        void Create(RenderGraphAllocator* allocator) override
+        {
+            resource.Create(allocator, name, desc);
+        }
 
         RESOURCE   resource {};
         Descriptor desc {};

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <atomic>
 
 namespace wind
 {
@@ -10,20 +11,22 @@ namespace wind
     class Handle
     {
     public:
+        static std::atomic<uint32_t> allocateCounter;
+
         using ValueType = T;
 
         Handle() = default;
         Handle(uint32_t index) : m_index(index) {}
 
-        T*   Get() { return m_object; }
         bool IsValid() { return m_index != INVALID_HANDLE; }
+
+        operator uint32_t() const { return m_index; }
 
         virtual void Init() {}
         virtual void Destroy() {}
 
     protected:
-        uint32_t m_index  = INVALID_HANDLE;
-        T*       m_object = nullptr;
+        uint32_t m_index = INVALID_HANDLE;
     };
 
 } // namespace wind

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "RenderGraph/RenderGraphResource.h"
 #include <string>
 
 #include "PassDesc.h"
@@ -15,17 +14,17 @@ namespace wind::rg
     class PassNode
     {
     public:
-        PassNode(const std::string& name) noexcept : m_Name(name) {}
+        PassNode(const std::string& name) noexcept : name(name) {}
         virtual ~PassNode() = default;
 
+        virtual void Prepare(ResourceRegistry& registry) {}
         virtual void Execute(ResourceRegistry& registry, CommandStream& commandStream) = 0;
 
-        std::string GetPassName() const { return m_Name; }
+        std::string GetPassName() const { return name; }
 
-    protected:
-        std::string m_Name;
-        wind::vector<VirutalResource*> m_Construct;
-        wind::vector<VirutalResource*> m_Destroy;
+        std::string                    name;
+        wind::vector<VirutalResource*> constructResource;
+        wind::vector<VirutalResource*> destroyResource;
     };
 
     class RenderPassNode : public PassNode
@@ -41,6 +40,7 @@ namespace wind::rg
 
         RenderPassNode(RenderGraph* renderGraph, const std::string& name, RenderGraphPassBase* pass);
 
+        void Prepare(ResourceRegistry& registry) override;
         void Execute(ResourceRegistry& registry, CommandStream& commandStream) override;
 
         uint32_t DeclareRenderPass(const std::string& name, const RenderPassDesc::Descriptor& passData);
@@ -48,9 +48,11 @@ namespace wind::rg
         auto GetRenderingInfo() const { return m_RenderingInfo; }
 
     private:
-        RenderGraph*          m_RenderGraph;
-        RenderGraphPassBase*  m_Pass;
-        std::vector<PassData> m_PassDatas;
-        vk::RenderingInfo     m_RenderingInfo;
+        RenderGraph*                             m_RenderGraph;
+        RenderGraphPassBase*                     m_Pass;
+        std::vector<PassData>                    m_PassDatas;
+        std::vector<vk::RenderingAttachmentInfo> m_RenderAttachmentInfos {};
+        vk::RenderingAttachmentInfo              m_DepthAttachmentInfo {};
+        vk::RenderingInfo                        m_RenderingInfo {};
     };
 } // namespace wind::rg

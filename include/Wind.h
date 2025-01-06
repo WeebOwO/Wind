@@ -3,6 +3,7 @@
 #include "Backend/Device.h"
 #include "Core/Application.h"
 #include "Core/Window.h"
+#include "Graphics/Camera.h"
 #include "Graphics/Renderer.h"
 
 namespace wind
@@ -38,9 +39,9 @@ namespace wind
 
         // Member variables
         const CommandLineArguments m_commandLineArguments;
-        std::unique_ptr<Window>    m_window;
-        std::unique_ptr<Device>    m_device;
-        std::vector<Scene*>        m_scenes;
-        std::unique_ptr<Renderer>  m_renderer;
+        std::unique_ptr<Window>    m_Window;
+        std::unique_ptr<Device>    m_Device;
+        std::unique_ptr<Renderer>  m_Renderer;
+        std::unique_ptr<Camera>    m_EditorCamera;
     };
 } // namespace wind

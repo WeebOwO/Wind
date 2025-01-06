@@ -2,6 +2,7 @@
 
 #include <type_traits>
 
+#include "Core/Log.h"
 #include "Backend/Stream.h"
 #include "ResourceRegistry.h"
 
@@ -54,24 +55,27 @@ namespace wind::rg
 
     private:
         friend class RenderGraph;
-        void Execute(const ResourceRegistry& registry, CommandStream& stream) noexcept override {}
+        void Execute(const ResourceRegistry& registry, CommandStream& stream) noexcept override \
+        {
+            WIND_CORE_INFO("This function should not be called");
+        }
     };
 
-    template<typename Data, typename Execute>
-    requires std::is_invocable_v<Execute, const ResourceRegistry&, Data&, CommandStream&> 
+    template<typename Data, typename ExecuteFunc>
+    requires std::is_invocable_v<ExecuteFunc, const ResourceRegistry&, Data&, CommandStream&> 
     class RenderGraphPassConcrete
         : public RenderGraphPass<Data>
     {
         friend class RenderGraph;
 
-        explicit RenderGraphPassConcrete(Execute&& execute) noexcept 
-        : m_execute(std::forward<Execute>(execute)) {}
+        explicit RenderGraphPassConcrete(ExecuteFunc&& execute) noexcept 
+        : m_execute(std::forward<ExecuteFunc>(execute)) {}
 
-        void ExecuteImpl(const ResourceRegistry& registry, CommandStream& stream) noexcept
+        void Execute(const ResourceRegistry& registry, CommandStream& stream) noexcept
         {
             m_execute(registry, this->m_data, stream);
         }
 
-        Execute m_execute;
+        ExecuteFunc m_execute;
     };
 }; // namespace wind::rg
