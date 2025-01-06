@@ -33,16 +33,16 @@ namespace wind
         static void Init();
         static void Shutdown();
 
-        static std::shared_ptr<spdlog::logger> GetCoreLogger() { return s_coreLogger; }
-        static std::shared_ptr<spdlog::logger> GetClientLogger() { return s_clientLogger; }
+        static std::shared_ptr<spdlog::logger> GetCoreLogger() { return s_CoreLogger; }
+        static std::shared_ptr<spdlog::logger> GetClientLogger() { return s_ClientLogger; }
 
         template<typename... Args>
         static void
         PrintMessage(Log::Type type, Log::Level level, spdlog::format_string_t<Args...> fmt, Args&&... args);
 
     private:
-        inline static std::shared_ptr<spdlog::logger> s_coreLogger   = nullptr;
-        inline static std::shared_ptr<spdlog::logger> s_clientLogger = nullptr;
+        inline static std::shared_ptr<spdlog::logger> s_CoreLogger   = nullptr;
+        inline static std::shared_ptr<spdlog::logger> s_ClientLogger = nullptr;
     };
 
     template<typename... Args>

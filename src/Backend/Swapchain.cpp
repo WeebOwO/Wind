@@ -60,13 +60,13 @@ namespace wind
         m_swapchain = vkDevice.createSwapchainKHR(createInfoNative);
 
         // extract swapchain images and create image views
-        m_images = vkDevice.getSwapchainImagesKHR(m_swapchain);
-        m_imageViews.resize(m_images.size());
+        m_Images = vkDevice.getSwapchainImagesKHR(m_swapchain);
+        m_ImageViews.resize(m_Images.size());
 
-        for (size_t i = 0; i < m_images.size(); i++)
+        for (size_t i = 0; i < m_Images.size(); i++)
         {
             vk::ImageViewCreateInfo imageViewCreateInfo = {
-                .image            = m_images[i],
+                .image            = m_Images[i],
                 .viewType         = vk::ImageViewType::e2D,
                 .format           = m_format,
                 .components       = {vk::ComponentSwizzle::eIdentity,
@@ -76,7 +76,7 @@ namespace wind
                 .subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1},
             };
 
-            m_imageViews[i] = vkDevice.createImageView(imageViewCreateInfo);
+            m_ImageViews[i] = vkDevice.createImageView(imageViewCreateInfo);
         }
     }
 
@@ -85,7 +85,7 @@ namespace wind
         auto vkDevice = m_device->GetDevice();
         // destroy image views
         // if we don't using auto& here, it will cause a validation layer error! wtfff
-        for (auto& imageView : m_imageViews)
+        for (auto& imageView : m_ImageViews)
         {
             vkDevice.destroyImageView(imageView);
         }

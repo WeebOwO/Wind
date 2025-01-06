@@ -19,10 +19,10 @@ namespace wind
         Image(Device* device) : Resource(device, Tag::Image) {}
         ~Image() override;
 
-        auto GetAllcateImage() { return m_allocateImage; }
+        auto GetAllcateImage() { return m_AllocateImage; }
 
     protected:
-        AllocateImage m_allocateImage;
+        AllocateImage m_AllocateImage;
     };
 
     using ImageHandle = ResourceHandle<Image>;

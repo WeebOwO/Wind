@@ -17,25 +17,25 @@ namespace wind
 
         spdlog::init_thread_pool(8192, 1);
 
-        s_coreLogger = std::make_shared<spdlog::async_logger>("Wind",
+        s_CoreLogger = std::make_shared<spdlog::async_logger>("Wind",
                                                               windowSinks.begin(),
                                                               windowSinks.end(),
                                                               spdlog::thread_pool(),
                                                               spdlog::async_overflow_policy::block);
-        s_coreLogger->set_level(spdlog::level::trace);
+        s_CoreLogger->set_level(spdlog::level::trace);
 
-        s_clientLogger = std::make_shared<spdlog::async_logger>(
+        s_ClientLogger = std::make_shared<spdlog::async_logger>(
             "APP", appSinks.begin(), appSinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-        s_clientLogger->set_level(spdlog::level::trace);
+        s_ClientLogger->set_level(spdlog::level::trace);
 
-        spdlog::register_logger(s_coreLogger);
-        spdlog::register_logger(s_clientLogger);
+        spdlog::register_logger(s_CoreLogger);
+        spdlog::register_logger(s_ClientLogger);
     }
 
     void Log::Shutdown()
     {
-        s_clientLogger->flush();
-        s_coreLogger->flush();
+        s_ClientLogger->flush();
+        s_CoreLogger->flush();
         spdlog::drop_all();
         spdlog::shutdown();
     }

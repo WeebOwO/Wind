@@ -24,8 +24,8 @@ namespace wind
     private:
         void* AllocImpl(size_t size, size_t align) override;
 
-        void*  m_memory;
-        size_t m_size;
-        size_t m_offset;
+        void*  m_Memory;
+        size_t m_Size;
+        size_t m_Offset;
     };
 } // namespace wind

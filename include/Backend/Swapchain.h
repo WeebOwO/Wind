@@ -26,8 +26,8 @@ namespace wind
         vk::SwapchainKHR  GetSwapchain() const { return m_swapchain; }
         vk::SwapchainKHR* GetSwapchainPtr() { return &m_swapchain; }
 
-        vk::Image     GetImage(uint32_t index) const { return m_images[index]; }
-        vk::ImageView GetImageView(uint32_t index) const { return m_imageViews[index]; }
+        vk::Image     GetImage(uint32_t index) const { return m_Images[index]; }
+        vk::ImageView GetImageView(uint32_t index) const { return m_ImageViews[index]; }
 
         uint32_t GetWidth() const { return m_width; }
         uint32_t GetHeight() const { return m_height; }
@@ -39,7 +39,7 @@ namespace wind
         vk::SwapchainKHR m_swapchain;
 
         // swapchain images
-        std::vector<vk::Image>     m_images;
-        std::vector<vk::ImageView> m_imageViews;
+        std::vector<vk::Image>     m_Images;
+        std::vector<vk::ImageView> m_ImageViews;
     };
 } // namespace wind

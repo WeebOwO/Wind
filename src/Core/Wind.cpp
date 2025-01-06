@@ -12,7 +12,7 @@ namespace wind
     const std::string kMainSceneName = "MainScene";
 
     ClientApp::ClientApp(const CommandLineArguments& args, const WindowCreateInfo& windowCreateInfo) :
-        m_commandLineArguments(args)
+        m_CommandLineArguments(args)
     {
         m_Window = std::make_unique<Window>(windowCreateInfo.title, windowCreateInfo.width, windowCreateInfo.height);
     }
@@ -54,7 +54,7 @@ namespace wind
     void ClientApp::Init()
     {
         Log::Init();
-        ParseCommandLine(m_commandLineArguments);
+        ParseCommandLine(m_CommandLineArguments);
         RegisterWindow();
         // device extensions
         DeviceExtensions extensions = {.extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME}, .enableValidationLayers = true};

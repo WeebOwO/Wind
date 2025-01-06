@@ -57,15 +57,15 @@ namespace wind
 
         virtual ~Pipeline();
 
-        auto GetNativePipeline() const { return m_pipeline; }
+        auto GetNativePipeline() const { return m_Pipeline; }
 
     private:
         friend class Device;
 
-        PipelineType         m_type;
-        PassType             m_passType;
-        vk::Pipeline         m_pipeline;
-        vk::Pipeline         m_pipelineCache;
-        std::vector<Shader*> m_refShaders;
+        PipelineType         m_Type;
+        PassType             m_PassType;
+        vk::Pipeline         m_Pipeline;
+        vk::Pipeline         m_PipelineCache;
+        std::vector<Shader*> m_RefShaders;
     };
 } // namespace wind

@@ -155,20 +155,20 @@ namespace wind
     }
 
     Pipeline::Pipeline(Device* device, const vk::GraphicsPipelineCreateInfo& createInfo) :
-        Resource(device, Tag::Pipeline), m_type(PipelineType::Graphics)
+        Resource(device, Tag::Pipeline), m_Type(PipelineType::Graphics)
     {
-        m_pipeline = device->GetDevice().createGraphicsPipeline(nullptr, createInfo).value;
+        m_Pipeline = device->GetDevice().createGraphicsPipeline(nullptr, createInfo).value;
     }
 
     Pipeline::Pipeline(Device* device, const vk::ComputePipelineCreateInfo& createInfo) :
-        Resource(device, Tag::Pipeline), m_type(PipelineType::Compute)
+        Resource(device, Tag::Pipeline), m_Type(PipelineType::Compute)
     {
-        m_pipeline = device->GetDevice().createComputePipeline(nullptr, createInfo).value;
+        m_Pipeline = device->GetDevice().createComputePipeline(nullptr, createInfo).value;
     }
 
     Pipeline::~Pipeline()
     {
         vk::Device device = m_device->GetDevice();
-        device.destroyPipeline(m_pipeline);
+        device.destroyPipeline(m_Pipeline);
     }
 } // namespace wind

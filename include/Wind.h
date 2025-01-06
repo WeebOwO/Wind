@@ -38,7 +38,7 @@ namespace wind
         void RegisterWindow();
 
         // Member variables
-        const CommandLineArguments m_commandLineArguments;
+        const CommandLineArguments m_CommandLineArguments;
         std::unique_ptr<Window>    m_Window;
         std::unique_ptr<Device>    m_Device;
         std::unique_ptr<Renderer>  m_Renderer;

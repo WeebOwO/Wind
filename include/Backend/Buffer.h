@@ -20,11 +20,11 @@ namespace wind
         Buffer(Device* device, vk::BufferCreateInfo& bufferInfo, const VmaAllocationCreateInfo& allocInfo);
         ~Buffer() override;
 
-        AllocateBuffer GetBuffer() const { return m_allocateBuffer; }
+        AllocateBuffer GetBuffer() const { return m_AllocateBuffer; }
 
     private:
-        AllocateBuffer m_allocateBuffer;
-        void*          m_mappedData;
+        AllocateBuffer m_AllocateBuffer;
+        void*          m_MappedData;
     };
 
     using BufferRef = std::shared_ptr<Buffer>;
