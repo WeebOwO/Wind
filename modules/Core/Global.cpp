@@ -5,6 +5,8 @@
 namespace wind::global
 {
     SceneManager* sceneManager;
+    SlangCompiler* slangCompiler;
+
     static DeletionQueue deletionQueue;
 
     template<typename T, typename... Args>
@@ -18,6 +20,7 @@ namespace wind::global
     void Init() 
     {
         sceneManager = CreateGlobalObject<SceneManager>();
+        slangCompiler = CreateGlobalObject<SlangCompiler>();
     }
 
     void Shutdown() 

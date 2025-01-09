@@ -27,6 +27,7 @@ namespace wind
         JobSystem::RunTest();
 #endif
         LoadScene();
+        global::slangCompiler->Test();
 
         View view = {.camera = m_EditorCamera.get()};
 
