@@ -25,5 +25,5 @@ namespace wind
         AllocateImage m_AllocateImage;
     };
 
-    using ImageHandle = ResourceHandle<Image>;
+    using ImageRef = std::shared_ptr<Image>;
 } // namespace wind

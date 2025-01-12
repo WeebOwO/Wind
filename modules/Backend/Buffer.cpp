@@ -17,8 +17,28 @@ namespace wind
                         nullptr);
     }
 
+    void Buffer::Map()
+    {
+        auto& allocator = m_device->GetAllocator();
+        vmaMapMemory(allocator, m_AllocateBuffer.allocation, &m_MappedData);
+    }
+
+    void Buffer::Unmap()
+    {
+        auto& allocator = m_device->GetAllocator();
+        vmaUnmapMemory(allocator, m_AllocateBuffer.allocation);
+    }
+
+    void Buffer::UpdateData(const void* data, size_t size)
+    {
+        Map();
+        memcpy(m_MappedData, data, size);
+        Unmap();
+    }
+
     Buffer::~Buffer()
     {
+        m_device->WaitIdle();
         auto& allocator = m_device->GetAllocator();
         vmaDestroyBuffer(allocator, m_AllocateBuffer.buffer, m_AllocateBuffer.allocation);
     }

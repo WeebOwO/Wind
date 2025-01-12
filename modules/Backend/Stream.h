@@ -38,7 +38,7 @@ namespace wind
 
         void BindPipeline(const Pipeline& pipeline);
 
-        void DrawIndex(const DrawIndexCommand& command);
+        void DrawIndexed(const DrawIndexCommand& command);
         void Flush();
 
         void RegisterWaitDependency(vk::Semaphore semaphore);
@@ -46,13 +46,16 @@ namespace wind
         void RegisterSignalDependency(vk::Semaphore semaphore);
         void RegisterSignalFence(vk::Fence fence);
 
-        void BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding);
-        void BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, vk::IndexType indexType);
+        void BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, uint32_t binding);
+        void BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::IndexType indexType);
 
         void ClearColor(const ColorClearCommand& command);
         void ClearDepthStencil(const DepthStencilClearCommand& command);
 
         void TransitionImageLayout(const ImageLayoutTransitionCommand& command);
+
+        void SetViewport(const vk::Viewport& viewport);
+        void SetScissor(const vk::Rect2D& scissor);
 
     private:
         void Init();

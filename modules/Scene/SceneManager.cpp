@@ -1,26 +1,27 @@
 #include "SceneManager.h"
 
-#include "Scene.h"
 #include "Core/Log.h"
+#include "Scene.h"
 
-namespace wind 
+
+namespace wind
 {
     Scene* SceneManager::GetScene(SceneHandle handle)
     {
-        if(!handle.IsValid()) 
+        if (!handle.IsValid())
         {
             WIND_CORE_ERROR("Invalid Scene Handle");
             return nullptr;
         }
-        
+
         return m_Scenes[handle];
     }
 
     Scene* SceneManager::GetScene(const std::string& sceneName)
     {
-        for(auto scene : m_Scenes)
+        for (auto scene : m_Scenes)
         {
-            if(scene->GetName() == sceneName)
+            if (scene->GetName() == sceneName)
             {
                 return scene;
             }
@@ -45,7 +46,7 @@ namespace wind
 
     void SceneManager::DestroyScene(SceneHandle& handle)
     {
-        if(!handle.IsValid())
+        if (!handle.IsValid())
         {
             WIND_CORE_ERROR("Invalid Scene Handle");
             return;
@@ -60,4 +61,12 @@ namespace wind
         assert(m_Scenes.size() > 0);
         return m_Scenes[0];
     }
-}
+
+    SceneManager::~SceneManager()
+    {
+        for (auto scene : m_Scenes)
+        {
+            delete scene;
+        }
+    }
+} // namespace wind

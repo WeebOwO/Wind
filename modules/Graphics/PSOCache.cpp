@@ -34,11 +34,11 @@ namespace wind
             std::vector<Shader*> shaders = {vs, ps};
 
             builder.ApplyDefaultState()
-                .SetBlendMode(BlendMode::Opaque)
-                .SetShaders(shaders)
-                .SetLayout(m_DefaultLayout)
-                .SetVertexLayout(VertexLayoutType::StaticMesh)
-                .SetPassType(PassType::Lighting);
+                    .SetBlendMode(BlendMode::Opaque)
+                    .SetShaders(shaders)
+                    .SetLayout(m_DefaultLayout)
+                    .SetVertexLayout(VertexLayoutType::StaticMesh)
+                    .SetPassType(PassType::Lighting);
 
             m_Pipelines[id] = builder.Build();
         }

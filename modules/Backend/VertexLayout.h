@@ -14,7 +14,8 @@ namespace wind
 
     struct StaticMeshVertex
     {
-        glm::vec3 position;
+        glm::vec2 position;
+        glm::vec3 color;
 
         static std::vector<vk::VertexInputBindingDescription>   s_bindingDescriptions;
         static std::vector<vk::VertexInputAttributeDescription> s_attributeDescriptions;

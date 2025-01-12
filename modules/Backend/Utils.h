@@ -2,7 +2,10 @@
 
 #include "Enum.h"
 
-namespace wind
+#include "Backend/Buffer.h"
+#include "Backend/VertexLayout.h"
+
+namespace wind::backend::utils
 {
     // auto generate string from enum using gpt
     template<typename T>
@@ -69,4 +72,7 @@ namespace wind
             static_assert(false, "Unknown type");
         };
     }
+
+    BufferRef CreateVertexBuffer(Device* device, const std::vector<StaticMeshVertex>& vertices);
+    BufferRef CreateIndexBuffer(Device* device, const std::vector<uint32_t>& indices);
 } // namespace wind

@@ -8,5 +8,6 @@ int main(int argc, char** argv)
         ClientApp::Create(wind::CommandLineArguments {argc, argv}, 
             wind::WindowCreateInfo {"Wind Engine", 1280, 720});
     app->Run();
+    app->Shutdown();
     return 0;
 }

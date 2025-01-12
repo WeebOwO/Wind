@@ -10,6 +10,6 @@ namespace wind::global
     void Init();
     void Shutdown();
 
-    extern SceneManager* sceneManager;
+    extern SceneManager*  sceneManager;
     extern SlangCompiler* slangCompiler;
-}
+} // namespace wind::global

@@ -148,6 +148,7 @@ namespace wind
 
     void Device::Destroy()
     {
+        vmaDestroyAllocator(m_allocator);
         m_device.destroy();
         m_instance.destroyDebugUtilsMessengerEXT(m_debugMessenger);
         m_instance.destroySurfaceKHR(m_surface);

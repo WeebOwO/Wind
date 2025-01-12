@@ -13,6 +13,9 @@
 #include "RenderGraph/RenderGraphID.h"
 #include "RenderGraph/RenderGraphTexture.h"
 
+#include "Component/MeshRenderer.h"
+#include "Scene/Scene.h"
+
 using namespace wind::rg;
 
 namespace wind
@@ -86,7 +89,7 @@ namespace wind
         FrameData& frame    = GetCurrentFrameData();
 
         // transition the image layout
-        auto backBuffer = m_swapchain->GetImage(frame.swapChainImageIndex);
+        auto                         backBuffer = m_swapchain->GetImage(frame.swapChainImageIndex);
         ImageLayoutTransitionCommand transitionCommand;
         transitionCommand.image            = backBuffer;
         transitionCommand.oldLayout        = vk::ImageLayout::eColorAttachmentOptimal;
@@ -140,9 +143,9 @@ namespace wind
         };
 
         RenderGraphTexture backBuffer;
-        backBuffer.desc.width  = m_swapchain->GetWidth();
-        backBuffer.desc.height = m_swapchain->GetHeight();
-        backBuffer.desc.format = m_swapchain->GetFormat();
+        backBuffer.desc.width         = m_swapchain->GetWidth();
+        backBuffer.desc.height        = m_swapchain->GetHeight();
+        backBuffer.desc.format        = m_swapchain->GetFormat();
         backBuffer.desc.initialLayout = vk::ImageLayout::eColorAttachmentOptimal;
 
         backBuffer.view  = m_swapchain->GetImageView(currentFrameData.swapChainImageIndex);
@@ -153,6 +156,8 @@ namespace wind
         blackBoard.Put(rg::kBackBufferName, backBufferHandle);
 
         Scene* renderScene = m_view.renderScene;
+        auto   gameObjects = renderScene->GetGameObjects();
+
         commandStream->BeginRecording();
         // present pass
 
@@ -194,6 +199,43 @@ namespace wind
 
                     RenderPassNode* passNode = registry.GetPass<RenderPassNode>();
                     stream.BeginRendering(passNode->GetRenderingInfo());
+                    stream.BindPipeline(*pipeline);
+
+                    // todo: reduece this kind of code which hard code the render pass
+                    vk::Viewport viewport;
+                    viewport.x      = 0.0f;
+                    viewport.y      = 0.0f;
+                    viewport.width  = static_cast<float>(m_swapchain->GetWidth());
+                    viewport.height = static_cast<float>(m_swapchain->GetHeight());
+                    stream.SetViewport(viewport);
+
+                    vk::Rect2D scissor;
+                    scissor.offset = {0, 0};
+                    scissor.extent = {m_swapchain->GetWidth(), m_swapchain->GetHeight()};
+                    stream.SetScissor(scissor);
+
+                    // draw the scene
+                    for (auto go : gameObjects)
+                    {
+                        auto meshRenderer = go->GetComponent<MeshRenderer>();
+                        if (meshRenderer)
+                        {
+                            std::shared_ptr<Mesh> mesh = meshRenderer->GetInternalMesh();
+                            for (auto subMesh : mesh->subMeshes)
+                            {
+                                stream.BindVertexBuffer(subMesh.vertexBuffer, 0, 0);
+                                stream.BindIndexBuffer(subMesh.indexBuffer, 0, vk::IndexType::eUint32);
+                                DrawIndexCommand drawCommand;
+                                drawCommand.indexCount    = subMesh.indices.size();
+                                drawCommand.instanceCount = 1;
+                                drawCommand.firstIndex    = 0;
+                                drawCommand.vertexOffset  = 0;
+                                drawCommand.firstInstance = 0;
+                                stream.DrawIndexed(drawCommand);
+                            }
+                        }
+                    }
+
                     stream.EndRendering();
                 })
             .GetData();

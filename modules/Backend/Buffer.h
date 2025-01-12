@@ -21,6 +21,10 @@ namespace wind
         ~Buffer() override;
 
         AllocateBuffer GetBuffer() const { return m_AllocateBuffer; }
+        void Map();
+        void Unmap();
+
+        void UpdateData(const void* data, size_t size);
 
     private:
         AllocateBuffer m_AllocateBuffer;

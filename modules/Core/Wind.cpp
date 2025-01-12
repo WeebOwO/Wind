@@ -5,7 +5,12 @@
 #include "Global.h"
 
 #include "Backend/Swapchain.h"
+#include "Backend/Utils.h"
+#include "Component/MeshRenderer.h"
 #include "JobSystem/JobSystem.h"
+#include "Resource/Mesh.h"
+#include "Scene/GameObject.h"
+#include "Scene/Scene.h"
 
 namespace wind
 {
@@ -29,7 +34,8 @@ namespace wind
         LoadScene();
         global::slangCompiler->Test();
 
-        View view = {.camera = m_EditorCamera.get()};
+        Scene* scene = global::sceneManager->GetActiveScene();
+        View   view  = {.camera = m_EditorCamera.get(), .renderScene = scene};
 
         while (!m_Window->ShouldClose())
         {
@@ -50,6 +56,27 @@ namespace wind
         WIND_CLIENT_INFO("Loading scene");
         // load the scene
         SceneHandle sceneHandle = global::sceneManager->CreateScene({.sceneName = kMainSceneName});
+        Scene*      scene       = global::sceneManager->GetScene(sceneHandle);
+        GameObject* go          = scene->CreateEntity("TestEntity");
+
+        std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+        SubMesh               subMesh;
+
+        const std::vector<Vertex> vertices = {{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+                                              {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+                                              {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+
+        const std::vector<uint32_t> indices = {0, 1, 2};
+
+        subMesh.vertices     = vertices;
+        subMesh.indices      = indices;
+        subMesh.vertexBuffer = backend::utils::CreateVertexBuffer(m_Device.get(), vertices);
+        subMesh.indexBuffer  = backend::utils::CreateIndexBuffer(m_Device.get(), indices);
+
+        mesh->subMeshes.push_back(subMesh);
+
+        auto* meshRenderer = go->AddComponent<MeshRenderer>();
+        meshRenderer->SetMesh(mesh);
     }
 
     void ClientApp::Init()
@@ -78,9 +105,14 @@ namespace wind
     void ClientApp::Shutdown()
     {
         WIND_CLIENT_INFO("ClientApp is shutting down");
-        Log::Shutdown();
         JobSystem::Shutdown();
         global::Shutdown();
+        // wait for the device to finish
+        m_Device->WaitIdle();
+        m_Window.reset();
+        m_Renderer.reset();
+        m_Device.reset();
+        Log::Shutdown();
     }
 
     std::unique_ptr<Application> ClientApp::Create(const CommandLineArguments& args,

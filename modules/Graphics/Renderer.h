@@ -47,8 +47,8 @@ namespace wind
         Device*                                   m_device; // non owning
         View                                      m_view;
         std::thread::id                           m_renderThread;
-        std::shared_ptr<Swapchain>                m_swapchain;
         std::unique_ptr<PSOCache>                 m_psoCache;
+        std::shared_ptr<Swapchain>                m_swapchain;
         std::unique_ptr<ShaderCache>              m_shaderCache;
         std::unique_ptr<rg::RenderGraphAllocator> m_rgAllocator;
         std::vector<FrameData>                    m_frames;

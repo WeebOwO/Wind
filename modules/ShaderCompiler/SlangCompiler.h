@@ -1,6 +1,8 @@
 #include <slang.h>
+#include <slang-com-helper.h>
+#include <slang-com-ptr.h>
 
-namespace wind 
+namespace wind
 {
     class SlangCompiler
     {
@@ -8,10 +10,12 @@ namespace wind
         SlangCompiler();
         ~SlangCompiler();
 
-        void Compile(const char* source, const char* entryPoint, const char* target, const char* output);
+        void Compile();
         void Test();
 
     private:
-        slang::ISession* m_Session;
+        void InitializeSlang();
+
+        Slang::ComPtr<slang::IGlobalSession> m_GlobalSession;
     };
-}
+} // namespace wind

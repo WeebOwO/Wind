@@ -68,7 +68,7 @@ namespace wind
         m_CommandBuffer.bindPipeline(bindPoint, pipeline.GetNativePipeline());
     }
 
-    void CommandStream::DrawIndex(const DrawIndexCommand& command)
+    void CommandStream::DrawIndexed(const DrawIndexCommand& command)
     {
         m_CommandBuffer.drawIndexed(
             command.indexCount, command.instanceCount, command.firstIndex, command.vertexOffset, command.firstInstance);
@@ -118,20 +118,26 @@ namespace wind
         m_WaitStagesQueue.clear();
     }
 
-    void
-    CommandStream::BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::DeviceSize range, uint32_t binding)
+    void CommandStream::BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, uint32_t binding)
     {
         vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
         m_CommandBuffer.bindVertexBuffers(binding, {vkBuffer}, {offset});
     }
 
-    void CommandStream::BindIndexBuffer(BufferRef      buffer,
-                                        vk::DeviceSize offset,
-                                        vk::DeviceSize range,
-                                        vk::IndexType  indexType)
+    void CommandStream::BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::IndexType indexType)
     {
         vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
         m_CommandBuffer.bindIndexBuffer(vkBuffer, offset, indexType);
+    }
+
+    void CommandStream::SetViewport(const vk::Viewport& viewport) 
+    { 
+        m_CommandBuffer.setViewport(0, viewport); 
+    }
+    
+    void CommandStream::SetScissor(const vk::Rect2D& scissor) 
+    {
+        m_CommandBuffer.setScissor(0, scissor); 
     }
 
     void CommandStream::ClearColor(const ColorClearCommand& command) {}

@@ -23,6 +23,9 @@ namespace wind
             CommandStream
         };
 
+        Resource(const Resource&)            = delete;
+        Resource& operator=(const Resource&) = delete;
+
     protected:
         Tag           m_tag    = Tag::None;
         Device*       m_device = nullptr;

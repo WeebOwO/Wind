@@ -87,10 +87,10 @@ namespace wind
     {
         if (passType == PassType::Lighting)
         {
-            std::vector<vk::Format> colorFormats = {vk::Format::eR8G8B8A8Unorm};
-            m_pipeInfo.renderInfoKHR.setDepthAttachmentFormat(vk::Format::eD32Sfloat)
-                .setColorAttachmentCount(1)
-                .setColorAttachmentFormats(colorFormats);
+            std::vector<vk::Format> colorFormats = {vk::Format::eB8G8R8A8Unorm};
+            m_pipeInfo.renderInfoKHR.setDepthAttachmentFormat(vk::Format::eUndefined)
+                                    .setColorAttachmentCount(1)
+                                    .setColorAttachmentFormats(colorFormats);
         }
         return *this;
     }
@@ -125,7 +125,7 @@ namespace wind
         }
 
         m_pipeInfo.colorBlendStateCI.setAttachmentCount(static_cast<uint32_t>(m_pipeInfo.colorBlendAttachments.size()))
-            .setPAttachments(m_pipeInfo.colorBlendAttachments.data());
+                                    .setPAttachments(m_pipeInfo.colorBlendAttachments.data());
         return *this;
     }
 

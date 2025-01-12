@@ -1,16 +1,12 @@
-// shader.slang
-
-//TEST_INPUT:ubuffer(random(float, 4096, -1.0, 1.0), stride=4):name=ioBuffer
-RWStructuredBuffer<float> ioBuffer;
+// hello-world.slang
+StructuredBuffer<float> buffer0;
+StructuredBuffer<float> buffer1;
+RWStructuredBuffer<float> result;
 
 [shader("compute")]
-[numthreads(4, 1, 1)]
-void computeMain(uint3 dispatchThreadID : SV_DispatchThreadID)
+[numthreads(1,1,1)]
+void computeMain(uint3 threadId : SV_DispatchThreadID)
 {
-    uint tid = dispatchThreadID.x;
-
-    float i = ioBuffer[tid];
-    float o = i < 0.5 ? (i + i) : sqrt(i);
-
-    ioBuffer[tid] = o;
+    uint index = threadId.x;
+    result[index] = buffer0[index] + buffer1[index];
 }

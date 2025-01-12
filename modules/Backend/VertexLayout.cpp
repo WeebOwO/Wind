@@ -9,7 +9,8 @@ namespace wind
 
     std::vector<vk::VertexInputAttributeDescription> StaticMeshVertex::s_attributeDescriptions = 
     {
-        vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32B32Sfloat, offsetof(StaticMeshVertex, position))
+        vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32Sfloat, offsetof(StaticMeshVertex, position)),
+        vk::VertexInputAttributeDescription(1, 0, vk::Format::eR32G32B32Sfloat, offsetof(StaticMeshVertex, color))
     };
 
     void InitVertexInputState(VertexLayoutType type, vk::PipelineVertexInputStateCreateInfo& vertexInputState)

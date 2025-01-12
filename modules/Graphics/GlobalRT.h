@@ -2,13 +2,27 @@
 
 #include <cstdint>
 
-namespace wind 
+#include "Backend/Image.h"
+
+namespace wind
 {
     enum RTID : uint8_t
     {
         SceneColor = 0,
-        SceneDepth = 1,
+        SceneDepth,
+        Count,
     };
 
-    void InitGlobalRT(uint32_t width, uint32_t height);
-}
+    class RTManager
+    {
+    public:
+        RTManager();
+        ~RTManager();
+
+        void Init();
+        void CreateRT(RTID id, uint32_t width, uint32_t height);
+
+    private:
+        Image m_images[RTID::Count];
+    };
+} // namespace wind

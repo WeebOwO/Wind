@@ -1,10 +1,8 @@
 #pragma once
 
-#include <unordered_map>
-
 #include <entt/entt.hpp>
 
-#include "Entity.h"
+#include "GameObject.h"
 
 namespace wind
 {
@@ -20,20 +18,21 @@ namespace wind
     {
     public:
         Scene()          = default;
-        virtual ~Scene() = default;
+        virtual ~Scene();
 
-        Entity CreateEntity(const std::string& name = "None");
-        void   DestroyEntity(Entity entity);
+        GameObject* CreateEntity(const std::string& name = "None");
+        void        DestroyEntity(GameObject* entity);
 
         void               SetName(const std::string& name) { m_Name = name; }
         const std::string& GetName() const { return m_Name; }
 
-    private:
-        friend class Entity;
-        std::string m_Name;
+        auto GetGameObjects() { return m_GameObjects; }
 
-        SceneState                           m_state = SceneState::Invalid;
-        std::unordered_map<uint64_t, Entity> m_entities;
-        entt::registry                       m_registry;
+    private:
+        friend class GameObject;
+
+        std::string              m_Name;
+        SceneState               m_State = SceneState::Invalid;
+        std::vector<GameObject*> m_GameObjects;
     };
 } // namespace wind

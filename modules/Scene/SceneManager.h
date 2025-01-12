@@ -27,7 +27,7 @@ namespace wind
     {
     public:
         SceneManager()          = default;
-        virtual ~SceneManager() = default;
+        virtual ~SceneManager();
 
         SceneHandle CreateScene(const SceneCreateInfo& createInfo);
         void        DestroyScene(SceneHandle& handle);

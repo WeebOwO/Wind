@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Component.h"
+#include "Component.h"
 
 #include "Core/Math.h"
 #include "Core/Vector.h"
@@ -14,14 +14,14 @@ namespace wind
         virtual ~Transform() = default;
 
         // range-based for loop
-        auto begin() { return m_children.begin(); }
-        auto end() { return m_children.end(); }
+        auto begin() { return m_Children.begin(); }
+        auto end() { return m_Children.end(); }
 
     private:
         glm::vec3 m_position;
         glm::vec3 m_rotation;
         glm::vec3 m_scale;
 
-        wind::vector<Transform> m_children;
+        wind::vector<Transform> m_Children;
     };
 } // namespace wind

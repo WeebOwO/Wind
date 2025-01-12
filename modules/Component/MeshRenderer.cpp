@@ -1,9 +1,21 @@
 #include "Component/MeshRenderer.h"
 
-namespace wind 
+namespace wind
 {
-    void MeshRenderer::Draw(CommandStreamRef commandStream)
+    void MeshRenderer::ExtractRenderContext()
     {
-        // Draw the mesh
+        
     }
-}
+
+    void MeshRenderer::OnCreate()
+    {
+        // Create the mesh
+        RegisterType(GetType());
+    }
+
+    void MeshRenderer::OnDestroy()
+    {
+        // Destroy the mesh
+        m_Mesh = nullptr;
+    }
+} // namespace wind
