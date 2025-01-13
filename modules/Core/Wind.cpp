@@ -62,7 +62,7 @@ namespace wind
         std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
         SubMesh               subMesh;
 
-        const std::vector<Vertex> vertices = {{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        const std::vector<Vertex> vertices = {{{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
                                               {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
                                               {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
 
@@ -70,8 +70,16 @@ namespace wind
 
         subMesh.vertices     = vertices;
         subMesh.indices      = indices;
-        subMesh.vertexBuffer = backend::utils::CreateVertexBuffer(m_Device.get(), vertices);
-        subMesh.indexBuffer  = backend::utils::CreateIndexBuffer(m_Device.get(), indices);
+        subMesh.vertexBuffer = m_Device->CreateBuffer({.bytesize    = sizeof(Vertex) * vertices.size(),
+                                                       .usage       = vk::BufferUsageFlagBits::eVertexBuffer,
+                                                       .memoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU});
+
+        subMesh.indexBuffer = m_Device->CreateBuffer({.bytesize    = sizeof(uint32_t) * indices.size(),
+                                                      .usage       = vk::BufferUsageFlagBits::eIndexBuffer,
+                                                      .memoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU});
+
+        m_Device->UpdateBuffer(subMesh.vertexBuffer, vertices.data(), sizeof(Vertex) * vertices.size());
+        m_Device->UpdateBuffer(subMesh.indexBuffer, indices.data(), sizeof(uint32_t) * indices.size());
 
         mesh->subMeshes.push_back(subMesh);
 

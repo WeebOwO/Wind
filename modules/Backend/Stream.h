@@ -27,7 +27,7 @@ namespace wind
         ~CommandStream() noexcept;
 
         vk::CommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
-        
+
         void BeginRecording();
         void EndRecording();
 
@@ -46,8 +46,7 @@ namespace wind
         void RegisterSignalDependency(vk::Semaphore semaphore);
         void RegisterSignalFence(vk::Fence fence);
 
-        void BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, uint32_t binding);
-        void BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::IndexType indexType);
+        void Draw(const DrawCommand& command);
 
         void ClearColor(const ColorClearCommand& command);
         void ClearDepthStencil(const DepthStencilClearCommand& command);
@@ -74,6 +73,8 @@ namespace wind
 
         bool      m_NeedFence;
         vk::Fence m_Fence;
+
+        std::vector<DrawCommand> m_DrawCommands;
     };
 
     using CommandStreamRef = std::shared_ptr<CommandStream>;

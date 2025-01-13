@@ -149,7 +149,7 @@ namespace wind
             .setPViewportState(&m_pipeInfo.viewportStateCI)
             .setPNext(&m_pipeInfo.renderInfoKHR);
 
-        auto pipeline = m_device->CreateResource<Pipeline>(m_pipeInfo.pipelineCI);
+        auto pipeline = m_device->CreateResourceRef<Pipeline>(m_pipeInfo.pipelineCI);
 
         return pipeline;
     }

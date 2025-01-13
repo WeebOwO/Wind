@@ -60,7 +60,7 @@ namespace wind
         ShaderInfo info = GetShaderPath(id);
         BlobData   blob(io::ReadFileAsString(info.filePath.string()), info.type);
 
-        std::shared_ptr<Shader> shader = m_device->CreateResource<Shader>(blob);
+        std::shared_ptr<Shader> shader = m_device->CreateResourceRef<Shader>(blob);
 
         m_shaders[id] = shader;
     }

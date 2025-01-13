@@ -118,27 +118,28 @@ namespace wind
         m_WaitStagesQueue.clear();
     }
 
-    void CommandStream::BindVertexBuffer(BufferRef buffer, vk::DeviceSize offset, uint32_t binding)
+    void CommandStream::Draw(const DrawCommand& command)
     {
-        vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
-        m_CommandBuffer.bindVertexBuffers(binding, {vkBuffer}, {offset});
+        Buffer* vertexBuffer = m_device->GetResource(command.vertexBuffer);
+        Buffer* indexBuffer  = m_device->GetResource(command.indexBuffer);
+
+        if (vertexBuffer == nullptr || indexBuffer == nullptr)
+        {
+            return;
+        }
+
+        uint32_t indexCount = indexBuffer->GetElementCount<uint32_t>();
+
+        m_CommandBuffer.bindVertexBuffers(0, {vertexBuffer->GetBuffer().buffer}, {0});
+        m_CommandBuffer.bindIndexBuffer(indexBuffer->GetBuffer().buffer, 0, vk::IndexType::eUint32);
+        m_CommandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, command.pipeline);
+        m_CommandBuffer.drawIndexed(
+            indexCount, command.instanceCount, command.indexOffset, command.vertexOffset, command.instanceOffset);
     }
 
-    void CommandStream::BindIndexBuffer(BufferRef buffer, vk::DeviceSize offset, vk::IndexType indexType)
-    {
-        vk::Buffer vkBuffer = buffer->GetBuffer().buffer;
-        m_CommandBuffer.bindIndexBuffer(vkBuffer, offset, indexType);
-    }
+    void CommandStream::SetViewport(const vk::Viewport& viewport) { m_CommandBuffer.setViewport(0, viewport); }
 
-    void CommandStream::SetViewport(const vk::Viewport& viewport) 
-    { 
-        m_CommandBuffer.setViewport(0, viewport); 
-    }
-    
-    void CommandStream::SetScissor(const vk::Rect2D& scissor) 
-    {
-        m_CommandBuffer.setScissor(0, scissor); 
-    }
+    void CommandStream::SetScissor(const vk::Rect2D& scissor) { m_CommandBuffer.setScissor(0, scissor); }
 
     void CommandStream::ClearColor(const ColorClearCommand& command) {}
 

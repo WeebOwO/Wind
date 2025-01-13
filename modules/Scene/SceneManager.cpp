@@ -3,18 +3,17 @@
 #include "Core/Log.h"
 #include "Scene.h"
 
-
 namespace wind
 {
     Scene* SceneManager::GetScene(SceneHandle handle)
     {
-        if (!handle.IsValid())
+        if (handle.index == INVALID_HANDLE)
         {
             WIND_CORE_ERROR("Invalid Scene Handle");
             return nullptr;
         }
 
-        return m_Scenes[handle];
+        return m_Scenes[handle.index];
     }
 
     Scene* SceneManager::GetScene(const std::string& sceneName)
@@ -46,14 +45,14 @@ namespace wind
 
     void SceneManager::DestroyScene(SceneHandle& handle)
     {
-        if (!handle.IsValid())
+        if (handle.index != INVALID_HANDLE)
         {
             WIND_CORE_ERROR("Invalid Scene Handle");
             return;
         }
 
-        delete m_Scenes[handle];
-        m_Scenes.erase(m_Scenes.begin() + handle);
+        delete m_Scenes[handle.index];
+        m_Scenes.erase(m_Scenes.begin() + handle.index);
     }
 
     Scene* SceneManager::GetActiveScene()

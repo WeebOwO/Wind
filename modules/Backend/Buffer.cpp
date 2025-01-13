@@ -5,16 +5,45 @@
 namespace wind
 {
     Buffer::Buffer(Device* device, vk::BufferCreateInfo& bufferInfo, const VmaAllocationCreateInfo& allocInfo) :
-        Resource(device, Tag::Buffer)
+        Resource(device, Tag::Buffer), m_AllocationInfo(allocInfo), m_BufferInfo(bufferInfo)
+    {}
+
+    Buffer::Buffer(Device*                        device,
+                   const std::string&             name,
+                   vk::BufferCreateInfo&          bufferInfo,
+                   const VmaAllocationCreateInfo& allocInfo) :
+        Resource(device, Tag::Buffer), m_AllocationInfo(allocInfo), m_BufferInfo(bufferInfo)
     {
-        auto& allocator = device->GetAllocator();
+        m_DebugName = name;
+    }
+
+    Buffer::Buffer(Device* device, const BufferCreateInfo& createInfo) :
+        Resource(device, Tag::Buffer),
+        m_BufferInfo({.size        = createInfo.bytesize,
+                      .usage       = createInfo.usage,
+                      .sharingMode = vk::SharingMode::eExclusive}),
+        m_AllocationInfo({.usage = createInfo.memoryUsage}),
+        m_MappedData(nullptr)
+    {
+        m_DebugName = createInfo.debugName;
+    }
+
+    void Buffer::InitRHI()
+    {
+        auto& allocator = m_device->GetAllocator();
 
         vmaCreateBuffer(allocator,
-                        reinterpret_cast<VkBufferCreateInfo*>(&bufferInfo),
-                        &allocInfo,
+                        reinterpret_cast<VkBufferCreateInfo*>(&m_BufferInfo),
+                        &m_AllocationInfo,
                         reinterpret_cast<VkBuffer*>(&m_AllocateBuffer.buffer),
                         &m_AllocateBuffer.allocation,
                         nullptr);
+    };
+
+    void Buffer::ReleaseRHI()
+    {
+        auto& allocator = m_device->GetAllocator();
+        vmaDestroyBuffer(allocator, m_AllocateBuffer.buffer, m_AllocateBuffer.allocation);
     }
 
     void Buffer::Map()
@@ -36,10 +65,5 @@ namespace wind
         Unmap();
     }
 
-    Buffer::~Buffer()
-    {
-        m_device->WaitIdle();
-        auto& allocator = m_device->GetAllocator();
-        vmaDestroyBuffer(allocator, m_AllocateBuffer.buffer, m_AllocateBuffer.allocation);
-    }
+    Buffer::~Buffer() {}
 } // namespace wind

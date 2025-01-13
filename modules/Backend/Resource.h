@@ -27,10 +27,14 @@ namespace wind
         Resource& operator=(const Resource&) = delete;
 
     protected:
-        Tag           m_tag    = Tag::None;
-        Device*       m_device = nullptr;
-        bool          m_init   = false;
-        ResourceState m_state  = ResourceState::UnDefined;
+        Tag           m_tag       = Tag::None;
+        Device*       m_device    = nullptr;
+        bool          m_init      = false;
+        ResourceState m_state     = ResourceState::UnDefined;
+        std::string   m_DebugName = "";
+
+        virtual void InitRHI() {}
+        virtual void ReleaseRHI() {}
 
     protected:
         friend class Device;
@@ -50,12 +54,5 @@ namespace wind
             // todo: add assert here to make sure this is called on the render thread
             m_init = false;
         }
-    };
-
-    template<typename T>
-    class ResourceHandle
-    {
-        using type = T;
-        int id     = kInvalidBackendID;
     };
 } // namespace wind

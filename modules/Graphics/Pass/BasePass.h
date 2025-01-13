@@ -1,11 +1,9 @@
 #pragma once
 
-#include "IPass.h"
+#include "ScriptPass.h"
 
-namespace wind 
+namespace wind
 {
-    class BasePass : public IRenderPass
-    {
-        
-    };
-}
+    class BasePass : public ScriptPass
+    {};
+} // namespace wind

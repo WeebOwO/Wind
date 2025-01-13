@@ -4,7 +4,7 @@ namespace wind
 {
     class RenderGraph;
 
-    class IRenderPass
+    class ScriptPass
     {
     protected:
         virtual void Record(RenderGraph& renderGraph);

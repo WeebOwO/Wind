@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Guard.h"
+#include "Buffer.h"
 #include <cstdint>
+
+#include "Core/Handle.h"
 
 namespace wind
 {
@@ -44,10 +46,13 @@ namespace wind
 
     struct DrawCommand : public CommandImpl<RenderCommandType::Draw, RenderCommandQueueType::Graphics>
     {
-        uint32_t vertexCount   = 0;
-        uint32_t instanceCount = 0;
-        uint32_t firstVertex   = 0;
-        uint32_t firstInstance = 0;
+        Handle<Buffer> vertexBuffer;
+        Handle<Buffer> indexBuffer;
+        vk::Pipeline   pipeline;
+        uint32_t       indexOffset    = 0;
+        uint32_t       vertexOffset   = 0;
+        uint32_t       instanceCount  = 1;
+        uint32_t       instanceOffset = 0;
     };
 
     struct DrawIndexCommand : public CommandImpl<RenderCommandType::Draw, RenderCommandQueueType::Graphics>
@@ -87,7 +92,8 @@ namespace wind
         vk::Rect2D                 renderArea;
     };
 
-    struct ImageLayoutTransitionCommand : public CommandImpl<RenderCommandType::UpdateTexture, RenderCommandQueueType::Graphics>
+    struct ImageLayoutTransitionCommand
+        : public CommandImpl<RenderCommandType::UpdateTexture, RenderCommandQueueType::Graphics>
     {
         vk::ImageLayout           oldLayout;
         vk::ImageLayout           newLayout;

@@ -9,7 +9,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 namespace wind
 {
-    Device::Device(const DeviceExtensions& extensions, Window* window) : m_extensions(extensions), m_window(window) {}
+    Device::Device(const DeviceExtensions& extensions, Window* window) : m_Extensions(extensions), m_Window(window) {}
     Device::~Device() { Destroy(); }
 
     std::unique_ptr<Device> Device::Create(const DeviceExtensions& extensions, Window* window)
@@ -25,7 +25,7 @@ namespace wind
         // create vk instance and physical device
         vkb::InstanceBuilder builder;
         auto                 instanceRet = builder.set_app_name("Wind")
-                               .request_validation_layers(m_extensions.enableValidationLayers)
+                               .request_validation_layers(m_Extensions.enableValidationLayers)
                                .require_api_version(1, 3, 0)
                                .set_debug_callback([](VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
                                                       VkDebugUtilsMessageTypeFlagsEXT             messageType,
@@ -60,13 +60,13 @@ namespace wind
             return false;
         }
 
-        m_instance       = instanceRet.value();
-        m_debugMessenger = instanceRet.value().debug_messenger;
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(m_instance);
+        m_Instance       = instanceRet.value();
+        m_DebugMessenger = instanceRet.value().debug_messenger;
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(m_Instance);
 
         // create surface
         glfwCreateWindowSurface(
-            VkInstance(m_instance), m_window->GetNativeWindow(), nullptr, reinterpret_cast<VkSurfaceKHR*>(&m_surface));
+            VkInstance(m_Instance), m_Window->GetNativeWindow(), nullptr, reinterpret_cast<VkSurfaceKHR*>(&m_Surface));
 
         // create physical device
         VkPhysicalDeviceVulkan13Features features {.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES};
@@ -80,7 +80,7 @@ namespace wind
 
         vkb::PhysicalDeviceSelector selector {instanceRet.value()};
         vkb::PhysicalDevice         physicalDevice = selector.set_minimum_version(1, 3)
-                                                 .set_surface(VkSurfaceKHR(m_surface))
+                                                 .set_surface(VkSurfaceKHR(m_Surface))
                                                  .set_required_features_13(features)
                                                  .set_required_features_12(features12)
                                                  .select()
@@ -94,64 +94,82 @@ namespace wind
 
         WIND_CORE_INFO("Selected physical device: {}", physicalDevice.name);
 
-        m_physicalDevice = physicalDevice.physical_device;
+        m_PhysicalDevice = physicalDevice.physical_device;
 
         // create logical device
         vkb::DeviceBuilder deviceBuilder {physicalDevice};
         auto               device_ret = deviceBuilder.build();
-        m_device                      = device_ret.value();
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(m_device);
+        m_Device                      = device_ret.value();
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(m_Device);
 
         // create queue
-        auto       queueProps = m_physicalDevice.getQueueFamilyProperties();
+        auto       queueProps = m_PhysicalDevice.getQueueFamilyProperties();
         const auto findQueue  = [&](vk::QueueFlags flag, GPUQueue& queue) {
             for (uint32_t i = 0; i < queueProps.size(); i++)
             {
                 if (queueProps[i].queueFlags & flag && queue.queue == nullptr)
                 {
-                    queue.queue       = m_device.getQueue(i, 0);
+                    queue.queue       = m_Device.getQueue(i, 0);
                     queue.familyIndex = i;
                     break;
                 }
             }
         };
 
-        findQueue(vk::QueueFlagBits::eGraphics, m_mainQueue);
-        findQueue(vk::QueueFlagBits::eCompute, m_asyncComputeQueue);
-        findQueue(vk::QueueFlagBits::eTransfer, m_transferQueue);
+        findQueue(vk::QueueFlagBits::eGraphics, m_MainQueue);
+        findQueue(vk::QueueFlagBits::eCompute, m_AsyncComputeQueue);
+        findQueue(vk::QueueFlagBits::eTransfer, m_TransferQueue);
 
         // create allocator
         VmaAllocatorCreateInfo allocatorInfo {};
-        allocatorInfo.physicalDevice = m_physicalDevice;
-        allocatorInfo.device         = m_device;
-        allocatorInfo.instance       = m_instance;
-        vmaCreateAllocator(&allocatorInfo, &m_allocator);
+        allocatorInfo.physicalDevice = m_PhysicalDevice;
+        allocatorInfo.device         = m_Device;
+        allocatorInfo.instance       = m_Instance;
+        vmaCreateAllocator(&allocatorInfo, &m_Allocator);
 
         return true;
     }
 
     uint32_t Device::GetQueueFamilyIndex(RenderCommandQueueType queueType)
     {
-        
         switch (queueType)
         {
             case RenderCommandQueueType::Graphics:
-                return m_mainQueue.familyIndex;
+                return m_MainQueue.familyIndex;
             case RenderCommandQueueType::AsyncCompute:
-                return m_asyncComputeQueue.familyIndex;
+                return m_AsyncComputeQueue.familyIndex;
             case RenderCommandQueueType::Copy:
-                return m_transferQueue.familyIndex;
+                return m_TransferQueue.familyIndex;
             default:
                 return UINT32_MAX;
         }
     }
 
+    Handle<Buffer> Device::CreateBuffer(const BufferCreateInfo& createInfo)
+    {
+        return m_BufferPool.Create(this, createInfo);
+    }
+
+    void Device::UpdateBuffer(Handle<Buffer> handle, const void* data, size_t size)
+    {
+        if (auto buffer = m_BufferPool.Get(handle))
+        {
+            buffer->UpdateData(data, size);
+        }
+    }
+
+    void Device::ClearResources()
+    {
+        m_BufferPool.Clear();
+        vmaDestroyAllocator(m_Allocator);
+    }
+
     void Device::Destroy()
     {
-        vmaDestroyAllocator(m_allocator);
-        m_device.destroy();
-        m_instance.destroyDebugUtilsMessengerEXT(m_debugMessenger);
-        m_instance.destroySurfaceKHR(m_surface);
-        m_instance.destroy();
+        ClearResources();
+        m_Device.destroy();
+        m_Instance.destroyDebugUtilsMessengerEXT(m_DebugMessenger);
+        m_Instance.destroySurfaceKHR(m_Surface);
+        m_Instance.destroy();
     }
 } // namespace wind

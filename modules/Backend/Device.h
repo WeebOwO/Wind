@@ -5,7 +5,7 @@
 
 #include "Buffer.h"
 #include "Command.h"
-#include "Resource.h"
+#include "ResourcePool.h"
 
 #include "Core/NonCopy.h"
 #include "Core/Vector.h"
@@ -31,23 +31,23 @@ namespace wind
         Device(const DeviceExtensions& extensions, Window* window);
         ~Device();
 
-        void WaitIdle() { m_device.waitIdle(); }
+        void                           WaitIdle() { m_Device.waitIdle(); }
         static std::unique_ptr<Device> Create(const DeviceExtensions& extensions, Window* window);
 
-        auto& GetAllocator() { return m_allocator; }
+        auto& GetAllocator() { return m_Allocator; }
 
         // get and set functions
-        vk::Instance       GetInstance() { return m_instance; }
-        vk::Device         GetDevice() { return m_device; }
-        vk::SurfaceKHR     GetSurface() { return m_surface; }
-        vk::PhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
+        vk::Instance       GetInstance() { return m_Instance; }
+        vk::Device         GetDevice() { return m_Device; }
+        vk::SurfaceKHR     GetSurface() { return m_Surface; }
+        vk::PhysicalDevice GetPhysicalDevice() { return m_PhysicalDevice; }
 
-        vk::Queue GetQueue(RenderCommandQueueType queueType) 
+        vk::Queue GetQueue(RenderCommandQueueType queueType)
         {
-            return queueType == RenderCommandQueueType::Graphics ? m_mainQueue.queue :
-                   queueType == RenderCommandQueueType::AsyncCompute ? m_asyncComputeQueue.queue :
-                   queueType == RenderCommandQueueType::Copy ? m_transferQueue.queue :
-                   nullptr;
+            return queueType == RenderCommandQueueType::Graphics     ? m_MainQueue.queue :
+                   queueType == RenderCommandQueueType::AsyncCompute ? m_AsyncComputeQueue.queue :
+                   queueType == RenderCommandQueueType::Copy         ? m_TransferQueue.queue :
+                                                                       nullptr;
         }
 
         // all resources should be created through this function,
@@ -55,16 +55,33 @@ namespace wind
         template<typename T, typename... Args>
         requires std::is_constructible_v<T, Device*, Args...>&&
                  std::derived_from<T, Resource> [[nodiscard]] std::shared_ptr<T>
-                 CreateResource(Args&&... args)
+                 CreateResourceRef(Args&&... args)
         {
             return std::make_shared<T>(this, std::forward<Args>(args)...);
         }
 
         uint32_t GetQueueFamilyIndex(RenderCommandQueueType queueType);
 
+        Handle<Buffer> CreateBuffer(const BufferCreateInfo& createInfo);
+        void           UpdateBuffer(Handle<Buffer> handle, const void* data, size_t size);
+
+        template<typename T>
+        T* GetResource(const Handle<T>& handle)
+        {
+            if constexpr (std::is_same_v<T, Buffer>)
+            {
+                return m_BufferPool.Get(handle);
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
     private:
         bool Init();
         void Destroy();
+        void ClearResources();
 
         struct ThreadCommandBuffer
         {
@@ -82,25 +99,27 @@ namespace wind
             int       familyIndex = -1;
         };
 
-        Window*            m_window;
-        vk::Device         m_device;
-        vk::Instance       m_instance;
-        vk::PhysicalDevice m_physicalDevice;
+        Window*            m_Window;
+        vk::Device         m_Device;
+        vk::Instance       m_Instance;
+        vk::PhysicalDevice m_PhysicalDevice;
 
-        vk::SurfaceKHR             m_surface;
-        vk::DebugUtilsMessengerEXT m_debugMessenger;
+        vk::SurfaceKHR             m_Surface;
+        vk::DebugUtilsMessengerEXT m_DebugMessenger;
 
-        vk::DispatchLoaderDynamic m_dynamicLoader;
-        DeviceExtensions          m_extensions;
+        vk::DispatchLoaderDynamic m_DynamicLoader;
+        DeviceExtensions          m_Extensions;
 
-        std::vector<ThreadCommandBuffer> m_commandBuffers;
+        std::vector<ThreadCommandBuffer> m_CommandBuffers;
 
-        GPUQueue m_mainQueue;         // use for graphics and compute
-        GPUQueue m_asyncComputeQueue; // use for async compute
-        GPUQueue m_transferQueue;     // use for transfer
+        GPUQueue m_MainQueue;         // use for graphics and compute
+        GPUQueue m_AsyncComputeQueue; // use for async compute
+        GPUQueue m_TransferQueue;     // use for transfer
 
-        std::queue<Resource*> m_deleteQueue;
+        std::queue<Resource*> m_DeleteQueue;
 
-        VmaAllocator m_allocator;
+        VmaAllocator m_Allocator;
+
+        ResourcePool<Buffer> m_BufferPool;
     };
 } // namespace wind

@@ -14,7 +14,8 @@ namespace wind::backend::utils
         VmaAllocationCreateInfo allocInfo = {};
         allocInfo.usage                   = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
-        BufferRef buffer = device->CreateResource<Buffer>(vertexBufferInfo, allocInfo);
+        BufferRef buffer = device->CreateResourceRef<Buffer>(vertexBufferInfo, allocInfo);
+        buffer->InitRHI();
         buffer->UpdateData(vertices.data(), sizeof(StaticMeshVertex) * vertices.size());
         return buffer;
     }
@@ -29,7 +30,8 @@ namespace wind::backend::utils
         VmaAllocationCreateInfo allocInfo = {};
         allocInfo.usage                   = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
-        BufferRef buffer = device->CreateResource<Buffer>(indexBufferInfo, allocInfo);
+        BufferRef buffer = device->CreateResourceRef<Buffer>(indexBufferInfo, allocInfo);
+        buffer->InitRHI();
         buffer->UpdateData(indices.data(), sizeof(uint32_t) * indices.size());
         return buffer;
     }

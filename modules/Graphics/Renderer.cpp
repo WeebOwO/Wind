@@ -30,7 +30,7 @@ namespace wind
     Renderer::Renderer(Device* device, const SwapchainCreateInfo& createInfo) : m_device(device)
     {
         // create swapchain
-        m_swapchain = device->CreateResource<Swapchain>(createInfo);
+        m_swapchain = device->CreateResourceRef<Swapchain>(createInfo);
         // create shader cache
         m_shaderCache = std::make_unique<ShaderCache>(device);
         m_shaderCache->Init();
@@ -161,84 +161,85 @@ namespace wind
         commandStream->BeginRecording();
         // present pass
 
-        renderGraph
-            .AddPass<RenderData>(
-                "MainDraw",
-                [&](RenderGraph::Builder& builder, RenderData& data) {
-                    data.color = backBufferHandle;
-                    RenderPassDesc::Descriptor descriptor {
-                        .attachments =
-                            {
-                                .color = {data.color},
-                            },
-                        .viewPort =
-                            {
-                                .x        = 0.0f,
-                                .y        = 0.0f,
-                                .width    = static_cast<float>(m_swapchain->GetWidth()),
-                                .height   = static_cast<float>(m_swapchain->GetHeight()),
-                                .minDepth = 0.0f,
-                                .maxDepth = 1.0f,
-                            },
-                    };
+        RenderData colorData =
+            renderGraph
+                .AddPass<RenderData>(
+                    "MainDraw",
+                    [&](RenderGraph::Builder& builder, RenderData& data) {
+                        data.color = backBufferHandle;
+                        RenderPassDesc::Descriptor descriptor {
+                            .attachments =
+                                {
+                                    .color = {data.color},
+                                },
+                            .viewPort =
+                                {
+                                    .x        = 0.0f,
+                                    .y        = 0.0f,
+                                    .width    = static_cast<float>(m_swapchain->GetWidth()),
+                                    .height   = static_cast<float>(m_swapchain->GetHeight()),
+                                    .minDepth = 0.0f,
+                                    .maxDepth = 1.0f,
+                                },
+                        };
 
-                    builder.DeclareRenderPass("ClearColor", descriptor);
-                },
-                [&](const ResourceRegistry& registry, RenderData& data, CommandStream& stream) {
-                    auto backBuffer = registry.Get(data.color);
-                    auto pipeline   = m_psoCache->GetPipeline(PipelineID::Lighting);
+                        builder.DeclareRenderPass("ClearColor", descriptor);
+                    },
+                    [&](const ResourceRegistry& registry, RenderData& data, CommandStream& stream) {
+                        auto backBuffer = registry.Get(data.color);
+                        auto pipeline   = m_psoCache->GetPipeline(PipelineID::Lighting);
 
-                    ImageLayoutTransitionCommand transitionCommand;
-                    transitionCommand.image            = backBuffer.image;
-                    transitionCommand.oldLayout        = vk::ImageLayout::eUndefined;
-                    transitionCommand.newLayout        = vk::ImageLayout::eColorAttachmentOptimal;
-                    transitionCommand.aspectMask       = vk::ImageAspectFlagBits::eColor;
-                    transitionCommand.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
-                    // transition the image layout
-                    stream.TransitionImageLayout(transitionCommand);
+                        ImageLayoutTransitionCommand transitionCommand;
+                        transitionCommand.image            = backBuffer.image;
+                        transitionCommand.oldLayout        = vk::ImageLayout::eUndefined;
+                        transitionCommand.newLayout        = vk::ImageLayout::eColorAttachmentOptimal;
+                        transitionCommand.aspectMask       = vk::ImageAspectFlagBits::eColor;
+                        transitionCommand.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+                        // transition the image layout
+                        stream.TransitionImageLayout(transitionCommand);
 
-                    RenderPassNode* passNode = registry.GetPass<RenderPassNode>();
-                    stream.BeginRendering(passNode->GetRenderingInfo());
-                    stream.BindPipeline(*pipeline);
+                        RenderPassNode* passNode = registry.GetPass<RenderPassNode>();
+                        stream.BeginRendering(passNode->GetRenderingInfo());
+                        stream.BindPipeline(*pipeline);
 
-                    // todo: reduece this kind of code which hard code the render pass
-                    vk::Viewport viewport;
-                    viewport.x      = 0.0f;
-                    viewport.y      = 0.0f;
-                    viewport.width  = static_cast<float>(m_swapchain->GetWidth());
-                    viewport.height = static_cast<float>(m_swapchain->GetHeight());
-                    stream.SetViewport(viewport);
+                        // todo: reduece this kind of code which hard code the render pass
+                        vk::Viewport viewport;
+                        viewport.x      = 0.0f;
+                        viewport.y      = 0.0f;
+                        viewport.width  = static_cast<float>(m_swapchain->GetWidth());
+                        viewport.height = static_cast<float>(m_swapchain->GetHeight());
+                        stream.SetViewport(viewport);
 
-                    vk::Rect2D scissor;
-                    scissor.offset = {0, 0};
-                    scissor.extent = {m_swapchain->GetWidth(), m_swapchain->GetHeight()};
-                    stream.SetScissor(scissor);
+                        vk::Rect2D scissor;
+                        scissor.offset = {0, 0};
+                        scissor.extent = {m_swapchain->GetWidth(), m_swapchain->GetHeight()};
+                        stream.SetScissor(scissor);
 
-                    // draw the scene
-                    for (auto go : gameObjects)
-                    {
-                        auto meshRenderer = go->GetComponent<MeshRenderer>();
-                        if (meshRenderer)
+                        // draw the scene
+                        for (auto go : gameObjects)
                         {
-                            std::shared_ptr<Mesh> mesh = meshRenderer->GetInternalMesh();
-                            for (auto subMesh : mesh->subMeshes)
+                            auto meshRenderer = go->GetComponent<MeshRenderer>();
+                            if (meshRenderer)
                             {
-                                stream.BindVertexBuffer(subMesh.vertexBuffer, 0, 0);
-                                stream.BindIndexBuffer(subMesh.indexBuffer, 0, vk::IndexType::eUint32);
-                                DrawIndexCommand drawCommand;
-                                drawCommand.indexCount    = subMesh.indices.size();
-                                drawCommand.instanceCount = 1;
-                                drawCommand.firstIndex    = 0;
-                                drawCommand.vertexOffset  = 0;
-                                drawCommand.firstInstance = 0;
-                                stream.DrawIndexed(drawCommand);
+                                std::shared_ptr<Mesh> mesh = meshRenderer->GetInternalMesh();
+                                for (auto subMesh : mesh->subMeshes)
+                                {
+                                    DrawCommand drawCommand;
+                                    drawCommand.vertexBuffer   = subMesh.vertexBuffer;
+                                    drawCommand.indexBuffer    = subMesh.indexBuffer;
+                                    drawCommand.pipeline       = pipeline->GetNativePipeline();
+                                    drawCommand.indexOffset    = 0;
+                                    drawCommand.vertexOffset   = 0;
+                                    drawCommand.instanceCount  = 1;
+                                    drawCommand.instanceOffset = 0;
+                                    stream.Draw(drawCommand);
+                                }
                             }
                         }
-                    }
 
-                    stream.EndRendering();
-                })
-            .GetData();
+                        stream.EndRendering();
+                    })
+                .GetData();
 
         renderGraph.Compile();
         renderGraph.Execute(*currentFrameData.commandStream);
@@ -258,7 +259,7 @@ namespace wind
             frame.renderFinished = vkDevice.createSemaphore({});
             frame.inFlight       = vkDevice.createFence({.flags = vk::FenceCreateFlagBits::eSignaled});
             frame.commandStream =
-                m_device->CreateResource<CommandStream>(RenderCommandQueueType::Graphics, StreamMode::eImmdiately);
+                m_device->CreateResourceRef<CommandStream>(RenderCommandQueueType::Graphics, StreamMode::eImmdiately);
         }
 
         // push the deletion queue to the main deletion queue
