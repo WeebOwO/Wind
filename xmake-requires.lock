@@ -1,0 +1,143 @@
+{
+    __meta__ = {
+        version = "1.0"
+    },
+    ["windows|x64"] = {
+        ["cmake >=3.17.2#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "3.30.3"
+        },
+        ["cmake#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "3.30.3"
+        },
+        ["entt#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "092f2defb411770bc3d02f5817e07cc9fa3f1375",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "v3.13.2"
+        },
+        ["glfw#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "d5382a3bab22616b1c5b0292a6ce460d116df916",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "3.4"
+        },
+        ["glm#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "1.0.1"
+        },
+        ["glslang#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "1.3.290+0"
+        },
+        ["opengl#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "latest"
+        },
+        ["python 3.x#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "3.12.3"
+        },
+        ["shaderc#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "v2024.1"
+        },
+        ["spdlog#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "v1.14.1"
+        },
+        ["spirv-cross#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "1.3.268+0"
+        },
+        ["spirv-headers 1.3.290#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "092f2defb411770bc3d02f5817e07cc9fa3f1375",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "1.3.290+0"
+        },
+        ["spirv-tools#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "1.3.290+0"
+        },
+        ["vk-bootstrap#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "v1.3.295"
+        },
+        ["vulkan-headers#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "092f2defb411770bc3d02f5817e07cc9fa3f1375",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "1.3.290+0"
+        },
+        ["vulkan-memory-allocator#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "092f2defb411770bc3d02f5817e07cc9fa3f1375",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "v3.1.0"
+        },
+        ["vulkansdk#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "latest"
+        }
+    }
+}

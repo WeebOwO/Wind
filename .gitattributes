@@ -1,0 +1,2 @@
+external/slang/bin/slang-llvm.dll filter=lfs diff=lfs merge=lfs -text
+external/slang/bin/slang.dll filter=lfs diff=lfs merge=lfs -text
