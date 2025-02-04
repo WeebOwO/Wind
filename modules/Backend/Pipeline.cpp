@@ -143,9 +143,9 @@ namespace wind
         return *this;
     }
 
-    GraphicPipelineDesc& GraphicPipelineDesc::SetLayoutInfo(vk::PipelineLayoutCreateInfo layout)
+    GraphicPipelineDesc& GraphicPipelineDesc::SetLayout(vk::PipelineLayout layout)
     {
-        m_LayoutCI = layout;
+        m_Layout = layout;
         return *this;
     }
 
@@ -184,8 +184,8 @@ namespace wind
             .pVertexAttributeDescriptions    = nullptr,
         };
 
+        m_Layout = m_Desc.m_Layout;
         // transfer ownership of the layout to the pipeline
-        m_Layout = vkDevice.createPipelineLayout(m_Desc.m_LayoutCI);
 
         vk::GraphicsPipelineCreateInfo pipelineCI;
         pipelineCI.setLayout(m_Layout)

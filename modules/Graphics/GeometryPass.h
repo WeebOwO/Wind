@@ -17,7 +17,7 @@ namespace wind
         GeometryPass();
         ~GeometryPass() override;
 
-        void Prepare(Device* m_Device, Shader* vertexShader, Shader* fragmentShader);
+        void Prepare(Device* m_Device, ShaderLibrary* shaderLibrary);
         void Draw(vk::CommandBuffer cmdBuffer) override;
 
         void HandleDirtyShaders(const std::unordered_set<ShaderID>& dirtyShaders,

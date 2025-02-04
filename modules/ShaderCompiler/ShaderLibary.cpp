@@ -77,8 +77,10 @@ namespace wind
 
     void ShaderLibrary::Init(Device* device)
     {
-        m_Device      = device;
-        m_FileWatcher = std::make_unique<FileWatcher>(wind::path::GetShaderRootDir());
+        m_Device = device;
+
+        std::regex pattern(".+\\.vert|.+\\.frag");
+        m_FileWatcher = std::make_unique<FileWatcher>(wind::path::GetShaderRootDir(), pattern);
         // construct the reverse map
         for (const auto& [id, name] : shaderFileNames)
         {

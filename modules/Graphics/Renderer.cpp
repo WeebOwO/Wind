@@ -47,8 +47,7 @@ namespace wind
         // geometry pass
         m_GeometryPass = std::make_unique<GeometryPass>();
         m_GeometryPass->Prepare(m_Device.get(),
-                                m_ShaderLibrary->GetShader(ShaderID::Triangle_VS),
-                                m_ShaderLibrary->GetShader(ShaderID::Triangle_PS));
+                                m_ShaderLibrary.get()); // prepare the geometry pass with the shader library
 
         while (!m_Window->ShouldClose())
         {

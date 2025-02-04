@@ -4,17 +4,18 @@
 
 namespace wind
 {
-    FileWatcher::FileWatcher(std::filesystem::path directory) : m_Directory(directory)
+    FileWatcher::FileWatcher(std::filesystem::path directory, std::regex pattern) :
+        m_Directory(directory), m_Pattern(pattern)
     {
         for (const auto& file : std::filesystem::directory_iterator(directory))
         {
+            if (!std::regex_match(file.path().string(), pattern))
+            {
+                continue;
+            }
             m_WatchedFiles[file.path().string()] = {file.path(), std::filesystem::last_write_time(file)};
         }
     }
-
-    void FileWatcher::Start() {
-
-    };
 
     void FileWatcher::Update()
     {

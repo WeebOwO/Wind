@@ -24,7 +24,7 @@ namespace wind
         GraphicPipelineDesc();
 
         GraphicPipelineDesc& SetShaders(vk::ShaderModule vertexShader, vk::ShaderModule fragmentShader);
-        GraphicPipelineDesc& SetLayoutInfo(vk::PipelineLayoutCreateInfo layout);
+        GraphicPipelineDesc& SetLayout(vk::PipelineLayout layout);
         GraphicPipelineDesc& SetInputTopology(vk::PrimitiveTopology topology);
         GraphicPipelineDesc& SetPolygonMode(vk::PolygonMode mode);
         GraphicPipelineDesc& SetCullMode(vk::CullModeFlags mode, vk::FrontFace frontFace);
@@ -51,7 +51,7 @@ namespace wind
         vk::PipelineRenderingCreateInfo                m_RenderingCI;
         vk::Format                                     m_ColorFormat;
         // need to call default constructor to initialize the layout info
-        vk::PipelineLayoutCreateInfo m_LayoutCI;
+        vk::PipelineLayout                             m_Layout;
     };
 
     class Pipeline : public Resource

@@ -10,14 +10,19 @@ namespace wind
         m_ShaderID.insert(ShaderID::Triangle_PS);
     }
 
-    void GeometryPass::Prepare(Device* device, Shader* vertexShader, Shader* fragmentShader)
+    void GeometryPass::Prepare(Device* device, ShaderLibrary* library)
     {
         GraphicPipelineDesc desc;
 
         vk::Device vkDevice = device->GetDevice();
 
+        vk::PipelineLayout pipelineLayout = vkDevice.createPipelineLayout({});
+
+        Shader* vertexShader   = library->GetShader(ShaderID::Triangle_VS);
+        Shader* fragmentShader = library->GetShader(ShaderID::Triangle_PS);
+
         desc.SetShaders(vertexShader->GetBlobData().module, fragmentShader->GetBlobData().module)
-            .SetLayoutInfo({})
+            .SetLayout(pipelineLayout)
             .SetInputTopology(vk::PrimitiveTopology::eTriangleList)
             .SetPolygonMode(vk::PolygonMode::eFill)
             .SetCullMode(vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
@@ -52,7 +57,6 @@ namespace wind
             }
         }
 
-        Prepare(
-            device, shaderLibrary->GetShader(ShaderID::Triangle_VS), shaderLibrary->GetShader(ShaderID::Triangle_PS));
+        Prepare(device, shaderLibrary);
     }
 } // namespace wind
