@@ -1,6 +1,7 @@
 #include "Renderer.h"
 
 #include "Backend/Utils.h"
+
 #include "Core/GlobalContext.h"
 #include "Core/Log.h"
 
@@ -16,44 +17,34 @@ namespace wind
         DeviceExtensions extensions = {.extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME}, .enableValidationLayers = true};
         m_Device                    = Device::Create(extensions, m_Window.get());
         m_Swapchain                 = m_Device->CreateResourceUnique<Swapchain>(800, 600);
-
-        // push the deletion to the main deletion queue
-        m_MainDelelteQueue.PushFunction([this]() { m_Device.reset(); });
-        m_MainDelelteQueue.PushFunction([this]() { m_GeometryPass.reset(); });
-        m_MainDelelteQueue.PushFunction([this]() { m_Window.reset(); });
-        m_MainDelelteQueue.PushFunction([this]() { m_Swapchain.reset(); });
-        m_MainDelelteQueue.PushFunction([this]() { m_ShaderLibrary.reset(); });
-
+        m_ShaderLibrary             = std::make_unique<ShaderLibrary>();
+        m_PipelineCache             = std::make_unique<PSOCache>();
         WIND_CORE_INFO("Renderer initialized");
         // create frame data
         CreateFrameData();
+        RegisterDeletionQueue();
     }
 
     Renderer::~Renderer()
     {
         WIND_CORE_INFO("Renderer shutting down");
         m_Device->WaitIdle();
-        m_ShaderLibrary->Destroy();
         m_MainDelelteQueue.Flush();
         global::Shutdown();
     }
 
     void Renderer::Run()
     {
-        // render loop
-        m_ShaderLibrary = std::make_unique<ShaderLibrary>();
         m_ShaderLibrary->Init(m_Device.get());
-
+        m_PipelineCache->Init(m_Device.get(), m_ShaderLibrary.get());
         // geometry pass
-        m_GeometryPass = std::make_unique<GeometryPass>();
-        m_GeometryPass->Prepare(m_Device.get(),
-                                m_ShaderLibrary.get()); // prepare the geometry pass with the shader library
+        m_GeometryPass = std::make_unique<GeometryPass>(m_PipelineCache->GetPipeline(PipelineID::Triangle));
 
         while (!m_Window->ShouldClose())
         {
             m_Window->Update();
             m_ShaderLibrary->Update();
-            ProcessDirtyShaders();
+            // ProcessDirtyShaders();
             DrawTriangle();
         }
     }
@@ -67,6 +58,9 @@ namespace wind
     {
         // draw a triangle
         BeginFrame();
+
+        RenderGraph graph;
+        graph.AddPass(m_GeometryPass.get());
 
         auto&             frame     = GetCurrentFrameData();
         vk::CommandBuffer cmdBuffer = frame.commandStream->Begin();
@@ -96,7 +90,7 @@ namespace wind
             0, {vk::Viewport(0.0f, 0.0f, m_Swapchain->GetWidth(), m_Swapchain->GetHeight(), 0.0f, 1.0f)});
         cmdBuffer.setScissor(0, {vk::Rect2D({0, 0}, m_Swapchain->GetExtent())});
 
-        m_GeometryPass->Draw(cmdBuffer);
+        graph.Execute(frame.commandStream.get());
         cmdBuffer.endRendering();
 
         utils::TransitionImageLayout(cmdBuffer,
@@ -194,6 +188,23 @@ namespace wind
                 m_Device->CreateResourceUnique<CommandStream>(CommandQueueType::Graphics, StreamMode::eImmdiately);
             frame.commandStream->InitRHI();
         }
+    }
+
+    void Renderer::RegisterDeletionQueue()
+    {
+        // push the deletion to the main deletion queue
+        m_MainDelelteQueue.PushFunction([this]() { m_Device.reset(); });
+        m_MainDelelteQueue.PushFunction([this]() { m_GeometryPass.reset(); });
+        m_MainDelelteQueue.PushFunction([this]() { m_Window.reset(); });
+        m_MainDelelteQueue.PushFunction([this]() { m_Swapchain.reset(); });
+        m_MainDelelteQueue.PushFunction([this]() {
+            m_ShaderLibrary->Destroy();
+            m_ShaderLibrary.reset();
+        });
+        m_MainDelelteQueue.PushFunction([this]() {
+            m_PipelineCache->Destroy();
+            m_PipelineCache.reset();
+        });
 
         // push the deletion queue to the main deletion queue
         m_MainDelelteQueue.PushFunction([this]() {
@@ -217,13 +228,6 @@ namespace wind
         }
 
         m_Device->WaitIdle();
-
-        for (auto& id : m_ShaderLibrary->GetDirtyShaders())
-        {
-            m_GeometryPass->HandleDirtyShaders(
-                m_ShaderLibrary->GetDirtyShaders(), m_ShaderLibrary.get(), m_Device.get());
-        }
-
         m_ShaderLibrary->AllDirtyClear();
     }
 } // namespace wind

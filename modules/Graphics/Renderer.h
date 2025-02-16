@@ -8,8 +8,9 @@
 #include "Core/DeletionQueue.h"
 #include "Core/Window.h"
 #include "ShaderCompiler/ShaderLibary.h"
-
 #include "GeometryPass.h"
+#include "PSOCache.h"
+#include "RenderGraph/RenderGraph.h"
 
 namespace wind
 {
@@ -37,6 +38,7 @@ namespace wind
         void DrawTriangle();
         void CreateFrameData();
         void ProcessDirtyShaders();
+        void RegisterDeletionQueue();
 
         FrameData& GetCurrentFrameData();
         // life cycle
@@ -48,6 +50,7 @@ namespace wind
         std::unique_ptr<Device>        m_Device;
         std::unique_ptr<Swapchain>     m_Swapchain;
         std::unique_ptr<ShaderLibrary> m_ShaderLibrary;
+        std::unique_ptr<PSOCache>      m_PipelineCache;
         std::vector<FrameData>         m_Frames;
         DeletionQueue                  m_MainDelelteQueue;
         uint32_t                       m_FrameCounter;

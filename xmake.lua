@@ -5,7 +5,7 @@ add_rules("mode.debug", "mode.release")
 
 includes("xmake/Env.lua")
 
-add_requires("spdlog", "glfw", "vulkansdk", "entt", "vk-bootstrap", "vulkan-memory-allocator", "glm", "shaderc", "vulkansdk", "spirv-cross")
+add_requires("spdlog", "glfw", "vulkansdk", "entt", "vk-bootstrap", "vulkan-memory-allocator", "glm", "shaderc", "vulkansdk", "spirv-cross", "nlohmann_json")
 set_policy("package.requires_lock", true)
 
 set_runtimes("MD")
@@ -19,7 +19,7 @@ target("Renderer")
     add_includedirs("modules/", "xmake/", "external/slang/include/")
     add_headerfiles("modules/**.h")
     add_files("modules/**.cpp")
-    add_packages("spdlog", "glfw", "entt", "vk-bootstrap", "vulkansdk", "vulkan-memory-allocator", "glm", "shaderc", "spirv-cross")
+    add_packages("spdlog", "glfw", "entt", "vk-bootstrap", "vulkansdk", "vulkan-memory-allocator", "glm", "shaderc", "spirv-cross", "nlohmann_json")
     add_links("slang")
     add_configfiles("xmake/Config.h.in")
     set_configdir("xmake/")

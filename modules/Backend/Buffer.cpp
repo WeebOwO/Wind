@@ -8,7 +8,8 @@ namespace wind
 {
     Buffer::Buffer(Device* device, const BufferDesc& desc) : Resource(device)
     {
-        m_BufferCreateInfo = {
+        m_BufferCreateInfo = 
+        {
             .size        = desc.byteSize,
             .usage       = desc.usage,
             .sharingMode = vk::SharingMode::eExclusive,
@@ -16,7 +17,8 @@ namespace wind
 
         m_DebugName = desc.name;
 
-        m_AllocationInfo = {
+        m_AllocationInfo = 
+        {
             .usage = desc.memoryUsage,
         };
     }
@@ -32,7 +34,7 @@ namespace wind
                         &m_AllocationInfo,
                         reinterpret_cast<VkBuffer*>(&m_AllocateBuffer.buffer),
                         &m_AllocateBuffer.allocation,
-                        nullptr);
+                        &m_AllocateBuffer.allocationInfo);
     }
 
     void Buffer::ReleaseRHI()

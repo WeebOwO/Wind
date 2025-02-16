@@ -5,10 +5,12 @@
 
 namespace wind
 {
-    // todo: mybe we can use this interface to create a render pass
-    struct IRenderPass
+    class RenderGraph;
+
+    class RenderGraphPass
     {
+    public:
         virtual void Draw(vk::CommandBuffer cmdBuffer) = 0;
-        virtual ~IRenderPass()                         = default;
+        virtual ~RenderGraphPass()                     = default;
     };
 } // namespace wind

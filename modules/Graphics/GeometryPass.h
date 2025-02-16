@@ -3,29 +3,24 @@
 #include <memory>
 
 #include "Backend/Pipeline.h"
-#include "Backend/Shader.h"
-#include "RenderPass.h"
+#include "RenderGraph/RenderGraphPass.h"
 #include "ShaderCompiler/ShaderLibary.h"
 
 namespace wind
 {
     class Device;
 
-    class GeometryPass : public IRenderPass
+    class GeometryPass : public RenderGraphPass
     {
     public:
-        GeometryPass();
+        GeometryPass(Pipeline* pipeline);
         ~GeometryPass() override;
 
-        void Prepare(Device* m_Device, ShaderLibrary* shaderLibrary);
         void Draw(vk::CommandBuffer cmdBuffer) override;
 
-        void HandleDirtyShaders(const std::unordered_set<ShaderID>& dirtyShaders,
-                                ShaderLibrary*                      shaderLibrary,
-                                Device*                             device);
-
     private:
-        std::unique_ptr<Pipeline>    m_Pipeline;
+        Pipeline*                    m_Pipeline;
         std::unordered_set<ShaderID> m_ShaderID;
+        vk::RenderingInfo            m_RenderingInfo;
     };
 } // namespace wind

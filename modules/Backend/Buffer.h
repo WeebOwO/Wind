@@ -20,8 +20,9 @@ namespace wind
 
     struct AllocateBuffer
     {
-        vk::Buffer    buffer;
-        VmaAllocation allocation;
+        vk::Buffer        buffer;
+        VmaAllocation     allocation;
+        VmaAllocationInfo allocationInfo;
     };
 
     class Buffer : public Resource

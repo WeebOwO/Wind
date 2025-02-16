@@ -128,4 +128,18 @@ namespace wind
 
     bool ShaderLibrary::HaveDirtyShaders() const { return !m_DirtyShaders.empty(); }
     void ShaderLibrary::AllDirtyClear() { m_DirtyShaders.clear(); }
+
+    Shader* ShaderLibrary::GetShader(ShaderID id) { return m_Shaders[static_cast<size_t>(id)].get(); }
+
+    Shader* ShaderLibrary::GetShader(const std::string& name)
+    {
+        if (shaderReverseMap.find(name) == shaderReverseMap.end())
+        {
+            WIND_CORE_ERROR("Shader {0} not found.", name);
+            return nullptr;
+        }
+
+        auto id = shaderReverseMap[name];
+        return m_Shaders[static_cast<size_t>(id)].get();
+    }
 } // namespace wind

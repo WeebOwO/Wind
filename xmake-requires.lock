@@ -3,14 +3,6 @@
         version = "1.0"
     },
     ["windows|x64"] = {
-        ["cmake >=3.17.2#31fecfc4"] = {
-            repo = {
-                branch = "master",
-                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
-                url = "https://gitee.com/tboox/xmake-repo.git"
-            },
-            version = "3.30.3"
-        },
         ["cmake#31fecfc4"] = {
             repo = {
                 branch = "master",
@@ -50,6 +42,14 @@
                 url = "https://gitee.com/tboox/xmake-repo.git"
             },
             version = "1.3.290+0"
+        },
+        ["nlohmann_json#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "44d5224dd81836b93774d4aa2d5961d22517c7c4",
+                url = "https://gitee.com/tboox/xmake-repo.git"
+            },
+            version = "v3.11.3"
         },
         ["opengl#31fecfc4"] = {
             repo = {

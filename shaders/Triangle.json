@@ -1,0 +1,9 @@
+{
+    "name" : "Gbuffer",
+    "shaders" : 
+    {
+        "vertex" : "Triangle.vert",
+        "fragment" : "Triangle.frag"
+    },
+    "blendmode" : "addtive"
+}

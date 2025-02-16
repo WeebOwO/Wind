@@ -23,9 +23,11 @@ namespace wind
         ShaderLibrary();
         ~ShaderLibrary();
 
-        Shader* GetShader(ShaderID id) { return m_Shaders[static_cast<size_t>(id)].get(); }
-        void    Init(Device* device);
-        void    Destroy();
+        Shader* GetShader(ShaderID id);
+        Shader* GetShader(const std::string& name);
+
+        void Init(Device* device);
+        void Destroy();
 
         void Update();
 
