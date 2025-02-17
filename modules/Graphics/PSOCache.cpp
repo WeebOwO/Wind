@@ -37,13 +37,30 @@ namespace wind
     {
         for (auto& [id, pipeline] : m_Pipelines)
         {
-            pipeline->ReleaseRHI();
+            pipeline.pipeline->ReleaseRHI();
         }
     }
 
     void PSOCache::Update()
     {
-        // update all the dirty pipelines
+        auto& dirtyShaders = m_ShaderLibrary->GetDirtyShaders();
+
+        for (const auto& id : dirtyShaders)
+        {
+            for (auto& [pipelineID, pipeline] : m_Pipelines)
+            {
+                if (std::find(pipeline.shaderIDs.begin(), pipeline.shaderIDs.end(), id) != pipeline.shaderIDs.end())
+                {
+                    RecompilePipeline(pipelineID);
+                }
+            }
+        }
+    }
+
+    void PSOCache::RecompilePipeline(PipelineID id)
+    {
+        m_Pipelines[id].pipeline->ReleaseRHI();
+        CompilePipeline(id);
     }
 
     void PSOCache::CompilePipeline(PipelineID id)
@@ -59,8 +76,9 @@ namespace wind
         json data = json::parse(file);
 
         GraphicPipelineDesc desc;
-        Shader*             vertexShader;
-        Shader*             fragmentShader;
+
+        ShaderID vertexShaderID   = ShaderID::None;
+        ShaderID fragmentShaderID = ShaderID::None;
 
         for (const auto& elem : data.items())
         {
@@ -78,11 +96,11 @@ namespace wind
 
                         if (shaderType == "vertex")
                         {
-                            vertexShader = m_ShaderLibrary->GetShader(shaderPath);
+                            vertexShaderID = m_ShaderLibrary->GetShaderID(shaderPath);
                         }
                         else if (shaderType == "fragment")
                         {
-                            fragmentShader = m_ShaderLibrary->GetShader(shaderPath);
+                            fragmentShaderID = m_ShaderLibrary->GetShaderID(shaderPath);
                         }
                         else
                         {
@@ -93,11 +111,13 @@ namespace wind
             }
         }
 
-        assert(vertexShader != nullptr && fragmentShader != nullptr);
+        assert(vertexShaderID != ShaderID::None);
+        assert(fragmentShaderID != ShaderID::None);
 
         vk::PipelineLayout pipelineLayout = m_Device->GetDevice().createPipelineLayout({});
 
-        desc.SetShaders(vertexShader->GetBlobData().module, fragmentShader->GetBlobData().module)
+        desc.SetShaders(m_ShaderLibrary->GetShader(vertexShaderID)->GetBlobData().module,
+                        m_ShaderLibrary->GetShader(fragmentShaderID)->GetBlobData().module)
             .SetLayout(pipelineLayout)
             .SetInputTopology(vk::PrimitiveTopology::eTriangleList)
             .SetPolygonMode(vk::PolygonMode::eFill)
@@ -105,11 +125,14 @@ namespace wind
             .SetMultisamplingNone()
             .EnableDepthTest(true, vk::CompareOp::eLessOrEqual);
 
-        m_Pipelines[id] = m_Device->CreateResourceUnique<Pipeline>(desc);
+        m_Pipelines[id].pipeline = m_Device->CreateResourceUnique<Pipeline>(desc);
+        m_Pipelines[id].pipeline->InitRHI();
+
+        m_Pipelines[id].shaderIDs.clear();
+        m_Pipelines[id].shaderIDs.push_back(vertexShaderID);
+        m_Pipelines[id].shaderIDs.push_back(fragmentShaderID);
 
         file.close();
-
-        m_Pipelines[id]->InitRHI();
     }
 
 } // namespace wind

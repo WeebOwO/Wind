@@ -8,7 +8,7 @@ namespace wind
     class Device;
 
     // buildin pipeline id
-    enum class PipelineID
+    enum class PipelineID : uint32_t
     {
         Triangle,
         Count
@@ -28,10 +28,16 @@ namespace wind
         void CompilePipeline(PipelineID id);
         void RecompilePipeline(PipelineID id);
 
-        Pipeline* GetPipeline(PipelineID id) { return m_Pipelines[id].get(); }
+        Pipeline* GetPipeline(PipelineID id) { return m_Pipelines[id].pipeline.get(); }
 
     private:
-        using PSOMap = std::unordered_map<PipelineID, std::unique_ptr<Pipeline>>;
+        struct PipelineRecord
+        {
+            std::vector<ShaderID>     shaderIDs; // shader ids
+            std::unique_ptr<Pipeline> pipeline;
+        };
+
+        using PSOMap = std::unordered_map<PipelineID, PipelineRecord>;
 
         PSOMap         m_Pipelines;
         Device*        m_Device;

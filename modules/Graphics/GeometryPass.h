@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Backend/Pipeline.h"
+#include "Graphics/PSOCache.h"
 #include "RenderGraph/RenderGraphPass.h"
 #include "ShaderCompiler/ShaderLibary.h"
 
@@ -13,13 +14,14 @@ namespace wind
     class GeometryPass : public RenderGraphPass
     {
     public:
-        GeometryPass(Pipeline* pipeline);
+        GeometryPass(PipelineID pipeline, PSOCache* globalPSOCache);
         ~GeometryPass() override;
 
         void Draw(vk::CommandBuffer cmdBuffer) override;
 
     private:
-        Pipeline*                    m_Pipeline;
+        PipelineID                   m_PipelineID;
+        PSOCache*                    m_PsoCacheLibrary;
         std::unordered_set<ShaderID> m_ShaderID;
         vk::RenderingInfo            m_RenderingInfo;
     };

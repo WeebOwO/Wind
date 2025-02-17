@@ -10,8 +10,9 @@ namespace wind
 {
     class Device;
 
-    enum class ShaderID
+    enum class ShaderID : uint32_t
     {
+        None = 0,
         Triangle_VS,
         Triangle_PS,
         Count
@@ -23,8 +24,9 @@ namespace wind
         ShaderLibrary();
         ~ShaderLibrary();
 
-        Shader* GetShader(ShaderID id);
-        Shader* GetShader(const std::string& name);
+        Shader*  GetShader(ShaderID id);
+        Shader*  GetShader(const std::string& name);
+        ShaderID GetShaderID(const std::string& name);
 
         void Init(Device* device);
         void Destroy();
@@ -36,6 +38,7 @@ namespace wind
         void        AllDirtyClear();
 
     private:
+        void ReleaseShader(ShaderID id);
         void CompileShader(ShaderID id);
 
         Device*                              m_Device;

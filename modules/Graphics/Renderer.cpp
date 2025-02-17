@@ -38,13 +38,13 @@ namespace wind
         m_ShaderLibrary->Init(m_Device.get());
         m_PipelineCache->Init(m_Device.get(), m_ShaderLibrary.get());
         // geometry pass
-        m_GeometryPass = std::make_unique<GeometryPass>(m_PipelineCache->GetPipeline(PipelineID::Triangle));
+        m_GeometryPass = std::make_unique<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
 
         while (!m_Window->ShouldClose())
         {
             m_Window->Update();
             m_ShaderLibrary->Update();
-            // ProcessDirtyShaders();
+            ProcessDirtyShaders();
             DrawTriangle();
         }
     }
@@ -228,6 +228,7 @@ namespace wind
         }
 
         m_Device->WaitIdle();
+        m_PipelineCache->Update();
         m_ShaderLibrary->AllDirtyClear();
     }
 } // namespace wind

@@ -11,6 +11,7 @@ namespace
 {
     using ShaderPair = std::pair<wind::ShaderID, std::string>;
     static const std::vector<ShaderPair> shaderFileNames {
+        {wind::ShaderID::None, ""},
         {wind::ShaderID::Triangle_VS, "Triangle.vert"},
         {wind::ShaderID::Triangle_PS, "Triangle.frag"},
     };
@@ -45,9 +46,20 @@ namespace wind
 
     ShaderLibrary::~ShaderLibrary() {}
 
+    void ShaderLibrary::ReleaseShader(ShaderID id)
+    {
+        if (id >= ShaderID::Count || id == ShaderID::None)
+        {
+            WIND_CORE_ERROR("Invalid shader id.");
+            return;
+        }
+
+        m_Shaders[static_cast<size_t>(id)]->ReleaseRHI();
+    }
+
     void ShaderLibrary::CompileShader(ShaderID id)
     {
-        if (id >= ShaderID::Count)
+        if (id >= ShaderID::Count || id == ShaderID::None)
         {
             WIND_CORE_ERROR("Invalid shader id.");
             return;
@@ -73,6 +85,7 @@ namespace wind
         }
 
         m_Shaders[static_cast<size_t>(id)] = m_Device->CreateResourceUnique<Shader>(blob);
+        m_Shaders[static_cast<size_t>(id)]->InitRHI();
     }
 
     void ShaderLibrary::Init(Device* device)
@@ -87,23 +100,21 @@ namespace wind
             shaderReverseMap[name] = id;
         }
 
-        for (size_t i = 0; i < m_Shaders.size(); i++)
+        for (size_t i = 1; i < m_Shaders.size(); i++)
         {
             CompileShader(static_cast<ShaderID>(i));
-        }
-
-        for (auto& shader : m_Shaders)
-        {
-            shader->InitRHI();
         }
     }
 
     void ShaderLibrary::Destroy()
     {
-        for (auto& shader : m_Shaders)
-        {
-            shader->ReleaseRHI();
-        }
+        std::for_each(m_Shaders.begin(), m_Shaders.end(),
+         [](auto& shader) {
+            if (shader != nullptr)
+            {
+                shader->ReleaseRHI();
+            }
+        });
     }
 
     void ShaderLibrary::Update()
@@ -116,9 +127,8 @@ namespace wind
                 auto     name = status.path.filename().string();
                 ShaderID id   = shaderReverseMap[name];
                 WIND_CORE_INFO("Recompile: {0}", name);
-                m_Shaders[static_cast<size_t>(id)]->ReleaseRHI();
+                ReleaseShader(id);
                 CompileShader(id);
-                m_Shaders[static_cast<size_t>(id)]->InitRHI();
                 m_DirtyShaders.insert(id);
             }
         }
@@ -141,5 +151,16 @@ namespace wind
 
         auto id = shaderReverseMap[name];
         return m_Shaders[static_cast<size_t>(id)].get();
+    }
+
+    ShaderID ShaderLibrary::GetShaderID(const std::string& name)
+    {
+        if (shaderReverseMap.find(name) == shaderReverseMap.end())
+        {
+            WIND_CORE_ERROR("Shader {0} not found.", name);
+            return ShaderID::None;
+        }
+
+        return shaderReverseMap[name];
     }
 } // namespace wind

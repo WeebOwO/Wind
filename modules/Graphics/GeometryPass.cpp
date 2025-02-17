@@ -4,13 +4,15 @@
 
 namespace wind
 {
-    GeometryPass::GeometryPass(Pipeline* pipeline) : m_Pipeline(pipeline) {}
+    GeometryPass::GeometryPass(PipelineID id, PSOCache* psoCache) : m_PipelineID(id), m_PsoCacheLibrary(psoCache) {}
 
     GeometryPass::~GeometryPass() {}
 
     void GeometryPass::Draw(vk::CommandBuffer cmdBuffer)
     {
-        cmdBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline->GetNativeHandle());
+        Pipeline* pipeline = m_PsoCacheLibrary->GetPipeline(m_PipelineID);
+
+        cmdBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->GetNativeHandle());
         cmdBuffer.draw(3, 1, 0, 0);
     };
 } // namespace wind
