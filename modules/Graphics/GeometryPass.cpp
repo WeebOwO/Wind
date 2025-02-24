@@ -1,10 +1,9 @@
 #include "GeometryPass.h"
 
-#include "Backend/Device.h"
-
 namespace wind
 {
-    GeometryPass::GeometryPass(PipelineID id, PSOCache* psoCache) : m_PipelineID(id), m_PsoCacheLibrary(psoCache) {}
+    GeometryPass::GeometryPass(PipelineID id, PSOCache* psoCache) : 
+    m_PipelineID(id), RenderGraphPass(psoCache) {}
 
     GeometryPass::~GeometryPass() {}
 

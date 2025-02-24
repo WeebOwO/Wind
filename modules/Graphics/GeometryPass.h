@@ -21,7 +21,6 @@ namespace wind
 
     private:
         PipelineID                   m_PipelineID;
-        PSOCache*                    m_PsoCacheLibrary;
         std::unordered_set<ShaderID> m_ShaderID;
         vk::RenderingInfo            m_RenderingInfo;
     };
