@@ -2,10 +2,14 @@
 
 #include "RenderGraph.h"
 
+#include "Phase/RenderGraphPhase.h"
+
 namespace wind
 {
     RenderGraph::~RenderGraph()
-    {}
+    {
+        
+    }
 
     void RenderGraph::Compile()
     {

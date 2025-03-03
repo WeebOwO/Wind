@@ -17,6 +17,7 @@ namespace wind
         GeometryPass(PipelineID pipeline, PSOCache* globalPSOCache);
         ~GeometryPass() override;
 
+        void Setup(RenderGraphBuilder& builder) override;
         void Draw(vk::CommandBuffer cmdBuffer) override;
 
     private:

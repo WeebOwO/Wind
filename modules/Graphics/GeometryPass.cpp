@@ -7,6 +7,11 @@ namespace wind
 
     GeometryPass::~GeometryPass() {}
 
+    void GeometryPass::Setup(RenderGraphBuilder& builder)
+    {
+        // setup the pass
+    }
+
     void GeometryPass::Draw(vk::CommandBuffer cmdBuffer)
     {
         Pipeline* pipeline = m_PsoCacheLibrary->GetPipeline(m_PipelineID);

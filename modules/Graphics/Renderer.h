@@ -4,13 +4,13 @@
 
 #include "Backend/Device.h"
 #include "Backend/Swapchain.h"
+#include "Core/Allocator.h"
 #include "Core/Application.h"
 #include "Core/DeletionQueue.h"
 #include "Core/Window.h"
-#include "ShaderCompiler/ShaderLibary.h"
 #include "GeometryPass.h"
 #include "PSOCache.h"
-#include "RenderGraph/RenderGraph.h"
+#include "ShaderCompiler/ShaderLibary.h"
 
 namespace wind
 {
@@ -55,5 +55,6 @@ namespace wind
         DeletionQueue                  m_MainDelelteQueue;
         uint32_t                       m_FrameCounter;
         std::unique_ptr<GeometryPass>  m_GeometryPass;
+        LinearAllocator*               m_LinearAllocator;
     };
 } // namespace wind

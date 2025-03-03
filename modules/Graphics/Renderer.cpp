@@ -1,9 +1,10 @@
 #include "Renderer.h"
 
 #include "Backend/Utils.h"
-
 #include "Core/GlobalContext.h"
 #include "Core/Log.h"
+#include "RenderGraph/Phase/AccessDagBuildPhase.h"
+#include "RenderGraph/RenderGraphBuilder.h"
 
 namespace wind
 {
@@ -19,6 +20,10 @@ namespace wind
         m_Swapchain                 = m_Device->CreateResourceUnique<Swapchain>(800, 600);
         m_ShaderLibrary             = std::make_unique<ShaderLibrary>();
         m_PipelineCache             = std::make_unique<PSOCache>();
+
+        // initialize the persistent memory with 1MB
+        m_LinearAllocator = new LinearAllocator(1024 * 1024);
+
         WIND_CORE_INFO("Renderer initialized");
         // create frame data
         CreateFrameData();
@@ -28,6 +33,7 @@ namespace wind
     Renderer::~Renderer()
     {
         WIND_CORE_INFO("Renderer shutting down");
+        delete m_LinearAllocator;
         m_Device->WaitIdle();
         m_MainDelelteQueue.Flush();
         global::Shutdown();
@@ -59,11 +65,13 @@ namespace wind
         // draw a triangle
         BeginFrame();
 
-        RenderGraph graph;
-        graph.AddPass(m_GeometryPass.get());
+        auto&              frame = GetCurrentFrameData();
+        RenderGraphBuilder rdgBuilder(frame.commandStream.get(), m_LinearAllocator);
+        vk::CommandBuffer  cmdBuffer = frame.commandStream->Begin();
 
-        auto&             frame     = GetCurrentFrameData();
-        vk::CommandBuffer cmdBuffer = frame.commandStream->Begin();
+        rdgBuilder.AddPass(m_GeometryPass.get());
+
+        rdgBuilder.AddPhase<AccessDagBuildPhase>();
 
         // begin render pass
         vk::ClearValue clearValue = {};
@@ -90,7 +98,7 @@ namespace wind
             0, {vk::Viewport(0.0f, 0.0f, m_Swapchain->GetWidth(), m_Swapchain->GetHeight(), 0.0f, 1.0f)});
         cmdBuffer.setScissor(0, {vk::Rect2D({0, 0}, m_Swapchain->GetExtent())});
 
-        graph.Execute(frame.commandStream.get());
+        rdgBuilder.Execute();
         cmdBuffer.endRendering();
 
         utils::TransitionImageLayout(cmdBuffer,
