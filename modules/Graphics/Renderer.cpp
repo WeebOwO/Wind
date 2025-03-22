@@ -4,7 +4,7 @@
 #include "Core/GlobalContext.h"
 #include "Core/Log.h"
 #include "RenderGraph/Phase/AccessDagBuildPhase.h"
-#include "RenderGraph/RenderGraphBuilder.h"
+#include "RenderGraph/RenderGraph.h"
 
 namespace wind
 {
@@ -43,8 +43,8 @@ namespace wind
     {
         m_ShaderLibrary->Init(m_Device.get());
         m_PipelineCache->Init(m_Device.get(), m_ShaderLibrary.get());
-        // geometry pass
-        m_GeometryPass = std::make_unique<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
+        // initialize the render graph
+        InitRenderGraph();
 
         while (!m_Window->ShouldClose())
         {
@@ -65,13 +65,12 @@ namespace wind
         // draw a triangle
         BeginFrame();
 
-        auto&              frame = GetCurrentFrameData();
-        RenderGraphBuilder rdgBuilder(frame.commandStream.get(), m_LinearAllocator);
-        vk::CommandBuffer  cmdBuffer = frame.commandStream->Begin();
+        auto& frame = GetCurrentFrameData();
 
-        rdgBuilder.AddPass(m_GeometryPass.get());
+        RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream.get()};
+        m_RenderGraph->PrepareFrame(context);
 
-        rdgBuilder.AddPhase<AccessDagBuildPhase>();
+        vk::CommandBuffer cmdBuffer = frame.commandStream->Begin();
 
         // begin render pass
         vk::ClearValue clearValue = {};
@@ -98,7 +97,7 @@ namespace wind
             0, {vk::Viewport(0.0f, 0.0f, m_Swapchain->GetWidth(), m_Swapchain->GetHeight(), 0.0f, 1.0f)});
         cmdBuffer.setScissor(0, {vk::Rect2D({0, 0}, m_Swapchain->GetExtent())});
 
-        rdgBuilder.Execute();
+        m_RenderGraph->Execute();
         cmdBuffer.endRendering();
 
         utils::TransitionImageLayout(cmdBuffer,
@@ -196,6 +195,16 @@ namespace wind
                 m_Device->CreateResourceUnique<CommandStream>(CommandQueueType::Graphics, StreamMode::eImmdiately);
             frame.commandStream->InitRHI();
         }
+    }
+
+    void Renderer::InitRenderGraph()
+    {
+        // initialize the render graph
+        m_RenderGraph = std::make_unique<RenderGraph>(m_LinearAllocator);
+        // create the render graph passes
+        m_GeometryPass = std::make_unique<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
+        
+        m_RenderGraph->AddPass<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
     }
 
     void Renderer::RegisterDeletionQueue()

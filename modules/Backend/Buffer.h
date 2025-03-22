@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Guard.h"
+#include "Utils.h"
 #include "Resource.h"
 
 namespace wind
@@ -25,11 +26,11 @@ namespace wind
         VmaAllocationInfo allocationInfo;
     };
 
-    class Buffer : public Resource
+    class GPUBuffer : public Resource
     {
     public:
-        Buffer(Device* device, const BufferDesc& desc);
-        ~Buffer() override;
+        GPUBuffer(Device* device, const BufferDesc& desc);
+        ~GPUBuffer() override;
 
         bool Map();
         void Unmap();

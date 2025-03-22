@@ -16,11 +16,11 @@ namespace wind
         // compile all passes
     }
 
-    void RenderGraph::Execute(CommandStream* stream)
+    void RenderGraph::Execute()
     {
         for (auto& pass : m_Passes)
         {
-            pass->Draw(stream->GetCommandBuffer());
+            pass->Draw(m_Context.commandStream->GetCommandBuffer());
         }
     }
 } // namespace wind

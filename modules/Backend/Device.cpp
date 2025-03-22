@@ -150,8 +150,7 @@ namespace wind
             case CommandQueueType::Transfer:
                 return m_TransferQueue;
             default:
-                WIND_CORE_ERROR("Unsupported queue type");
-                return {};
+                return m_MainQueue;
         }
     }
 } // namespace wind

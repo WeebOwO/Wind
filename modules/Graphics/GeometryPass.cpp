@@ -7,7 +7,7 @@ namespace wind
 
     GeometryPass::~GeometryPass() {}
 
-    void GeometryPass::Setup(RenderGraphBuilder& builder)
+    void GeometryPass::Setup()
     {
         // setup the pass
     }

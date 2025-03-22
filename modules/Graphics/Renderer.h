@@ -14,14 +14,19 @@
 
 namespace wind
 {
+    template<typename T>
+    using Scoped = std::unique_ptr<T>;
+
+    class RenderGraph;
+
     struct FrameData
     {
-        vk::Semaphore                  imageAvailableSemaphore;
-        vk::Semaphore                  renderFinishedSemaphore;
-        vk::Fence                      inFlightFence;
-        DeletionQueue                  deletionQueue;
-        uint32_t                       swapChainImageIndex;
-        std::unique_ptr<CommandStream> commandStream;
+        vk::Semaphore         imageAvailableSemaphore;
+        vk::Semaphore         renderFinishedSemaphore;
+        vk::Fence             inFlightFence;
+        DeletionQueue         deletionQueue;
+        uint32_t              swapChainImageIndex;
+        Scoped<CommandStream> commandStream;
     };
 
     class Renderer : public Application
@@ -39,6 +44,7 @@ namespace wind
         void CreateFrameData();
         void ProcessDirtyShaders();
         void RegisterDeletionQueue();
+        void InitRenderGraph();
 
         FrameData& GetCurrentFrameData();
         // life cycle
@@ -46,15 +52,16 @@ namespace wind
         void EndFrame();
 
         // renderer specific data
-        std::unique_ptr<Window>        m_Window;
-        std::unique_ptr<Device>        m_Device;
-        std::unique_ptr<Swapchain>     m_Swapchain;
-        std::unique_ptr<ShaderLibrary> m_ShaderLibrary;
-        std::unique_ptr<PSOCache>      m_PipelineCache;
-        std::vector<FrameData>         m_Frames;
-        DeletionQueue                  m_MainDelelteQueue;
-        uint32_t                       m_FrameCounter;
-        std::unique_ptr<GeometryPass>  m_GeometryPass;
-        LinearAllocator*               m_LinearAllocator;
+        Scoped<Window>         m_Window;
+        Scoped<Device>         m_Device;
+        Scoped<Swapchain>      m_Swapchain;
+        Scoped<ShaderLibrary>  m_ShaderLibrary;
+        Scoped<PSOCache>       m_PipelineCache;
+        Scoped<GeometryPass>   m_GeometryPass;
+        Scoped<RenderGraph>    m_RenderGraph;
+        LinearAllocator*       m_LinearAllocator;
+        DeletionQueue          m_MainDelelteQueue;
+        uint32_t               m_FrameCounter;
+        std::vector<FrameData> m_Frames;
     };
 } // namespace wind

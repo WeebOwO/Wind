@@ -62,7 +62,7 @@ namespace wind
         }
 
         // handle mode
-        Handle<Buffer> CreateBuffer(const BufferDesc& desc) { return m_BufferPool.Create(this, desc); }
+        Handle<GPUBuffer> CreateBuffer(const BufferDesc& desc) { return m_BufferPool.Create(this, desc); }
 
     private:
         bool Init();
@@ -81,6 +81,6 @@ namespace wind
         GPUQueue m_TransferQueue;     // use for transfer
 
         VmaAllocator         m_Allocator;
-        ResourcePool<Buffer> m_BufferPool;
+        ResourcePool<GPUBuffer> m_BufferPool;
     };
 } // namespace wind
