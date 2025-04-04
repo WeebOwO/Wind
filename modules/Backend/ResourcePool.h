@@ -20,7 +20,8 @@ namespace wind
     };
 
     template<typename T>
-    requires std::is_base_of_v<Resource, T> class ResourcePool
+    requires std::is_base_of_v<Resource, T> 
+    class ResourcePool
     {
     public:
         ResourcePool()  = default;

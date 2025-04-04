@@ -1,5 +1,6 @@
 #pragma once
 
+#include <any>
 #include <vector>
 
 #include "Backend/Stream.h"
@@ -19,7 +20,17 @@ namespace wind
     class RenderGraph
     {
     public:
-        RenderGraph(LinearAllocator* allocator) : m_Allocator(allocator) {}
+        struct Builder
+        {
+            Builder(RenderGraph& renderGraph, RenderGraphPass* currentPass)
+                : m_RenderGraph(renderGraph), m_CurrentPass(currentPass) {}
+            
+        private:
+            RenderGraph&     m_RenderGraph;
+            RenderGraphPass* m_CurrentPass;
+        };
+
+        RenderGraph();
         ~RenderGraph();
 
         template<typename T, typename... Args>
@@ -28,18 +39,19 @@ namespace wind
 
         template<typename T, typename... Args>
         requires std::derived_from<T, RenderGraphPass> 
-        void AddPass(Args&&... args);
+        Builder AddPass(Args&&... args);
 
         void Compile();
         void Execute();
 
-        void PrepareFrame(RenderGraphUpdateContext& context) { m_Context = context; }
+        void PrepareFrame(RenderGraphUpdateContext& context);
 
     private:
         friend class RenderGraphBuilder;
 
         RenderGraphUpdateContext m_Context;
-        LinearAllocator*         m_Allocator;
+        LinearAllocator*         m_FrameAllocator;
+        LinearAllocator*         m_PersistentAllocator;
 
         std::vector<RenderGraphPass*>  m_Passes;
         std::vector<RenderGraphPhase*> m_Phases;

@@ -4,10 +4,12 @@
 
 #include <vk_mem_alloc.h>
 
+#include "Core/RefCount.h"
+
 namespace wind
 {
     class Device;
-    class Resource
+    class Resource : public RefCounted
     {
     public:
         Resource(const Resource&)            = delete;

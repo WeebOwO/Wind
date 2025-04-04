@@ -6,17 +6,22 @@
 
 namespace wind
 {
+    class RenderGraphUpdateContext;
+    class RenderGraph;
+
     class RenderGraphPass : public PassNode
     {
     public:
-        RenderGraphPass(PSOCache* psoCache) : m_PsoCacheLibrary(psoCache) {};
+        RenderGraphPass(const std::string& name) : 
+            m_PassName(name) {};
+            
+        virtual void RecordRenderGrpah(RenderGraph& renderGraph);
+        virtual void Execute(vk::CommandBuffer cmdBuffer);
 
-        virtual void Setup() = 0;
-        virtual void Draw(vk::CommandBuffer cmdBuffer)  = 0;
-        virtual ~RenderGraphPass()                      = default;
+        virtual ~RenderGraphPass() = default;
 
     protected:
-        PSOCache* m_PsoCacheLibrary;
+        std::string m_PassName;
     };
 
 } // namespace wind

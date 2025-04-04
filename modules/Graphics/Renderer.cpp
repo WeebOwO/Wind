@@ -3,7 +3,6 @@
 #include "Backend/Utils.h"
 #include "Core/GlobalContext.h"
 #include "Core/Log.h"
-#include "RenderGraph/Phase/AccessDagBuildPhase.h"
 #include "RenderGraph/RenderGraph.h"
 
 namespace wind
@@ -51,7 +50,7 @@ namespace wind
             m_Window->Update();
             m_ShaderLibrary->Update();
             ProcessDirtyShaders();
-            DrawTriangle();
+            RecordRenderGraph();
         }
     }
 
@@ -60,7 +59,7 @@ namespace wind
         // parse command line arguments
     }
 
-    void Renderer::DrawTriangle()
+    void Renderer::RecordRenderGraph()
     {
         // draw a triangle
         BeginFrame();
@@ -69,6 +68,12 @@ namespace wind
 
         RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream.get()};
         m_RenderGraph->PrepareFrame(context);
+
+        // build the render graph
+        for (auto& pass : m_ActivePassRoot)
+        {
+            pass->RecordRenderGrpah(*m_RenderGraph);
+        }
 
         vk::CommandBuffer cmdBuffer = frame.commandStream->Begin();
 
@@ -126,6 +131,8 @@ namespace wind
             throw std::runtime_error("failed to wait for fence");
         }
 
+        m_ActivePassRoot.clear();
+
         // reset the fence
         vkDevice.resetFences(frame.inFlightFence);
 
@@ -136,6 +143,8 @@ namespace wind
                 .value;
 
         frame.commandStream->Reset();
+
+        m_ActivePassRoot.push_back(m_GeometryPass.get());
     }
 
     void Renderer::EndFrame()
@@ -200,11 +209,9 @@ namespace wind
     void Renderer::InitRenderGraph()
     {
         // initialize the render graph
-        m_RenderGraph = std::make_unique<RenderGraph>(m_LinearAllocator);
+        m_RenderGraph = std::make_unique<RenderGraph>();
         // create the render graph passes
         m_GeometryPass = std::make_unique<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
-        
-        m_RenderGraph->AddPass<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
     }
 
     void Renderer::RegisterDeletionQueue()

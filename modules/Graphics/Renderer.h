@@ -2,14 +2,14 @@
 
 #include <memory>
 
+#include "PSOCache.h"
+#include "Passes/GeometryPass.h"
 #include "Backend/Device.h"
 #include "Backend/Swapchain.h"
+#include "Core/Window.h"
 #include "Core/Allocator.h"
 #include "Core/Application.h"
 #include "Core/DeletionQueue.h"
-#include "Core/Window.h"
-#include "GeometryPass.h"
-#include "PSOCache.h"
 #include "ShaderCompiler/ShaderLibary.h"
 
 namespace wind
@@ -29,6 +29,8 @@ namespace wind
         Scoped<CommandStream> commandStream;
     };
 
+    // todo: this should not be a application
+    // but a renderer interface 
     class Renderer : public Application
     {
     public:
@@ -38,9 +40,9 @@ namespace wind
         void Run() override;
         void ParseCommandLine(const CommandLineArguments& args) override;
 
+        void RecordRenderGraph();
+
     private:
-        // test function
-        void DrawTriangle();
         void CreateFrameData();
         void ProcessDirtyShaders();
         void RegisterDeletionQueue();
@@ -52,16 +54,17 @@ namespace wind
         void EndFrame();
 
         // renderer specific data
-        Scoped<Window>         m_Window;
-        Scoped<Device>         m_Device;
-        Scoped<Swapchain>      m_Swapchain;
-        Scoped<ShaderLibrary>  m_ShaderLibrary;
-        Scoped<PSOCache>       m_PipelineCache;
-        Scoped<GeometryPass>   m_GeometryPass;
-        Scoped<RenderGraph>    m_RenderGraph;
-        LinearAllocator*       m_LinearAllocator;
-        DeletionQueue          m_MainDelelteQueue;
-        uint32_t               m_FrameCounter;
-        std::vector<FrameData> m_Frames;
+        Scoped<Window>              m_Window;
+        Scoped<Device>              m_Device;
+        Scoped<Swapchain>           m_Swapchain;
+        Scoped<ShaderLibrary>       m_ShaderLibrary;
+        Scoped<PSOCache>            m_PipelineCache;
+        Scoped<GeometryPass>        m_GeometryPass;
+        Scoped<RenderGraph>         m_RenderGraph;
+        std::list<RenderGraphPass*> m_ActivePassRoot;
+        LinearAllocator*            m_LinearAllocator;
+        DeletionQueue               m_MainDelelteQueue;
+        uint32_t                    m_FrameCounter;
+        std::vector<FrameData>      m_Frames;
     };
 } // namespace wind

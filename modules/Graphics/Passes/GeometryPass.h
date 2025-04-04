@@ -17,10 +17,11 @@ namespace wind
         GeometryPass(PipelineID pipeline, PSOCache* globalPSOCache);
         ~GeometryPass() override;
 
-        void Setup() override;
-        void Draw(vk::CommandBuffer cmdBuffer) override;
+        void RecordRenderGrpah(RenderGraph& renderGraph) override;
+        void Execute(vk::CommandBuffer cmdBuffer) override;
 
     private:
+        PSOCache*                    m_PsoCacheLibrary;
         PipelineID                   m_PipelineID;
         std::unordered_set<ShaderID> m_ShaderID;
         vk::RenderingInfo            m_RenderingInfo;

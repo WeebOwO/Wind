@@ -16,7 +16,6 @@ namespace wind
     {
         NodeID              handle;
         std::vector<NodeID> dependencies;
-        std::vector<NodeID> dependents;
         NodeType            type;
     };
 
