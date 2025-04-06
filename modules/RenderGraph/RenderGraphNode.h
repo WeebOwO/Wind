@@ -12,7 +12,7 @@ namespace wind
         Resource,
     };
 
-    struct PassNode
+    struct Node
     {
         NodeID              handle;
         std::vector<NodeID> dependencies;

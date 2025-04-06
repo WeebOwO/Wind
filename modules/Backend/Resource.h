@@ -9,6 +9,7 @@
 namespace wind
 {
     class Device;
+    
     class Resource : public RefCounted
     {
     public:

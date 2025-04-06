@@ -182,7 +182,7 @@ namespace wind
             miplevels      = inMipLevels;
             baseArrayLayer = inBaseArrayLayer;
             arrayLayers    = inArrayLayers;
-        }
+        } 
 
         uint16_t baseMipLevel;
         uint16_t miplevels;
