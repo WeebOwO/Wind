@@ -1,11 +1,14 @@
 #pragma once
 
-#include <any>
 #include <vector>
 
-#include "Backend/Stream.h"
-#include "Core/Allocator.h"
+#include "Blackboard.h"
 #include "RenderGraphPass.h"
+#include "RenderGraphHandle.h"
+#include "RenderGraphResource.h"
+#include "VirtualResource.h"
+#include "Core/Allocator.h"
+#include "Backend/Stream.h"
 
 namespace wind
 {
@@ -22,12 +25,27 @@ namespace wind
     public:
         struct Builder
         {
-            Builder(RenderGraph& renderGraph, RenderGraphPass* currentPass)
-                : m_RenderGraph(renderGraph), m_CurrentPass(currentPass) {}
-            
+            Builder(RenderGraph& renderGraph, PassNode* currentPass) :
+                m_RenderGraph(renderGraph), m_CurrentPass(currentPass)
+            {
+                currentPass->RegisterGraph(&renderGraph);
+            }
+
+            RenderGraphHandle AllocRenderGraphResource(const RDGResourceDesc& resourceDesc);
+            RenderGraphHandle ImportRenderGraphResource(VirtualResource* resource);
+
+            template<typename Setup>
+            void Invoke(Setup setup)
+            {
+                if (m_CurrentPass != nullptr)
+                {
+                    setup(m_CurrentPass);
+                }
+            }
+
         private:
-            RenderGraph&     m_RenderGraph;
-            RenderGraphPass* m_CurrentPass;
+            RenderGraph& m_RenderGraph;
+            PassNode*    m_CurrentPass;
         };
 
         RenderGraph();
@@ -37,14 +55,28 @@ namespace wind
         requires std::derived_from<T, RenderGraphPhase> 
         void AddPhase(Args&&... args);
 
-        template<typename T, typename... Args>
-        requires std::derived_from<T, RenderGraphPass> 
-        Builder AddPass(Args&&... args);
+        template<typename T>
+        requires std::derived_from<T, PassNode>
+        Builder AddPass(T* pass);
+
+        RenderGraphHandle AllocRenderGraphResource(const RDGResourceDesc& resourceDesc);
+        RenderGraphHandle ImportRenderGraphResource(VirtualResource* resource);
 
         void Compile();
         void Execute();
 
         void PrepareFrame(RenderGraphUpdateContext& context);
+
+        auto& GetBlackboard() { return m_Blackboard; }
+
+        VirtualResource* GetResource(RenderGraphHandle handle)
+        {
+            if (handle.isInitialized()) 
+            {
+                return m_Resources[handle.index];
+            }
+            return nullptr;
+        }
 
     private:
         friend class RenderGraphBuilder;
@@ -53,8 +85,10 @@ namespace wind
         LinearAllocator*         m_FrameAllocator;
         LinearAllocator*         m_PersistentAllocator;
 
-        std::vector<RenderGraphPass*>  m_Passes;
+        std::vector<VirtualResource*>  m_Resources;
+        std::vector<PassNode*>         m_Passes;
         std::vector<RenderGraphPhase*> m_Phases;
+        Blackboard                     m_Blackboard;
     };
 
 } // namespace wind

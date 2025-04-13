@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 
 namespace wind
 {
@@ -32,10 +33,10 @@ namespace wind
 
         void* Allocate(size_t size, size_t alignment) override;
 
-        template<typename T>
-        T* Allocate(size_t count = 1)
+        template<typename T, typename... Args>
+        T* AllocateConstruct(Args&&... args)
         {
-            return reinterpret_cast<T*>(Allocate(sizeof(T) * count, alignof(T)));
+            return new (Allocate(sizeof(T), alignof(T))) T(std::forward<Args>(args)...);
         }
 
         void Free(void* ptr) override;

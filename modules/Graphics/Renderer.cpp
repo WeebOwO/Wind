@@ -4,6 +4,8 @@
 #include "Core/GlobalContext.h"
 #include "Core/Log.h"
 #include "RenderGraph/RenderGraph.h"
+#include "GlobalRT.h"
+#include "View.h"
 
 namespace wind
 {
@@ -13,6 +15,8 @@ namespace wind
         // initialize the renderer
         m_Window = std::make_unique<Window>("Wind", 800, 600);
         m_Window->Init();
+
+        m_View = std::make_unique<View>();
 
         DeviceExtensions extensions = {.extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME}, .enableValidationLayers = true};
         m_Device                    = Device::Create(extensions, m_Window.get());
@@ -69,6 +73,22 @@ namespace wind
         RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream.get()};
         m_RenderGraph->PrepareFrame(context);
 
+        RDGResourceDesc importImageDesc = RDGResourceDesc::Image2D(
+            m_Swapchain->GetFormat(), m_Swapchain->GetWidth(), m_Swapchain->GetHeight());
+        
+        VirtualImage* virtualImage = m_LinearAllocator->AllocateConstruct<VirtualImage>(importImageDesc);
+        virtualImage->image = m_Swapchain->GetImage(frame.swapChainImageIndex);
+        virtualImage->imageView = m_Swapchain->GetImageView(frame.swapChainImageIndex);
+        virtualImage->imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
+
+        m_View->viewport = {0, 0, m_Swapchain->GetWidth(), m_Swapchain->GetHeight()};
+
+        // import the swapchain image as a render graph resource
+        RenderGraphHandle backBufferHandle = m_RenderGraph->ImportRenderGraphResource(virtualImage);
+        m_RenderGraph->GetBlackboard().Put(GlobalRT::BackBuffer, backBufferHandle);
+
+        m_GeometryPass->InitView(m_View.get());
+
         // build the render graph
         for (auto& pass : m_ActivePassRoot)
         {
@@ -77,33 +97,13 @@ namespace wind
 
         vk::CommandBuffer cmdBuffer = frame.commandStream->Begin();
 
-        // begin render pass
-        vk::ClearValue clearValue = {};
-        clearValue.color          = vk::ClearColorValue(std::array<float, 4> {0.0f, 0.0f, 0.0f, 1.0f});
-
-        vk::RenderingAttachmentInfo colorAttachment =
-            init::GetColorAttachmentInfo(m_Swapchain->GetImageView(frame.swapChainImageIndex),
-                                         m_Swapchain->GetFormat(),
-                                         vk::ImageLayout::eColorAttachmentOptimal,
-                                         clearValue);
-
-        vk::Rect2D renderArea = {{0, 0}, m_Swapchain->GetExtent()};
-
-        vk::RenderingInfo renderInfo = init::GetRenderingInfo(renderArea, &colorAttachment, nullptr);
-
         utils::TransitionImageLayout(cmdBuffer,
                                      m_Swapchain->GetImage(frame.swapChainImageIndex),
                                      vk::ImageLayout::eUndefined,
                                      vk::ImageLayout::eColorAttachmentOptimal,
                                      1);
 
-        cmdBuffer.beginRendering(renderInfo);
-        cmdBuffer.setViewport(
-            0, {vk::Viewport(0.0f, 0.0f, m_Swapchain->GetWidth(), m_Swapchain->GetHeight(), 0.0f, 1.0f)});
-        cmdBuffer.setScissor(0, {vk::Rect2D({0, 0}, m_Swapchain->GetExtent())});
-
         m_RenderGraph->Execute();
-        cmdBuffer.endRendering();
 
         utils::TransitionImageLayout(cmdBuffer,
                                      m_Swapchain->GetImage(frame.swapChainImageIndex),
@@ -132,6 +132,7 @@ namespace wind
         }
 
         m_ActivePassRoot.clear();
+        m_LinearAllocator->Reset();
 
         // reset the fence
         vkDevice.resetFences(frame.inFlightFence);

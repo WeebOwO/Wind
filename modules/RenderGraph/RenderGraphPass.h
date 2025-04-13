@@ -1,5 +1,6 @@
 #pragma once
 
+#include <any>
 #include <string>
 
 #include "Backend/Define.h"
@@ -13,9 +14,39 @@ namespace wind
     class RenderGraphUpdateContext;
     class RenderGraph;
 
-    class RenderGraphPass : public Node
+    enum PassType
+    {
+        RenderPass,
+        ComputePass,
+        AsyncComputePass,
+    };
+
+    class PassNode : public Node
     {
     public:
+        PassNode(const std::string& name, PassType passType) : m_PassName(name), m_PassType(passType) {};
+
+        void RegisterGraph(RenderGraph* renderGraph) { m_RenderGraph = renderGraph; }
+
+        PassType           GetPassType() const { return m_PassType; }
+        const std::string& GetPassName() const { return m_PassName; }
+
+        virtual void RecordRenderGrpah(RenderGraph& renderGraph);
+        virtual void Execute(vk::CommandBuffer cmdBuffer);
+
+        virtual ~PassNode() = default;
+
+    protected:
+        RenderGraph* m_RenderGraph;
+        std::string  m_PassName;
+        PassType     m_PassType;
+    };
+
+    class RenderPassNode : public PassNode
+    {
+    public:
+        RenderPassNode(const std::string& name) : PassNode(name, PassType::RenderPass) {};
+
         struct Attachments
         {
             union
@@ -32,22 +63,26 @@ namespace wind
 
         struct Descriptor
         {
-            Attachments    attachments;
-            Viewport       viewPort;
-            vk::ClearValue clearValue;
-            uint8_t        sampleCount;
-            uint8_t        layerCount = 1;
+            Attachments    attachments {};
+            Viewport       viewPort {};
+            vk::Rect2D     renderArea {};
+            vk::ClearValue clearValue {};
+            uint8_t        sampleCount = 1;
+            uint8_t        layerCount  = 1;
         };
 
-        RenderGraphPass(const std::string& name) : m_PassName(name) {};
+        template<typename T>
+        T* GetUserData()
+        {
+            return std::any_cast<T>(&m_UserData);
+        }
 
-        virtual void RecordRenderGrpah(RenderGraph& renderGraph);
-        virtual void Execute(vk::CommandBuffer cmdBuffer);
-
-        virtual ~RenderGraphPass() = default;
+        void BeforeRendering(vk::CommandBuffer cmdBuffer);
+        void AfterRendering(vk::CommandBuffer cmdBuffer);
 
     protected:
-        std::string m_PassName;
+        std::any   m_UserData;
+        Descriptor m_Descriptor {};
     };
 
 } // namespace wind

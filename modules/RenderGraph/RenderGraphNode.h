@@ -18,9 +18,4 @@ namespace wind
         std::vector<NodeID> dependencies;
         NodeType            type;
     };
-
-    struct ResourceNode
-    {
-        
-    };
 } // namespace wind

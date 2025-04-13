@@ -10,8 +10,9 @@
 namespace wind
 {
     class Device;
+    class View;
 
-    class GeometryPass : public RenderGraphPass
+    class GeometryPass : public RenderPassNode
     {
     public:
         GeometryPass(PipelineID pipeline, PSOCache* globalPSOCache);
@@ -20,7 +21,16 @@ namespace wind
         void RecordRenderGrpah(RenderGraph& renderGraph) override;
         void Execute(vk::CommandBuffer cmdBuffer) override;
 
+        void InitView(View* view);
+
+        struct Data
+        {
+            RenderGraphHandle color;
+        };
+
     private:
+        View*                        m_View;
+        Data                         m_Data;
         PSOCache*                    m_PsoCacheLibrary;
         PipelineID                   m_PipelineID;
         std::unordered_set<ShaderID> m_ShaderID;

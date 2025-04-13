@@ -11,7 +11,6 @@ namespace wind
         using Index   = uint16_t;
         using Version = uint16_t;
 
-    private:
         template<typename T>
         friend class FrameGraphId;
 

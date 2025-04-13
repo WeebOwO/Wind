@@ -189,5 +189,4 @@ namespace wind
         uint32_t baseArrayLayer;
         uint32_t arrayLayers;
     };
-
 } // namespace wind
