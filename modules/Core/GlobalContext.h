@@ -1,9 +1,15 @@
 #pragma once
 
-namespace wind::global 
+namespace wind 
 {
-    void Init();
-    void Shutdown();
+    struct GlobalContext 
+    {
+        void Init();
+        void Shutdown();
 
-    constexpr int kMaxFramesInFlight = 2;
+        // global context data
+        static constexpr int kMaxFramesInFlight = 2;
+    };
+
+    extern GlobalContext* g_GlobalContext;
 }

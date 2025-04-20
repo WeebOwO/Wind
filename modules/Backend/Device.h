@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-#include <vk_mem_alloc.h>
-
 #include "Buffer.h"
 #include "Core/Window.h"
 #include "Guard.h"

@@ -1,18 +1,15 @@
 #include "GlobalContext.h"
 #include "Log.h"
 
-namespace wind::global
+namespace wind 
 {
-    void Init()
+    void GlobalContext::Init()
     {
-        // initialize the global context
         Log::Init();
     }
 
-    void Shutdown()
+    void GlobalContext::Shutdown()
     {
-        // shutdown the global context
         Log::Shutdown();
     }
-
-} // namespace wind::global
+}

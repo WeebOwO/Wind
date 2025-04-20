@@ -9,9 +9,8 @@
 
 namespace wind
 {
-    Renderer::Renderer() : m_FrameCounter(0)
+    Renderer::Renderer() : Service("Renderer"), m_FrameCounter(0)
     {
-        global::Init();
         // initialize the renderer
         m_Window = std::make_unique<Window>("Wind", 800, 600);
         m_Window->Init();
@@ -26,41 +25,49 @@ namespace wind
 
         // initialize the persistent memory with 1MB
         m_LinearAllocator = new LinearAllocator(1024 * 1024);
+    }
 
+    void Renderer::Init() 
+    {
         WIND_CORE_INFO("Renderer initialized");
         // create frame data
         CreateFrameData();
         RegisterDeletionQueue();
+
+        m_ShaderLibrary->Init(m_Device.get());
+        m_PipelineCache->Init(m_Device.get(), m_ShaderLibrary.get());
+
+        InitRenderGraph();
     }
 
-    Renderer::~Renderer()
+    void Renderer::Shutdown()
     {
         WIND_CORE_INFO("Renderer shutting down");
         delete m_LinearAllocator;
         m_Device->WaitIdle();
         m_MainDelelteQueue.Flush();
-        global::Shutdown();
     }
+
+    Renderer::~Renderer() = default;
 
     void Renderer::Run()
     {
-        m_ShaderLibrary->Init(m_Device.get());
-        m_PipelineCache->Init(m_Device.get(), m_ShaderLibrary.get());
         // initialize the render graph
-        InitRenderGraph();
+    }
 
-        while (!m_Window->ShouldClose())
+    void Renderer::Tick()
+    {
+        if(!m_Window->ShouldClose())
         {
             m_Window->Update();
             m_ShaderLibrary->Update();
             ProcessDirtyShaders();
             RecordRenderGraph();
+        } 
+        else
+        {
+            ProduceSignal(Signal::NeedExit);
         }
-    }
-
-    void Renderer::ParseCommandLine(const CommandLineArguments& args)
-    {
-        // parse command line arguments
     }
 
     void Renderer::RecordRenderGraph()
@@ -117,7 +124,7 @@ namespace wind
         EndFrame();
     }
 
-    FrameData& Renderer::GetCurrentFrameData() { return m_Frames[m_FrameCounter % global::kMaxFramesInFlight]; }
+    FrameData& Renderer::GetCurrentFrameData() { return m_Frames[m_FrameCounter % g_GlobalContext->kMaxFramesInFlight]; }
 
     void Renderer::BeginFrame()
     {
@@ -192,7 +199,7 @@ namespace wind
 
     void Renderer::CreateFrameData()
     {
-        m_Frames.resize(global::kMaxFramesInFlight);
+        m_Frames.resize(g_GlobalContext->kMaxFramesInFlight);
 
         vk::Device vkDevice = m_Device->GetDevice();
 

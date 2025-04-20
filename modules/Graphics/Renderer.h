@@ -32,16 +32,19 @@ namespace wind
 
     // todo: this should not be a application
     // but a renderer interface
-    class Renderer : public Application
+    class Renderer : public Service
     {
     public:
         Renderer();
-        ~Renderer() override;
+        ~Renderer();
 
-        void Run() override;
-        void ParseCommandLine(const CommandLineArguments& args) override;
+        void Init() override;
+        void Shutdown() override;
 
+        void Run();
         void RecordRenderGraph();
+
+        void Tick() override;
 
     private:
         void CreateFrameData();

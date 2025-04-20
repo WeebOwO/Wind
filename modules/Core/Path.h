@@ -9,3 +9,11 @@ namespace wind::path
     std::filesystem::path GetShaderRootDir();
     std::filesystem::path GetSPVOutputDir();
 } // namespace wind::path
+
+namespace wind 
+{
+    struct PathManager 
+    {
+        
+    };
+}
