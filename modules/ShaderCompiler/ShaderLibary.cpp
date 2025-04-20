@@ -5,7 +5,7 @@
 
 #include "Backend/Device.h"
 #include "Core/Log.h"
-#include "Core/Path.h"
+#include "Core/GlobalContext.h"
 
 namespace
 {
@@ -20,7 +20,9 @@ namespace
 
     std::filesystem::path GetShaderEntry(wind::ShaderID id)
     {
-        return wind::path::GetShaderRootDir() / shaderFileNames[static_cast<size_t>(id)].second;
+        auto shaderPath = wind::g_GlobalContext->pathManager.GetShaderRootDir();
+
+        return shaderPath / shaderFileNames[static_cast<size_t>(id)].second;
     }
 
     std::string ReadShaderFile(const std::filesystem::path& path)
@@ -93,7 +95,10 @@ namespace wind
         m_Device = device;
 
         std::regex pattern(".+\\.vert|.+\\.frag");
-        m_FileWatcher = std::make_unique<FileWatcher>(wind::path::GetShaderRootDir(), pattern);
+
+        auto shaderPathRoot = wind::g_GlobalContext->pathManager.GetShaderRootDir();
+
+        m_FileWatcher = std::make_unique<FileWatcher>(shaderPathRoot, pattern);
         // construct the reverse map
         for (const auto& [id, name] : shaderFileNames)
         {

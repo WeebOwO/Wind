@@ -25,7 +25,6 @@ namespace wind
         SlangCompiler();
         ~SlangCompiler();
 
-        void Compile(CompileEntry& option);
         void Test();
 
     private:

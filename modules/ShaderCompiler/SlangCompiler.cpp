@@ -1,76 +1,33 @@
 #include "SlangCompiler.h"
 
+#include <iostream>
 #include <string>
 
 #include "Core/Log.h"
 
 using namespace Slang;
 
-namespace
-{
-    void TestSlang() {}
-} // namespace
-
 namespace wind
 {
+    void diagnoseIfNeeded(slang::IBlob* diagnosticsBlob)
+    {
+        if (diagnosticsBlob != nullptr)
+        {
+            std::cout << (const char*)diagnosticsBlob->getBufferPointer() << std::endl;
+        }
+    }
+
+    const char* shortestShader = "RWStructuredBuffer<float> result;"
+                                 "[shader(\"compute\")]"
+                                 "[numthreads(1,1,1)]"
+                                 "void computeMain(uint3 threadId : SV_DispatchThreadID)"
+                                 "{"
+                                 "    result[threadId.x] = threadId.x;"
+                                 "}";
+
     SlangCompiler::SlangCompiler() { InitializeSlang(); }
 
     SlangCompiler::~SlangCompiler() {}
-
-    void SlangCompiler::Compile(CompileEntry& compileEntry)
-    {
-        ComPtr<slang::ISession> slangSession;
-        slang::SessionDesc      sessionDesc;
-        slang::TargetDesc       targetDesc;
-
-        targetDesc.format  = SLANG_SPIRV;
-        targetDesc.profile = m_GlobalSession->findProfile("spirv_1_5");
-        targetDesc.flags   = 0;
-
-        sessionDesc.targets     = &targetDesc;
-        sessionDesc.targetCount = 1;
-
-        std::vector<slang::CompilerOptionEntry> options;
-        options.push_back({slang::CompilerOptionName::EmitSpirvDirectly,
-                           {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}});
-
-        sessionDesc.compilerOptionEntries    = options.data();
-        sessionDesc.compilerOptionEntryCount = options.size();
-
-        m_GlobalSession->createSession(sessionDesc, slangSession.writeRef());
-
-        slang::IModule* slangModule = nullptr;
-        {
-            ComPtr<slang::IBlob> diagnosticBlob;
-
-            slangModule = slangSession->loadModule(compileEntry.sourcePath.c_str(), diagnosticBlob.writeRef());
-        }
-
-        ComPtr<slang::IEntryPoint> entryPoint;
-        slangModule->findEntryPointByName(compileEntry.entryPoint.c_str(), entryPoint.writeRef());
-
-        std::vector<slang::IComponentType*> componentTypes;
-        componentTypes.push_back(slangModule);
-        componentTypes.push_back(entryPoint);
-
-        ComPtr<slang::IComponentType> linkedProgram;
-        {
-            ComPtr<slang::IBlob> diagnosticsBlob;
-            SlangResult          result = slangSession->createCompositeComponentType(
-                componentTypes.data(), componentTypes.size(), linkedProgram.writeRef(), diagnosticsBlob.writeRef());
-        }
-
-        ComPtr<slang::IBlob> sprivBlob;
-        {
-            ComPtr<slang::IBlob> diagnosticsBlob;
-            SlangResult          result =
-                linkedProgram->getEntryPointCode(0, 0, sprivBlob.writeRef(), diagnosticsBlob.writeRef());
-        }
-
-        compileEntry.outSpirv.resize(sprivBlob->getBufferSize());
-        WIND_CORE_INFO("Spirv size: {0}", sprivBlob->getBufferSize());
-        memcpy(compileEntry.outSpirv.data(), sprivBlob->getBufferPointer(), sprivBlob->getBufferSize());
-    }
 
     void SlangCompiler::InitializeSlang()
     {
@@ -80,9 +37,74 @@ namespace wind
         return;
     }
 
+    // compile the shortest shader
     void SlangCompiler::Test()
     {
-        TestSlang();
+        slang::SessionDesc sessionDesc {};
+        slang::TargetDesc  targetDesc {};
+
+        targetDesc.format  = SLANG_SPIRV;
+        targetDesc.profile = m_GlobalSession->findProfile("spirv_1_5");
+
+        sessionDesc.targets     = &targetDesc;
+        sessionDesc.targetCount = 1;
+
+        std::array<slang::CompilerOptionEntry, 1> options = {
+            {slang::CompilerOptionName::EmitSpirvDirectly,
+             {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}}};
+
+        sessionDesc.compilerOptionEntries    = options.data();
+        sessionDesc.compilerOptionEntryCount = options.size();
+
+        Slang::ComPtr<slang::ISession> session;
+        m_GlobalSession->createSession(sessionDesc, session.writeRef());
+
+        // load module
+        Slang::ComPtr<slang::IModule> slangModule;
+        {
+            Slang::ComPtr<slang::IBlob> diagBlob;
+            slangModule = session->loadModuleFromSourceString(
+                "shortestShader", "shortest.slang", shortestShader, diagBlob.writeRef());
+            diagnoseIfNeeded(diagBlob.get());
+        }
+
+        Slang::ComPtr<slang::IEntryPoint> entryPoint;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            slangModule->findEntryPointByName("computeMain", entryPoint.writeRef());
+            if (!entryPoint)
+            {
+                std::cout << "Error getting entry point" << std::endl;
+            }
+        }
+
+        std::array<slang::IComponentType*, 2> componentTypes = {slangModule, entryPoint};
+
+        Slang::ComPtr<slang::IComponentType> composedProgram;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult                 result = session->createCompositeComponentType(
+                componentTypes.data(), componentTypes.size(), composedProgram.writeRef(), diagnosticsBlob.writeRef());
+            diagnoseIfNeeded(diagnosticsBlob);
+        }
+
+        Slang::ComPtr<slang::IComponentType> linkedProgram;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult result = composedProgram->link(linkedProgram.writeRef(), diagnosticsBlob.writeRef());
+            diagnoseIfNeeded(diagnosticsBlob);
+        }
+
+        Slang::ComPtr<slang::IBlob> spirvCode;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult                 result =
+                linkedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
+            diagnoseIfNeeded(diagnosticsBlob);
+        }
+
+        WIND_CORE_INFO("SPIRV code size: {0}", spirvCode->getBufferSize());
+
         return;
     }
 } // namespace wind

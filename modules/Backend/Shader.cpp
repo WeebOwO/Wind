@@ -5,7 +5,7 @@
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
 
-#include "Core/Path.h"
+#include "Core/GlobalContext.h"
 #include "Core/Log.h"
 #include "Device.h"
 
@@ -18,7 +18,8 @@ namespace wind
                                            const char*          requesting_source,
                                            size_t               include_depth) override
         {
-            auto filePath = path::GetShaderRootDir() / requested_source;
+            auto shaderRootDir = g_GlobalContext->pathManager.GetShaderRootDir();
+            auto filePath = shaderRootDir / requested_source;
             std::string content = Read(filePath.string().c_str());
 
             shaderc_include_result* result = new shaderc_include_result();

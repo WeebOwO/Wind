@@ -5,9 +5,9 @@
 #include "Backend/Device.h"
 #include "Backend/Swapchain.h"
 #include "Core/Allocator.h"
-#include "Core/Application.h"
 #include "Core/DeletionQueue.h"
 #include "Core/Window.h"
+#include "Core/Service.h"
 #include "PSOCache.h"
 #include "Passes/GeometryPass.h"
 #include "ShaderCompiler/ShaderLibary.h"
@@ -19,6 +19,7 @@ namespace wind
 
     class RenderGraph;
     class View;
+    class SlangCompiler;
 
     struct FrameData
     {
@@ -65,6 +66,7 @@ namespace wind
         Scoped<PSOCache>       m_PipelineCache;
         Scoped<GeometryPass>   m_GeometryPass;
         Scoped<RenderGraph>    m_RenderGraph;
+        Scoped<SlangCompiler>  m_SlangCompiler;
         Scoped<View>           m_View;
         std::list<PassNode*>   m_ActivePassRoot;
         LinearAllocator*       m_LinearAllocator;

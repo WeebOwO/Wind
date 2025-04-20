@@ -1,17 +1,25 @@
 #include "Game.h"
 
-#include <iostream>
+#include "Config.h"
 #include "Core/GlobalContext.h"
 
 namespace wind 
 {
     GlobalContext* g_GlobalContext = nullptr;
 
+    static std::filesystem::path workingDir;
+
     void Game::Init() 
     {
-        ParseCommandLine(m_CommandLineArgs);
         g_GlobalContext = new GlobalContext();
         g_GlobalContext->Init();
+
+        if (workingDir.empty()) 
+        {
+            workingDir = PROJECT_DIR;
+        }
+
+        g_GlobalContext->pathManager.MarkRootDir(workingDir);
 
         m_Renderer = std::make_unique<Renderer>();
         RegisterServices(m_Renderer.get());
@@ -62,8 +70,7 @@ namespace wind
             {
                 // set the working directory
                 std::string path = arg.substr(arg.find("=") + 1);
-                // set the working directory
-                std::filesystem::current_path(path);
+                workingDir = path;
             }
         }
     }

@@ -6,6 +6,7 @@
 #include "RenderGraph/RenderGraph.h"
 #include "GlobalRT.h"
 #include "View.h"
+#include "ShaderCompiler/SlangCompiler.h"
 
 namespace wind
 {
@@ -36,6 +37,9 @@ namespace wind
 
         m_ShaderLibrary->Init(m_Device.get());
         m_PipelineCache->Init(m_Device.get(), m_ShaderLibrary.get());
+
+        m_SlangCompiler = std::make_unique<SlangCompiler>();
+        m_SlangCompiler->Test();
 
         InitRenderGraph();
     }

@@ -30,6 +30,7 @@ target("Renderer")
     -- post build step to copy dlls
     after_build(function(target)
         os.cp("external/slang/bin/slang.dll", target:targetdir())
+        os.cp("external/slang/bin/slang-glslang.dll", target:targetdir())
     end)
 
 target("Game")
@@ -37,7 +38,7 @@ target("Game")
     add_deps("Renderer")
     add_options("env")
     set_languages("c++20")
-    add_includedirs("modules/") 
+    add_includedirs("modules/", "xmake/") 
     add_files("game/**.cpp")
     -- set the working directory to the prject directory
     set_runargs("--working-dir=".. os.scriptdir())

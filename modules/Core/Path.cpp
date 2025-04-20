@@ -4,13 +4,18 @@
 
 namespace wind
 {
-    std::filesystem::path path::GetProjectDir()
+    PathManager::PathManager(std::filesystem::path projectDir) : m_ProjectDir(projectDir)
     {
-        const std::string projectDir = PROJECT_DIR;
-        return std::filesystem::path(projectDir);
+        
     }
-    
-    std::filesystem::path path::GetExecutableDir() { return GetProjectDir().parent_path(); }
-    std::filesystem::path path::GetShaderRootDir() { return GetProjectDir() / "shaders"; }
-    std::filesystem::path path::GetSPVOutputDir() { return GetProjectDir() / "shaders" / "CompiledSPV"; }
+
+    std::filesystem::path PathManager::GetProjectDir() const
+    {
+        return m_ProjectDir;
+    }
+
+    std::filesystem::path PathManager::GetShaderRootDir() const
+    {
+        return m_ProjectDir / "shaders";
+    }
 } // namespace wind

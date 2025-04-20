@@ -5,9 +5,6 @@
 
 namespace wind
 {
-    struct GameInfo
-    {};
-
     class Renderer;
 
     class Game : public Application
@@ -24,8 +21,6 @@ namespace wind
         void ParseCommandLine(const CommandLineArguments& args) override;
 
     private:
-        // game data
-        GameInfo m_GameInfo;
         // renderer
         std::unique_ptr<Renderer> m_Renderer;
     };

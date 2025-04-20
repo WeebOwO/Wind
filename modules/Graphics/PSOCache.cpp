@@ -6,7 +6,7 @@
 
 #include "Backend/Device.h"
 #include "Core/Log.h"
-#include "Core/Path.h"
+#include "Core/GlobalContext.h"
 
 using json = nlohmann::json;
 
@@ -65,7 +65,7 @@ namespace wind
 
     void PSOCache::CompilePipeline(PipelineID id)
     {
-        std::filesystem::path path = path::GetShaderRootDir() / PipeLineFileNames[id];
+        std::filesystem::path path = g_GlobalContext->pathManager.GetShaderRootDir() / PipeLineFileNames[id];
         std::ifstream         file(path);
 
         if (!file.is_open())
