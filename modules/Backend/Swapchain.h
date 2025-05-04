@@ -24,6 +24,8 @@ namespace wind
         uint32_t GetWidth() const { return m_Width; }
         uint32_t GetHeight() const { return m_Height; }
 
+        uint32_t GetImageCount() const { return static_cast<uint32_t>(m_Images.size()); }
+
     private:
         uint32_t         m_Width;
         uint32_t         m_Height;

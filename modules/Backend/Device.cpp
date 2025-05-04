@@ -127,12 +127,23 @@ namespace wind
         allocatorInfo.instance       = m_Instance;
         vmaCreateAllocator(&allocatorInfo, &m_Allocator);
 
+        vk::CommandPoolCreateInfo poolInfo {};
+        poolInfo.queueFamilyIndex = m_MainQueue.familyIndex;
+        poolInfo.flags            = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+        m_ImmediateCommandPool    = m_Device.createCommandPool(poolInfo);
+        m_ImmediateCommandBuffer  = m_Device.allocateCommandBuffers(vk::CommandBufferAllocateInfo {
+             .commandPool        = m_ImmediateCommandPool,
+             .level              = vk::CommandBufferLevel::ePrimary,
+             .commandBufferCount = 1,
+        })[0];
+
         return true;
     }
 
     void Device::Shutdown()
     {
         vmaDestroyAllocator(m_Allocator);
+        m_Device.destroyCommandPool(m_ImmediateCommandPool);
         m_Device.destroy();
         m_Instance.destroyDebugUtilsMessengerEXT(m_DebugMessenger);
         m_Instance.destroySurfaceKHR(m_Surface);

@@ -4,6 +4,8 @@
 #include "Graphics/View.h"
 #include "RenderGraph/RenderGraph.h"
 
+#include "imgui.h"
+#include "backends/imgui_impl_vulkan.h"
 
 namespace wind
 {
@@ -37,6 +39,18 @@ namespace wind
 
         cmdBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->GetNativeHandle());
         cmdBuffer.draw(3, 1, 0, 0);
+
+        ImGui::Render();
+		ImDrawData* main_draw_data = ImGui::GetDrawData();
+
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+        ImGui_ImplVulkan_RenderDrawData(main_draw_data, cmdBuffer);
 
         AfterRendering(cmdBuffer);
     };

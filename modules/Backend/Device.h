@@ -25,6 +25,8 @@ namespace wind
         int       familyIndex = -1;
     };
 
+    using GPUFunction = std::function<void(vk::CommandBuffer cmdBuffer)>;
+
     class Device
     {
     public:
@@ -62,6 +64,22 @@ namespace wind
         // handle mode
         Handle<GPUBuffer> CreateBuffer(const BufferDesc& desc) { return m_BufferPool.Create(this, desc); }
 
+        void ExecuteImmediate(GPUFunction&& function)
+        {
+            vk::CommandBufferBeginInfo beginInfo = {};
+            beginInfo.flags                   = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+            m_ImmediateCommandBuffer.begin(beginInfo);
+            function(m_ImmediateCommandBuffer);
+            m_ImmediateCommandBuffer.end();
+
+            vk::SubmitInfo submitInfo = {};
+            submitInfo.commandBufferCount = 1;
+            submitInfo.pCommandBuffers    = &m_ImmediateCommandBuffer;
+
+            m_MainQueue.queue.submit(submitInfo, nullptr);
+            m_MainQueue.queue.waitIdle();
+        }
+
     private:
         bool Init();
         void Shutdown();
@@ -80,5 +98,8 @@ namespace wind
 
         VmaAllocator         m_Allocator;
         ResourcePool<GPUBuffer> m_BufferPool;
+
+        vk::CommandBuffer m_ImmediateCommandBuffer;
+        vk::CommandPool   m_ImmediateCommandPool;
     };
 } // namespace wind

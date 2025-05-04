@@ -3,10 +3,17 @@
 #include "Backend/Utils.h"
 #include "Core/GlobalContext.h"
 #include "Core/Log.h"
-#include "RenderGraph/RenderGraph.h"
 #include "GlobalRT.h"
-#include "View.h"
+#include "RenderGraph/RenderGraph.h"
 #include "ShaderCompiler/SlangCompiler.h"
+#include "View.h"
+
+#include "Roboto-Regular.embed"
+
+// imgui part
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_vulkan.h"
+#include "imgui.h"
 
 namespace wind
 {
@@ -28,7 +35,7 @@ namespace wind
         m_LinearAllocator = new LinearAllocator(1024 * 1024);
     }
 
-    void Renderer::Init() 
+    void Renderer::Init()
     {
         WIND_CORE_INFO("Renderer initialized");
         // create frame data
@@ -41,7 +48,94 @@ namespace wind
         m_SlangCompiler = std::make_unique<SlangCompiler>();
         m_SlangCompiler->Test();
 
+        // init imgui part
+        InitImGui();
+
         InitRenderGraph();
+    }
+
+    void Renderer::InitImGui()
+    {
+        WIND_CORE_INFO("Init ImGui");
+        // init imgui
+        vk::DescriptorPoolSize poolSizes[] = {{vk::DescriptorType::eSampler, 1000},
+                                              {vk::DescriptorType::eCombinedImageSampler, 1000},
+                                              {vk::DescriptorType::eSampledImage, 1000},
+                                              {vk::DescriptorType::eStorageImage, 1000},
+                                              {vk::DescriptorType::eUniformTexelBuffer, 1000},
+                                              {vk::DescriptorType::eStorageTexelBuffer, 1000},
+                                              {vk::DescriptorType::eUniformBuffer, 1000},
+                                              {vk::DescriptorType::eStorageBuffer, 1000},
+                                              {vk::DescriptorType::eUniformBufferDynamic, 1000},
+                                              {vk::DescriptorType::eStorageBufferDynamic, 1000},
+                                              {vk::DescriptorType::eInputAttachment, 1000}};
+
+        vk::DescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.flags                        = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+        poolInfo.maxSets                      = 1000;
+        poolInfo.poolSizeCount                = static_cast<uint32_t>(std::size(poolSizes));
+        poolInfo.pPoolSizes                   = poolSizes;
+
+        m_ImguiPool = m_Device->GetDevice().createDescriptorPool(poolInfo);
+
+        ImGui::CreateContext();
+
+        ImGuiIO& io = ImGui::GetIO();
+        (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
+
+        ImGui::StyleColorsDark();
+
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding              = 0.0f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
+
+        // init glfw imgui
+        ImGui_ImplGlfw_InitForVulkan(m_Window->GetNativeWindow(), true);
+
+        ImGui_ImplVulkan_InitInfo initInfo = {};
+        initInfo.Instance                  = m_Device->GetInstance();
+        initInfo.PhysicalDevice            = m_Device->GetPhysicalDevice();
+        initInfo.Device                    = m_Device->GetDevice();
+        initInfo.QueueFamily               = m_Device->GetQueue(CommandQueueType::Graphics).familyIndex;
+        initInfo.Queue                     = m_Device->GetQueue(CommandQueueType::Graphics).queue;
+        initInfo.UseDynamicRendering       = true;
+        initInfo.DescriptorPool            = m_ImguiPool;
+        initInfo.MinImageCount             = m_Swapchain->GetImageCount();
+        initInfo.ImageCount                = m_Swapchain->GetImageCount();
+
+        initInfo.PipelineRenderingCreateInfo = {};
+        initInfo.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
+        initInfo.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
+
+        VkFormat colorFormats[] = {(VkFormat)m_Swapchain->GetFormat()};
+        const VkFormat* format = (const VkFormat*)colorFormats;
+        initInfo.PipelineRenderingCreateInfo.pColorAttachmentFormats = format;
+
+        ImGui_ImplVulkan_Init(&initInfo);
+
+        // upload the font texture
+        ImFontConfig fontConfig;
+        fontConfig.FontDataOwnedByAtlas = false;
+        ImFont* robotoFont =
+            io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
+        io.FontDefault = robotoFont;
+
+        ImGui_ImplVulkan_CreateFontsTexture();
+
+        m_Device->WaitIdle();
+
+        m_MainDelelteQueue.PushFunction([this]() {
+            ImGui_ImplVulkan_Shutdown();
+            ImGui_ImplGlfw_Shutdown();
+            ImGui::DestroyContext();
+            m_Device->GetDevice().destroyDescriptorPool(m_ImguiPool);
+        });
     }
 
     void Renderer::Shutdown()
@@ -54,20 +148,15 @@ namespace wind
 
     Renderer::~Renderer() = default;
 
-    void Renderer::Run()
-    {
-        // initialize the render graph
-    }
-
     void Renderer::Tick()
     {
-        if(!m_Window->ShouldClose())
+        if (!m_Window->ShouldClose())
         {
             m_Window->Update();
             m_ShaderLibrary->Update();
             ProcessDirtyShaders();
             RecordRenderGraph();
-        } 
+        }
         else
         {
             ProduceSignal(Signal::NeedExit);
@@ -79,18 +168,20 @@ namespace wind
         // draw a triangle
         BeginFrame();
 
+        ImGui::ShowDemoWindow();
+
         auto& frame = GetCurrentFrameData();
 
         RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream.get()};
         m_RenderGraph->PrepareFrame(context);
 
-        RDGResourceDesc importImageDesc = RDGResourceDesc::Image2D(
-            m_Swapchain->GetFormat(), m_Swapchain->GetWidth(), m_Swapchain->GetHeight());
-        
+        RDGResourceDesc importImageDesc =
+            RDGResourceDesc::Image2D(m_Swapchain->GetFormat(), m_Swapchain->GetWidth(), m_Swapchain->GetHeight());
+
         VirtualImage* virtualImage = m_LinearAllocator->AllocateConstruct<VirtualImage>(importImageDesc);
-        virtualImage->image = m_Swapchain->GetImage(frame.swapChainImageIndex);
-        virtualImage->imageView = m_Swapchain->GetImageView(frame.swapChainImageIndex);
-        virtualImage->imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
+        virtualImage->image        = m_Swapchain->GetImage(frame.swapChainImageIndex);
+        virtualImage->imageView    = m_Swapchain->GetImageView(frame.swapChainImageIndex);
+        virtualImage->imageLayout  = vk::ImageLayout::eColorAttachmentOptimal;
 
         m_View->viewport = {0, 0, m_Swapchain->GetWidth(), m_Swapchain->GetHeight()};
 
@@ -128,7 +219,10 @@ namespace wind
         EndFrame();
     }
 
-    FrameData& Renderer::GetCurrentFrameData() { return m_Frames[m_FrameCounter % g_GlobalContext->kMaxFramesInFlight]; }
+    FrameData& Renderer::GetCurrentFrameData()
+    {
+        return m_Frames[m_FrameCounter % g_GlobalContext->kMaxFramesInFlight];
+    }
 
     void Renderer::BeginFrame()
     {
@@ -157,6 +251,10 @@ namespace wind
         frame.commandStream->Reset();
 
         m_ActivePassRoot.push_back(m_GeometryPass.get());
+
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
     }
 
     void Renderer::EndFrame()

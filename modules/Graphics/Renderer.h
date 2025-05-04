@@ -42,12 +42,12 @@ namespace wind
         void Init() override;
         void Shutdown() override;
 
-        void Run();
         void RecordRenderGraph();
 
         void Tick() override;
 
     private:
+        void InitImGui();
         void CreateFrameData();
         void ProcessDirtyShaders();
         void RegisterDeletionQueue();
@@ -73,5 +73,8 @@ namespace wind
         DeletionQueue          m_MainDelelteQueue;
         uint32_t               m_FrameCounter;
         std::vector<FrameData> m_Frames;
+
+        // imgui descriptor pool
+        vk::DescriptorPool m_ImguiPool;
     };
 } // namespace wind
