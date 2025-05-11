@@ -2,13 +2,14 @@
 
 #include "Core/Log.h"
 #include "RenderGraph.h"
+#include "RenderGraphBuilder.h"
 
 namespace wind
 {
-    void PassNode::RecordRenderGrpah(RenderGraph& renderGraph)
+    void PassNode::Setup(RenderGraphBuilder& renderGraph)
     {
         // record the render graph
-        WIND_CORE_WARN("RenderGraphPass {} record function not implemented", m_PassName);
+        WIND_CORE_WARN("RenderGraphPass {} setup function not implemented", m_PassName);
     }
 
     void PassNode::Execute(vk::CommandBuffer cmdBuffer)
@@ -17,7 +18,7 @@ namespace wind
         WIND_CORE_WARN("RenderGraphPass {} execute function not implemented", m_PassName);
     }
 
-    void RenderPassNode::BeforeRendering(vk::CommandBuffer cmdBuffer)
+    void RenderPassNode::BeginRendering(vk::CommandBuffer cmdBuffer)
     {
         RenderGraph& renderGraph = *m_RenderGraph;
 
@@ -29,58 +30,61 @@ namespace wind
         bool hasStencil = false;
 
         // loop through the attachments and set the color attachments
-        for (int i = 0; i < MAX_RENDER_TARGET_COUNT - 2; ++i)
+        for (auto colorAttachment : m_Descriptor.renderTargets)
         {
-            if (m_Descriptor.attachments.color[i].isInitialized())
+            if (colorAttachment.handle.isInitialized())
             {
-                VirtualResource* resource = renderGraph.GetResource(m_Descriptor.attachments.color[i]);
+                VirtualResource* resource = renderGraph.GetResource(colorAttachment.handle);
                 if (resource != nullptr)
                 {
                     colorAttachments.push_back(vk::RenderingAttachmentInfo {
                         .imageView   = resource->As<VirtualImage>()->imageView,
                         .imageLayout = vk::ImageLayout::eColorAttachmentOptimal,
-                        .loadOp      = vk::AttachmentLoadOp::eClear,
-                        .storeOp     = vk::AttachmentStoreOp::eStore,
-                        .clearValue  = m_Descriptor.clearValue,
+                        .loadOp      = colorAttachment.loadOp,
+                        .storeOp     = colorAttachment.storeOp,
+                        .clearValue  = colorAttachment.clearValue,
                     });
                 }
             }
         }
 
         // set the depth attachment
-        if (m_Descriptor.attachments.depth.isInitialized())
+        if (m_Descriptor.depth.handle.isInitialized())
         {
-            VirtualResource* resource = renderGraph.GetResource(m_Descriptor.attachments.depth);
+            VirtualResource* resource = renderGraph.GetResource(m_Descriptor.depth.handle);
             if (resource != nullptr)
             {
                 depthAttachment = vk::RenderingAttachmentInfo {
                     .imageView   = resource->As<VirtualImage>()->imageView,
                     .imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal,
-                    .loadOp      = vk::AttachmentLoadOp::eClear,
-                    .storeOp     = vk::AttachmentStoreOp::eStore,
+                    .loadOp      = m_Descriptor.depth.loadOp,
+                    .storeOp     = m_Descriptor.depth.storeOp,
+                    .clearValue  = m_Descriptor.depth.clearValue,
                 };
                 hasDepth = true;
             }
         }
 
         // set the stencil attachment
-        if (m_Descriptor.attachments.stencil.isInitialized())
+        if (m_Descriptor.stencil.handle.isInitialized())
         {
-            VirtualResource* resource = renderGraph.GetResource(m_Descriptor.attachments.stencil);
+            VirtualResource* resource = renderGraph.GetResource(m_Descriptor.stencil.handle);
             if (resource != nullptr)
             {
                 stencilAttachment = vk::RenderingAttachmentInfo {
                     .imageView   = resource->As<VirtualImage>()->imageView,
                     .imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal,
-                    .loadOp      = vk::AttachmentLoadOp::eClear,
-                    .storeOp     = vk::AttachmentStoreOp::eStore,
+                    .loadOp      = m_Descriptor.stencil.loadOp,
+                    .storeOp     = m_Descriptor.stencil.storeOp,
+                    .clearValue  = m_Descriptor.stencil.clearValue,
                 };
                 hasStencil = true;
             }
         }
 
         // set the rendering info
-        vk::RenderingInfo renderingInfo = vk::RenderingInfo {
+        vk::RenderingInfo renderingInfo = vk::RenderingInfo 
+        {
             .renderArea           = m_Descriptor.renderArea,
             .layerCount           = 1,
             .colorAttachmentCount = static_cast<uint32_t>(colorAttachments.size()),
@@ -93,10 +97,9 @@ namespace wind
         cmdBuffer.beginRendering(renderingInfo);
 
         // set the viewport and scissor
-        vk::Viewport viewPort 
-        {
-            .width = static_cast<float>(m_Descriptor.viewPort.width),
-            .height = static_cast<float>(m_Descriptor.viewPort.height),
+        vk::Viewport viewPort {
+            .width    = static_cast<float>(m_Descriptor.viewPort.width),
+            .height   = static_cast<float>(m_Descriptor.viewPort.height),
             .minDepth = 0.0f,
             .maxDepth = 1.0f,
         };
@@ -107,11 +110,11 @@ namespace wind
             .offset = {0, 0},
             .extent = {m_Descriptor.viewPort.width, m_Descriptor.viewPort.height},
         };
-        
+
         cmdBuffer.setScissor(0, 1, &scissor);
     }
 
-    void RenderPassNode::AfterRendering(vk::CommandBuffer cmdBuffer)
+    void RenderPassNode::EndRendering(vk::CommandBuffer cmdBuffer)
     {
         // end the rendering
         cmdBuffer.endRendering();

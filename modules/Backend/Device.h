@@ -6,6 +6,7 @@
 #include "Buffer.h"
 #include "Core/Window.h"
 #include "Guard.h"
+#include "Image.h"
 #include "Pipeline.h"
 #include "Resource.h"
 #include "ResourcePool.h"
@@ -62,23 +63,44 @@ namespace wind
         }
 
         // handle mode
-        Handle<GPUBuffer> CreateBuffer(const BufferDesc& desc) { return m_BufferPool.Create(this, desc); }
+        Handle<GPUBuffer>  Create(const BufferDesc& desc) { return m_BufferPool.Create(this, desc); }
+        Handle<GPUTexture> Create(const ImageCreateInfo& imageInfo) { return m_TexturePool.Create(this, imageInfo); }
+
+        GPUBuffer*  GetBuffer(const Handle<GPUBuffer>& handle) { return m_BufferPool.Get(handle); }
+        GPUTexture* GetTexture(const Handle<GPUTexture>& handle) { return m_TexturePool.Get(handle); }
+
+        template<typename T>
+        void Free(T handle)
+        {
+            if constexpr (std::is_same_v<T, Handle<GPUBuffer>>)
+            {
+                m_BufferPool.Free(handle);
+            }
+            else if constexpr (std::is_same_v<T, Handle<GPUTexture>>)
+            {
+                m_TexturePool.Free(handle);
+            }
+        }
 
         void ExecuteImmediate(GPUFunction&& function)
         {
             vk::CommandBufferBeginInfo beginInfo = {};
-            beginInfo.flags                   = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+            beginInfo.flags                      = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
             m_ImmediateCommandBuffer.begin(beginInfo);
             function(m_ImmediateCommandBuffer);
             m_ImmediateCommandBuffer.end();
 
-            vk::SubmitInfo submitInfo = {};
+            vk::SubmitInfo submitInfo     = {};
             submitInfo.commandBufferCount = 1;
             submitInfo.pCommandBuffers    = &m_ImmediateCommandBuffer;
 
             m_MainQueue.queue.submit(submitInfo, nullptr);
             m_MainQueue.queue.waitIdle();
         }
+
+        // debug region
+        void BeginDebugRegion(vk::CommandBuffer cmdBuffer, const char* pMarkerName, const float* color);
+        void EndDebugRegion(vk::CommandBuffer cmdBuffer);
 
     private:
         bool Init();
@@ -96,8 +118,10 @@ namespace wind
         GPUQueue m_AsyncComputeQueue; // use for async compute
         GPUQueue m_TransferQueue;     // use for transfer
 
-        VmaAllocator         m_Allocator;
-        ResourcePool<GPUBuffer> m_BufferPool;
+        VmaAllocator m_Allocator;
+
+        ResourcePool<GPUBuffer>  m_BufferPool;
+        ResourcePool<GPUTexture> m_TexturePool;
 
         vk::CommandBuffer m_ImmediateCommandBuffer;
         vk::CommandPool   m_ImmediateCommandPool;

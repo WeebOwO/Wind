@@ -6,10 +6,11 @@
 #include "Backend/Swapchain.h"
 #include "Core/Allocator.h"
 #include "Core/DeletionQueue.h"
-#include "Core/Window.h"
 #include "Core/Service.h"
+#include "Core/Window.h"
 #include "PSOCache.h"
 #include "Passes/GeometryPass.h"
+#include "Passes/UIPass.h"
 #include "ShaderCompiler/ShaderLibary.h"
 
 namespace wind
@@ -42,11 +43,15 @@ namespace wind
         void Init() override;
         void Shutdown() override;
 
-        void RecordRenderGraph();
-
         void Tick() override;
+        void RenderFrame();
+
+        Device* GetDevice() { return m_Device.get(); }
+        void    SetRenderCamera(Camera* camera) { m_RenderCamera = camera; }
+        Camera* GetRenderCamera() { return m_RenderCamera; }
 
     private:
+        void ImportRenderGraphResources();
         void InitImGui();
         void CreateFrameData();
         void ProcessDirtyShaders();
@@ -64,7 +69,6 @@ namespace wind
         Scoped<Swapchain>      m_Swapchain;
         Scoped<ShaderLibrary>  m_ShaderLibrary;
         Scoped<PSOCache>       m_PipelineCache;
-        Scoped<GeometryPass>   m_GeometryPass;
         Scoped<RenderGraph>    m_RenderGraph;
         Scoped<SlangCompiler>  m_SlangCompiler;
         Scoped<View>           m_View;
@@ -73,6 +77,12 @@ namespace wind
         DeletionQueue          m_MainDelelteQueue;
         uint32_t               m_FrameCounter;
         std::vector<FrameData> m_Frames;
+
+        // pass specific data
+        Scoped<GeometryPass> m_GeometryPass;
+        Scoped<UIPass>       m_UIPass;
+
+        Camera* m_RenderCamera;
 
         // imgui descriptor pool
         vk::DescriptorPool m_ImguiPool;

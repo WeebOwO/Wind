@@ -15,7 +15,7 @@ namespace wind
     struct Node
     {
         NodeID              handle;
+        NodeType            nodeType;
         std::vector<NodeID> dependencies;
-        NodeType            type;
     };
 } // namespace wind

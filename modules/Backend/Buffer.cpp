@@ -3,7 +3,6 @@
 #include "Core/Log.h"
 #include "Device.h"
 
-
 namespace wind
 {
     GPUBuffer::GPUBuffer(Device* device, const BufferDesc& desc) : Resource(device)

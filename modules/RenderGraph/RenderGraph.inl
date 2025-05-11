@@ -18,9 +18,8 @@ namespace wind
 
     template<typename T>
     requires std::derived_from<T, PassNode>
-    RenderGraph::Builder RenderGraph::AddPass(T* pass)
+    void RenderGraph::AddPass(T* pass)
     {
-        m_Passes.push_back(pass);
-        return Builder(*this, pass);
+        AddPassInternal(pass);
     }
 } // namespace wind

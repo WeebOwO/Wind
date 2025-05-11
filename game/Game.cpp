@@ -22,6 +22,10 @@ namespace wind
         g_GlobalContext->pathManager.MarkRootDir(workingDir);
 
         m_Renderer = std::make_unique<Renderer>();
+        m_Camera   = std::make_unique<Camera>();
+
+        m_Camera->CreateRT(m_Renderer->GetDevice());
+
         RegisterServices(m_Renderer.get());
 
         Application::Init();
@@ -29,8 +33,8 @@ namespace wind
 
     void Game::Shutdown() 
     {
+        m_Camera->ReleaseRT(m_Renderer->GetDevice());
         Application::Shutdown();
-        m_Renderer.reset();
         g_GlobalContext->Shutdown();
     }
 
@@ -46,6 +50,8 @@ namespace wind
                     m_Running = false;
                 }
             }
+
+            m_Renderer->SetRenderCamera(m_Camera.get());
 
             // clear the signals
             m_Signals.clear();

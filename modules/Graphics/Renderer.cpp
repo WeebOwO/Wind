@@ -109,12 +109,12 @@ namespace wind
         initInfo.MinImageCount             = m_Swapchain->GetImageCount();
         initInfo.ImageCount                = m_Swapchain->GetImageCount();
 
-        initInfo.PipelineRenderingCreateInfo = {};
+        initInfo.PipelineRenderingCreateInfo       = {};
         initInfo.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
         initInfo.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
 
-        VkFormat colorFormats[] = {(VkFormat)m_Swapchain->GetFormat()};
-        const VkFormat* format = (const VkFormat*)colorFormats;
+        VkFormat        colorFormats[]                               = {(VkFormat)m_Swapchain->GetFormat()};
+        const VkFormat* format                                       = (const VkFormat*)colorFormats;
         initInfo.PipelineRenderingCreateInfo.pColorAttachmentFormats = format;
 
         ImGui_ImplVulkan_Init(&initInfo);
@@ -155,7 +155,7 @@ namespace wind
             m_Window->Update();
             m_ShaderLibrary->Update();
             ProcessDirtyShaders();
-            RecordRenderGraph();
+            RenderFrame();
         }
         else
         {
@@ -163,7 +163,7 @@ namespace wind
         }
     }
 
-    void Renderer::RecordRenderGraph()
+    void Renderer::RenderFrame()
     {
         // draw a triangle
         BeginFrame();
@@ -174,28 +174,15 @@ namespace wind
 
         RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream.get()};
         m_RenderGraph->PrepareFrame(context);
-
-        RDGResourceDesc importImageDesc =
-            RDGResourceDesc::Image2D(m_Swapchain->GetFormat(), m_Swapchain->GetWidth(), m_Swapchain->GetHeight());
-
-        VirtualImage* virtualImage = m_LinearAllocator->AllocateConstruct<VirtualImage>(importImageDesc);
-        virtualImage->image        = m_Swapchain->GetImage(frame.swapChainImageIndex);
-        virtualImage->imageView    = m_Swapchain->GetImageView(frame.swapChainImageIndex);
-        virtualImage->imageLayout  = vk::ImageLayout::eColorAttachmentOptimal;
-
-        m_View->viewport = {0, 0, m_Swapchain->GetWidth(), m_Swapchain->GetHeight()};
-
-        // import the swapchain image as a render graph resource
-        RenderGraphHandle backBufferHandle = m_RenderGraph->ImportRenderGraphResource(virtualImage);
-        m_RenderGraph->GetBlackboard().Put(GlobalRT::BackBuffer, backBufferHandle);
+        m_View->camera = m_RenderCamera;
+        // add the pass based on our need
+        m_RenderGraph->AddPass(m_GeometryPass.get());
+        m_RenderGraph->AddPass(m_UIPass.get());
 
         m_GeometryPass->InitView(m_View.get());
+        m_UIPass->InitView(m_View.get());
 
-        // build the render graph
-        for (auto& pass : m_ActivePassRoot)
-        {
-            pass->RecordRenderGrpah(*m_RenderGraph);
-        }
+        ImportRenderGraphResources();
 
         vk::CommandBuffer cmdBuffer = frame.commandStream->Begin();
 
@@ -249,8 +236,6 @@ namespace wind
                 .value;
 
         frame.commandStream->Reset();
-
-        m_ActivePassRoot.push_back(m_GeometryPass.get());
 
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -316,12 +301,51 @@ namespace wind
         }
     }
 
+    void Renderer::ImportRenderGraphResources()
+    {
+        // import the render graph resources
+        auto& frame = GetCurrentFrameData();
+
+        RDGResourceDesc importImageDesc =
+            RDGResourceDesc::Image2D(m_Swapchain->GetFormat(), m_Swapchain->GetWidth(), m_Swapchain->GetHeight());
+
+        VirtualImage* virtualImage = m_LinearAllocator->AllocateConstruct<VirtualImage>(importImageDesc);
+        virtualImage->image        = m_Swapchain->GetImage(frame.swapChainImageIndex);
+        virtualImage->imageView    = m_Swapchain->GetImageView(frame.swapChainImageIndex);
+        virtualImage->imageLayout  = vk::ImageLayout::eColorAttachmentOptimal;
+        virtualImage->name         = GlobalRT::BackBuffer;
+
+        m_View->viewport = {0, 0, m_Swapchain->GetWidth(), m_Swapchain->GetHeight()};
+
+        // import the swapchain image as a render graph resource
+        RenderGraphHandle backBufferHandle = m_RenderGraph->ImportRenderGraphResource(virtualImage);
+        m_RenderGraph->GetBlackboard().Put(GlobalRT::BackBuffer, backBufferHandle);
+
+        // import camera color 
+        GPUTexture* cameraTexture = m_Device->GetTexture(m_RenderCamera->GetTextureHandle());
+        vk::Extent3D extent = cameraTexture->imageInfo.extent;
+
+        RDGResourceDesc cameraImageDesc =
+            RDGResourceDesc::Image2D(cameraTexture->imageInfo.format, extent.width, extent.height);
+
+        VirtualImage* cameraVirtualImage = m_LinearAllocator->AllocateConstruct<VirtualImage>(cameraImageDesc);
+        cameraVirtualImage->image        = cameraTexture->allocateImage.image;
+        cameraVirtualImage->imageView    = cameraTexture->imageView;
+        cameraVirtualImage->imageLayout  = vk::ImageLayout::eColorAttachmentOptimal;
+        cameraVirtualImage->name         = GlobalRT::SceneColor;
+        cameraVirtualImage->imported     = true;
+        RenderGraphHandle sceneColorHandle =
+            m_RenderGraph->ImportRenderGraphResource(cameraVirtualImage);
+        m_RenderGraph->GetBlackboard().Put(GlobalRT::SceneColor, sceneColorHandle);
+    }
+
     void Renderer::InitRenderGraph()
     {
         // initialize the render graph
-        m_RenderGraph = std::make_unique<RenderGraph>();
+        m_RenderGraph = std::make_unique<RenderGraph>(m_Device.get());
         // create the render graph passes
         m_GeometryPass = std::make_unique<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
+        m_UIPass       = std::make_unique<UIPass>();
     }
 
     void Renderer::RegisterDeletionQueue()

@@ -164,4 +164,15 @@ namespace wind
                 return m_MainQueue;
         }
     }
+
+    void Device::BeginDebugRegion(vk::CommandBuffer cmdBuffer, const char* pMarkerName, const float* color)
+    {
+        vk::DebugUtilsLabelEXT labelInfo = {};
+        labelInfo.pLabelName             = pMarkerName;
+        std::array<float, 4> markCol {color[0], color[1], color[2], color[3]};
+        labelInfo.color = markCol;
+        cmdBuffer.beginDebugUtilsLabelEXT(labelInfo);
+    }
+
+    void Device::EndDebugRegion(vk::CommandBuffer cmdBuffer) { cmdBuffer.endDebugUtilsLabelEXT(); }
 } // namespace wind

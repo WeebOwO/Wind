@@ -23,5 +23,6 @@ namespace wind
     private:
         // renderer
         std::unique_ptr<Renderer> m_Renderer;
+        std::unique_ptr<Camera>   m_Camera;
     };
 } // namespace wind

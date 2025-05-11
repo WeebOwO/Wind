@@ -1,18 +1,13 @@
-#include "GeometryPass.h"
+#include "UIPass.h"
 
+#include "imgui.h"
+#include "backends/imgui_impl_vulkan.h"
 #include "Graphics/GlobalRT.h"
-#include "Graphics/View.h"
 #include "RenderGraph/RenderGraphBuilder.h"
 
 namespace wind
 {
-    GeometryPass::GeometryPass(PipelineID id, PSOCache* psoCache) :
-        m_PsoCacheLibrary(psoCache), m_PipelineID(id), RenderPassNode("GBufferPass")
-    {}
-
-    GeometryPass::~GeometryPass() {}
-
-    void GeometryPass::Setup(RenderGraphBuilder& builder)
+    void UIPass::Setup(RenderGraphBuilder& builder)
     {
         // setup the pass
         RenderGraphHandle handle = builder.GetResourceHandle(GlobalRT::SceneColor);
@@ -26,19 +21,26 @@ namespace wind
         SetRenderTargets(renderTargets);
 
         m_Descriptor.viewPort     = m_View->viewport;
-        m_Descriptor.clearValue   = clearValue;
         m_Descriptor.renderArea   = vk::Rect2D {{0, 0}, m_View->viewport.width, m_View->viewport.height};
     }
 
-    void GeometryPass::Execute(vk::CommandBuffer cmdBuffer)
+    void UIPass::Execute(vk::CommandBuffer cmdBuffer)
     {
         BeginRendering(cmdBuffer);
 
-        Pipeline* pipeline = m_PsoCacheLibrary->GetPipeline(m_PipelineID);
+        // draw UI here
+        ImGui::Render();
+        ImDrawData* main_draw_data = ImGui::GetDrawData();
 
-        cmdBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->GetNativeHandle());
-        cmdBuffer.draw(3, 1, 0, 0);
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+        ImGui_ImplVulkan_RenderDrawData(main_draw_data, cmdBuffer);
 
         EndRendering(cmdBuffer);
-    };
+    }
 } // namespace wind

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <any>
 #include <string>
 
 #include "Backend/Define.h"
 #include "Backend/Guard.h"
+#include "Graphics/View.h"
 #include "RenderGraphHandle.h"
 #include "RenderGraphNode.h"
 #include "Scene/Viewport.h"
@@ -13,6 +13,7 @@ namespace wind
 {
     class RenderGraphUpdateContext;
     class RenderGraph;
+    class RenderGraphBuilder;
 
     enum PassType
     {
@@ -24,14 +25,17 @@ namespace wind
     class PassNode : public Node
     {
     public:
-        PassNode(const std::string& name, PassType passType) : m_PassName(name), m_PassType(passType) {};
+        PassNode(const std::string& name, PassType passType) : m_PassName(name), m_PassType(passType)
+        {
+            nodeType = NodeType::Pass;
+        };
 
         void RegisterGraph(RenderGraph* renderGraph) { m_RenderGraph = renderGraph; }
 
         PassType           GetPassType() const { return m_PassType; }
         const std::string& GetPassName() const { return m_PassName; }
 
-        virtual void RecordRenderGrpah(RenderGraph& renderGraph);
+        virtual void Setup(RenderGraphBuilder& renderGraph);
         virtual void Execute(vk::CommandBuffer cmdBuffer);
 
         virtual ~PassNode() = default;
@@ -40,6 +44,14 @@ namespace wind
         RenderGraph* m_RenderGraph;
         std::string  m_PassName;
         PassType     m_PassType;
+    };
+
+    struct AttachmentInfo
+    {
+        RenderGraphHandle     handle;
+        vk::ClearValue        clearValue;
+        vk::AttachmentLoadOp  loadOp;
+        vk::AttachmentStoreOp storeOp;
     };
 
     class RenderPassNode : public PassNode
@@ -63,26 +75,32 @@ namespace wind
 
         struct Descriptor
         {
-            Attachments    attachments {};
-            Viewport       viewPort {};
-            vk::Rect2D     renderArea {};
-            vk::ClearValue clearValue {};
-            uint8_t        sampleCount = 1;
-            uint8_t        layerCount  = 1;
+            std::vector<AttachmentInfo> renderTargets {};
+            AttachmentInfo              depth {};
+            AttachmentInfo              stencil {};
+            Viewport                    viewPort {};
+            vk::Rect2D                  renderArea {};
+            vk::ClearValue              clearValue {};
+            uint8_t                     sampleCount = 1;
+            uint8_t                     layerCount  = 1;
         };
 
-        template<typename T>
-        T* GetUserData()
+        void InitView(View* view) { m_View = view; }
+
+        void BeginRendering(vk::CommandBuffer cmdBuffer);
+        void EndRendering(vk::CommandBuffer cmdBuffer);
+
+        void SetRenderTargets(const std::vector<AttachmentInfo>& renderTargets)
         {
-            return std::any_cast<T>(&m_UserData);
+            m_Descriptor.renderTargets = renderTargets;
         }
 
-        void BeforeRendering(vk::CommandBuffer cmdBuffer);
-        void AfterRendering(vk::CommandBuffer cmdBuffer);
+        void SetDepthAttachment(const AttachmentInfo& depth) { m_Descriptor.depth = depth; }
+        void SetStencilAttachment(const AttachmentInfo& stencil) { m_Descriptor.stencil = stencil; }
 
     protected:
-        std::any   m_UserData;
         Descriptor m_Descriptor {};
+        View*      m_View;
     };
 
 } // namespace wind

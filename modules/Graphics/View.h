@@ -9,7 +9,7 @@ namespace wind
     struct View
     {
         Viewport   viewport;
-        Camera     camera;
         vk::Rect2D scissor;
+        Camera*     camera;
     };
 } // namespace wind

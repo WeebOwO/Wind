@@ -7,6 +7,12 @@
 
 namespace wind
 {
+    enum class CameraType
+    {
+        GameView,
+        SceneView,
+    };
+
     class CameraManager
     {
     public:
@@ -15,5 +21,6 @@ namespace wind
 
     private:
         std::unordered_map<std::string, Camera*> m_Cameras;
+        Camera                                   m_GameViewCamera;
     };
 } // namespace wind

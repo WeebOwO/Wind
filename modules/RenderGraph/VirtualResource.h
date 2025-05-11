@@ -16,7 +16,7 @@ namespace wind
     class VirtualResource
     {
     public:
-        VirtualResource(const RDGResourceDesc& resourceDesc) : desc(resourceDesc) {};
+        VirtualResource(const RDGResourceDesc& resourceDesc) : desc(resourceDesc), name(""), imported(false) {};
         virtual ~VirtualResource() = default;
 
         template<typename T>
@@ -29,11 +29,14 @@ namespace wind
 
         // during dag build pass in render graph
         uint32_t         refCount = 0;
+        // first use pass and last use pass
         PassNode*        first    = nullptr;
         PassNode*        last     = nullptr;
 
         ResourceLifeTime lifeTime = ResourceLifeTime::Transient;
         RDGResourceDesc  desc;
+        std::string      name;
+        bool             imported;
     };
 
     struct VirtualImage : public VirtualResource 
