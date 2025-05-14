@@ -8,6 +8,8 @@ compile_commands.json
 vsxmake2022/
 VS2022.bat
 shaders/CompiledSPV
+# xmake lock
+xmake-requires.lock
 # dependencies
 
 # auto generate file

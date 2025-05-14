@@ -128,8 +128,6 @@ namespace wind
 
         ImGui_ImplVulkan_CreateFontsTexture();
 
-        m_Device->WaitIdle();
-
         m_MainDelelteQueue.PushFunction([this]() {
             ImGui_ImplVulkan_Shutdown();
             ImGui_ImplGlfw_Shutdown();
@@ -141,9 +139,9 @@ namespace wind
     void Renderer::Shutdown()
     {
         WIND_CORE_INFO("Renderer shutting down");
-        delete m_LinearAllocator;
         m_Device->WaitIdle();
         m_MainDelelteQueue.Flush();
+        delete m_LinearAllocator;
     }
 
     Renderer::~Renderer() = default;
