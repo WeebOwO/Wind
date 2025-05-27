@@ -11,6 +11,7 @@ namespace wind
     enum class PipelineID : uint32_t
     {
         Triangle,
+        UI,
         Count
     };
 

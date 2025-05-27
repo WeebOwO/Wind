@@ -170,7 +170,8 @@ namespace wind
 
         auto& frame = GetCurrentFrameData();
 
-        RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream.get()};
+        RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream->GetCommandBuffer()};
+
         m_RenderGraph->PrepareFrame(context);
         m_View->camera = m_RenderCamera;
         // add the pass based on our need
@@ -319,21 +320,20 @@ namespace wind
         RenderGraphHandle backBufferHandle = m_RenderGraph->ImportRenderGraphResource(virtualImage);
         m_RenderGraph->GetBlackboard().Put(GlobalRT::BackBuffer, backBufferHandle);
 
-        // import camera color 
-        GPUTexture* cameraTexture = m_Device->GetTexture(m_RenderCamera->GetTextureHandle());
-        vk::Extent3D extent = cameraTexture->imageInfo.extent;
+        // import camera color
+        GPUTexture*  cameraTexture = m_Device->GetTexture(m_RenderCamera->GetTextureHandle());
+        vk::Extent3D extent        = cameraTexture->imageInfo.extent;
 
         RDGResourceDesc cameraImageDesc =
             RDGResourceDesc::Image2D(cameraTexture->imageInfo.format, extent.width, extent.height);
 
-        VirtualImage* cameraVirtualImage = m_LinearAllocator->AllocateConstruct<VirtualImage>(cameraImageDesc);
-        cameraVirtualImage->image        = cameraTexture->allocateImage.image;
-        cameraVirtualImage->imageView    = cameraTexture->imageView;
-        cameraVirtualImage->imageLayout  = vk::ImageLayout::eColorAttachmentOptimal;
-        cameraVirtualImage->name         = GlobalRT::SceneColor;
-        cameraVirtualImage->imported     = true;
-        RenderGraphHandle sceneColorHandle =
-            m_RenderGraph->ImportRenderGraphResource(cameraVirtualImage);
+        VirtualImage* cameraVirtualImage   = m_LinearAllocator->AllocateConstruct<VirtualImage>(cameraImageDesc);
+        cameraVirtualImage->image          = cameraTexture->allocateImage.image;
+        cameraVirtualImage->imageView      = cameraTexture->imageView;
+        cameraVirtualImage->imageLayout    = vk::ImageLayout::eColorAttachmentOptimal;
+        cameraVirtualImage->name           = GlobalRT::SceneColor;
+        cameraVirtualImage->imported       = true;
+        RenderGraphHandle sceneColorHandle = m_RenderGraph->ImportRenderGraphResource(cameraVirtualImage);
         m_RenderGraph->GetBlackboard().Put(GlobalRT::SceneColor, sceneColorHandle);
     }
 

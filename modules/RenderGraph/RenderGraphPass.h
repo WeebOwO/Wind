@@ -36,7 +36,7 @@ namespace wind
         const std::string& GetPassName() const { return m_PassName; }
 
         virtual void Setup(RenderGraphBuilder& renderGraph);
-        virtual void Execute(vk::CommandBuffer cmdBuffer);
+        virtual void Execute(RenderGraphUpdateContext& context);
 
         virtual ~PassNode() = default;
 

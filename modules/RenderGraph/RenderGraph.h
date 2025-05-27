@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "Backend/Stream.h"
 #include "Blackboard.h"
 #include "Core/Allocator.h"
 #include "RenderGraphHandle.h"
@@ -13,11 +12,13 @@
 namespace wind
 {
     class RenderGraphPhase;
+    class RenderGraphResourceRegistry; 
 
     struct RenderGraphUpdateContext
     {
-        uint32_t       frameIndex;
-        CommandStream* commandStream;
+        uint32_t                     frameIndex;
+        vk::CommandBuffer            cmdBuffer;
+        RenderGraphResourceRegistry* resourceRegistry; 
     };
 
     class RenderGraph
@@ -26,6 +27,7 @@ namespace wind
         RenderGraph(Device* device);
         ~RenderGraph();
 
+        auto& GetBlackboard() { return m_Blackboard; }
         template<typename T, typename... Args>
         requires std::derived_from<T, RenderGraphPhase> void AddPhase(Args&&... args);
 
@@ -36,10 +38,7 @@ namespace wind
         RenderGraphHandle ImportRenderGraphResource(VirtualResource* resource);
 
         void Execute();
-
         void PrepareFrame(RenderGraphUpdateContext& context);
-
-        auto& GetBlackboard() { return m_Blackboard; }
 
         VirtualResource* GetResource(RenderGraphHandle handle)
         {
@@ -51,7 +50,11 @@ namespace wind
         }
 
     private:
+        template<typename T>
+        using Scoped = std::unique_ptr<T>;
+
         friend class RenderGraphBuilder;
+        friend class RenderGraphResourceRegistry;
 
         void BeforeExecute(PassNode* pass);
         void AfterExecute(PassNode* pass);
@@ -62,15 +65,16 @@ namespace wind
 
         void Compile();
 
-        RenderGraphUpdateContext       m_Context;
-        LinearAllocator*               m_FrameAllocator;
-        LinearAllocator*               m_PersistentAllocator;
-        std::vector<VirtualResource*>  m_Resources;
-        std::vector<PassNode*>         m_Passes;
-        std::vector<ResourceNode*>     m_ResourceNodes;
-        std::vector<RenderGraphPhase*> m_Phases;
-        Blackboard                     m_Blackboard;
-        Device*                        m_Device;
+        RenderGraphUpdateContext            m_Context;
+        Scoped<RenderGraphResourceRegistry> m_ResourceRegistry;
+        Scoped<LinearAllocator>             m_FrameAllocator;
+        Scoped<LinearAllocator>             m_PersistentAllocator;
+        std::vector<VirtualResource*>       m_Resources;
+        std::vector<PassNode*>              m_Passes;
+        std::vector<ResourceNode*>          m_ResourceNodes;
+        std::vector<RenderGraphPhase*>      m_Phases;
+        Blackboard                          m_Blackboard;
+        Device*                             m_Device;
     };
 
 } // namespace wind

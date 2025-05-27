@@ -11,9 +11,6 @@ namespace wind
         UIPass() : RenderPassNode("UIPass") {};
 
         void Setup(RenderGraphBuilder& renderGraph) override;
-        void Execute(vk::CommandBuffer cmdBuffer) override;
-
-    private:
-        
+        void Execute(RenderGraphUpdateContext& context) override;
     };
 } // namespace wind

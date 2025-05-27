@@ -34,6 +34,7 @@ target("Renderer")
     end)
 
 target("Game")
+    set_symbols("debug") -- 强制生成 PDB
     set_kind("binary")
     add_deps("Renderer")
     add_options("env")

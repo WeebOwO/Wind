@@ -12,7 +12,7 @@ namespace wind
         WIND_CORE_WARN("RenderGraphPass {} setup function not implemented", m_PassName);
     }
 
-    void PassNode::Execute(vk::CommandBuffer cmdBuffer)
+    void PassNode::Execute(RenderGraphUpdateContext& context)
     {
         // execute the render graph pass
         WIND_CORE_WARN("RenderGraphPass {} execute function not implemented", m_PassName);

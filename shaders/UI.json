@@ -1,0 +1,9 @@
+{
+    "name": "UIPass",
+    "shaders": {
+        "vertex": "FullScreen.vert",
+        "fragment": "UIPass.frag"
+    },
+    "CullMode": "None",
+    "BlendMode": "Alpha"
+}

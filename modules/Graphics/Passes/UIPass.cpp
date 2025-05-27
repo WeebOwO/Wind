@@ -4,6 +4,8 @@
 #include "backends/imgui_impl_vulkan.h"
 #include "Graphics/GlobalRT.h"
 #include "RenderGraph/RenderGraphBuilder.h"
+#include "RenderGraph/RenderGraph.h"
+#include "RenderGraph/RenderGraphResourceRegistry.h"
 
 namespace wind
 {
@@ -24,8 +26,9 @@ namespace wind
         m_Descriptor.renderArea   = vk::Rect2D {{0, 0}, m_View->viewport.width, m_View->viewport.height};
     }
 
-    void UIPass::Execute(vk::CommandBuffer cmdBuffer)
+    void UIPass::Execute(RenderGraphUpdateContext& context)
     {
+        vk::CommandBuffer cmdBuffer = context.cmdBuffer;
         BeginRendering(cmdBuffer);
 
         // draw UI here

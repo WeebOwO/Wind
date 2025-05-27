@@ -5,8 +5,8 @@
 #include <nlohmann/json.hpp>
 
 #include "Backend/Device.h"
-#include "Core/Log.h"
 #include "Core/GlobalContext.h"
+#include "Core/Log.h"
 
 using json = nlohmann::json;
 
@@ -14,6 +14,7 @@ namespace
 {
     static std::unordered_map<wind::PipelineID, std::string> PipeLineFileNames = {
         {wind::PipelineID::Triangle, "Triangle.json"},
+        {wind::PipelineID::UI, "UI.json"},
     };
 }
 
@@ -77,8 +78,7 @@ namespace wind
 
         GraphicPipelineDesc desc;
 
-        ShaderID vertexShaderID   = ShaderID::None;
-        ShaderID fragmentShaderID = ShaderID::None;
+        std::string vertexShaderPath, fragmentShaderPath;
 
         for (const auto& elem : data.items())
         {
@@ -96,28 +96,25 @@ namespace wind
 
                         if (shaderType == "vertex")
                         {
-                            vertexShaderID = m_ShaderLibrary->GetShaderID(shaderPath);
+                            vertexShaderPath = shaderPath;
                         }
                         else if (shaderType == "fragment")
                         {
-                            fragmentShaderID = m_ShaderLibrary->GetShaderID(shaderPath);
+                            fragmentShaderPath = shaderPath;
                         }
                         else
                         {
-                            WIND_CORE_ERROR("Unsupported shader type.");
+                            WIND_CORE_ERROR("Unsupported shader type: {}", shaderType);
                         }
                     }
                 }
             }
         }
 
-        assert(vertexShaderID != ShaderID::None);
-        assert(fragmentShaderID != ShaderID::None);
-
         vk::PipelineLayout pipelineLayout = m_Device->GetDevice().createPipelineLayout({});
 
-        desc.SetShaders(m_ShaderLibrary->GetShader(vertexShaderID)->GetBlobData().module,
-                        m_ShaderLibrary->GetShader(fragmentShaderID)->GetBlobData().module)
+        desc.SetShaders(m_ShaderLibrary->GetShader(vertexShaderPath)->GetBlobData().module,
+                        m_ShaderLibrary->GetShader(fragmentShaderPath)->GetBlobData().module)
             .SetLayout(pipelineLayout)
             .SetInputTopology(vk::PrimitiveTopology::eTriangleList)
             .SetPolygonMode(vk::PolygonMode::eFill)
@@ -129,8 +126,8 @@ namespace wind
         m_Pipelines[id].pipeline->InitRHI();
 
         m_Pipelines[id].shaderIDs.clear();
-        m_Pipelines[id].shaderIDs.push_back(vertexShaderID);
-        m_Pipelines[id].shaderIDs.push_back(fragmentShaderID);
+        m_Pipelines[id].shaderIDs.push_back(vertexShaderPath);
+        m_Pipelines[id].shaderIDs.push_back(fragmentShaderPath);
 
         file.close();
     }

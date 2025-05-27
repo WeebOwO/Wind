@@ -3,23 +3,32 @@
 #include "Core/Log.h"
 #include "Phase/RenderGraphPhase.h"
 #include "RenderGraphBuilder.h"
+#include "RenderGraphResourceRegistry.h"
 
 namespace wind
 {
     RenderGraph::RenderGraph(Device* device) : 
         m_Device(device),
-        m_FrameAllocator(new LinearAllocator(1024 * 1024)),     // 1MB
-        m_PersistentAllocator(new LinearAllocator(1024 * 1024)) // 1MB
+        m_FrameAllocator(std::make_unique<LinearAllocator>(1024 * 1024)),     // 1MB
+        m_PersistentAllocator(std::make_unique<LinearAllocator>(1024 * 1024)) // 1MB
     {
         m_FrameAllocator->Reset();
         m_PersistentAllocator->Reset();
+        m_ResourceRegistry = std::make_unique<RenderGraphResourceRegistry>(this);
     }
 
-    RenderGraph::~RenderGraph() {}
+    RenderGraph::~RenderGraph() 
+    {
+        // release the resources
+        m_ResourceRegistry.reset();
+        m_FrameAllocator.reset();
+        m_PersistentAllocator.reset();
+    }
 
     void RenderGraph::PrepareFrame(RenderGraphUpdateContext& context)
     {
         m_Context = context;
+        m_Context.resourceRegistry = m_ResourceRegistry.get();
         m_FrameAllocator->Reset();
         m_Resources.clear();
         m_Passes.clear();
@@ -44,12 +53,10 @@ namespace wind
         std::array<float, 4> red = {1.0f, 0.0f, 0.0f, 1.0f};
 
         for (auto& pass : m_Passes)
-        {
-            vk::CommandBuffer cmdBuffer = m_Context.commandStream->GetCommandBuffer();
-            
-            m_Device->BeginDebugRegion(cmdBuffer, pass->GetPassName().c_str(), red.data());
-            pass->Execute(cmdBuffer);
-            m_Device->EndDebugRegion(cmdBuffer);
+        {          
+            m_Device->BeginDebugRegion(m_Context.cmdBuffer, pass->GetPassName().c_str(), red.data());
+            pass->Execute(m_Context);
+            m_Device->EndDebugRegion(m_Context.cmdBuffer);
         }
     }
 

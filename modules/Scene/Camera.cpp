@@ -17,7 +17,7 @@ namespace wind
             .debugName = "CameraTexture",
             .extent    = {1024, 1024, 1},
             .format    = vk::Format::eR8G8B8A8Unorm,
-            .usage     = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment,
+            .usage     = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
             .mipMap    = false,
         });
     }

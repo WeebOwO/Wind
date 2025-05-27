@@ -16,9 +16,11 @@ namespace wind
         ~GeometryPass() override;
 
         void Setup(RenderGraphBuilder& renderGraph) override;
-        void Execute(vk::CommandBuffer cmdBuffer) override;
+        void Execute(RenderGraphUpdateContext& context) override;
 
     private:
+        void BlitToBackBuffer(vk::CommandBuffer cmdBuffer, vk::Image color, vk::Image backBuffer);
+
         RenderGraphHandle            m_SceneColorHandle;
         PSOCache*                    m_PsoCacheLibrary;
         PipelineID                   m_PipelineID;
