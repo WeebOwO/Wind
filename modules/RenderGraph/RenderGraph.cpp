@@ -52,10 +52,22 @@ namespace wind
 
         std::array<float, 4> red = {1.0f, 0.0f, 0.0f, 1.0f};
 
-        for (auto& pass : m_Passes)
-        {          
+        for (auto* pass : m_Passes) {
+            // collect resource transitions
+            std::vector<ResourceTransition> transitions;
             m_Device->BeginDebugRegion(m_Context.cmdBuffer, pass->GetPassName().c_str(), red.data());
+            CollectTransitions(pass, transitions);
+            
+            // insert barriers
+            InsertBarriers(m_Context.cmdBuffer, transitions);
+            // execute pass
             pass->Execute(m_Context);
+            
+            // update global resource states
+            for (const auto& [handle, access] : pass->GetResourceAccesses()) {
+                m_GlobalResourceStates[handle] = access.first;
+            }
+
             m_Device->EndDebugRegion(m_Context.cmdBuffer);
         }
     }
@@ -63,7 +75,7 @@ namespace wind
     RenderGraphHandle RenderGraph::AllocRenderGraphResource(const RDGResourceDesc& resourceDesc)
     {
         // allocate a new resource
-        VirtualResource* resource;
+        VirtualResource* resource = m_FrameAllocator->Construct<VirtualResource>(resourceDesc);
         m_Resources.push_back(resource);
         return RenderGraphHandle(m_Resources.size() - 1);
     }
@@ -102,11 +114,74 @@ namespace wind
     void RenderGraph::BeforeExecute(PassNode* pass)
     {
         // before execute the pass
-        
     }
 
     void RenderGraph::AfterExecute(PassNode* pass)
     {
         
+    }
+
+    void RenderGraph::CollectTransitions(PassNode* pass, std::vector<ResourceTransition>& transitions) {
+        for (const auto& [handle, access] : pass->GetResourceAccesses()) {
+            const auto& [newState, range] = access;
+            const auto& currentState = m_GlobalResourceStates[handle];
+            
+            // check if need state transition
+            if (!(currentState == newState)) {
+                transitions.push_back({
+                    handle,
+                    currentState,
+                    newState,
+                    range
+                });
+            }
+        }
+    }
+
+    void RenderGraph::InsertBarriers(vk::CommandBuffer cmdBuffer, 
+                                   const std::vector<ResourceTransition>& transitions) {
+        std::vector<vk::ImageMemoryBarrier> imageBarriers;
+        std::vector<vk::BufferMemoryBarrier> bufferBarriers;
+
+        for (const auto& transition : transitions) {
+            auto* resource = GetResource(transition.handle);
+            if (!resource) continue;
+
+            if (resource->IsImage()) {
+                vk::ImageMemoryBarrier barrier;
+                barrier.oldLayout = transition.from.layout;
+                barrier.newLayout = transition.to.layout;
+                barrier.srcAccessMask = transition.from.accessFlags;
+                barrier.dstAccessMask = transition.to.accessFlags;
+                barrier.image = resource->GetImage();
+                barrier.subresourceRange = {
+                    transition.range.aspectMask,
+                    transition.range.baseMipLevel,
+                    transition.range.miplevels,
+                    transition.range.baseArrayLayer,
+                    transition.range.arrayLayers
+                };
+                imageBarriers.push_back(barrier);
+            } else {
+                vk::BufferMemoryBarrier barrier;
+                barrier.srcAccessMask = transition.from.accessFlags;
+                barrier.dstAccessMask = transition.to.accessFlags;
+                barrier.buffer = resource->GetBuffer();
+                barrier.offset = 0;
+                barrier.size = VK_WHOLE_SIZE;
+                bufferBarriers.push_back(barrier);
+            }
+        }
+
+        if (!imageBarriers.empty() || !bufferBarriers.empty()) {
+            cmdBuffer.pipelineBarrier(
+                vk::PipelineStageFlagBits::eAllCommands,
+                vk::PipelineStageFlagBits::eAllCommands,
+                vk::DependencyFlags(),
+                {},  // memory barriers
+                bufferBarriers,
+                imageBarriers
+            );
+        }
     }
 } // namespace wind

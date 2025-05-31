@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <functional>
 
 namespace wind
 {
@@ -51,3 +52,16 @@ namespace wind
         bool operator!=(const RenderGraphHandle& rhs) const noexcept { return !operator==(rhs); }
     };
 } // namespace wind
+
+// Add hash function specialization for RenderGraphHandle
+namespace std
+{
+    template<>
+    struct hash<wind::RenderGraphHandle>
+    {
+        size_t operator()(const wind::RenderGraphHandle& handle) const noexcept
+        {
+            return hash<uint16_t>{}(handle.index);
+        }
+    };
+}

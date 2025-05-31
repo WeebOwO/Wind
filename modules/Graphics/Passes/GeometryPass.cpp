@@ -4,8 +4,6 @@
 #include "Graphics/View.h"
 #include "RenderGraph/RenderGraph.h"
 #include "RenderGraph/RenderGraphBuilder.h"
-#include "RenderGraph/RenderGraphResourceRegistry.h"
-
 
 namespace wind
 {

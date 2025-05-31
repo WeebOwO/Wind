@@ -9,10 +9,7 @@ namespace wind
     void RenderGraph::AddPhase(Args&&... args)
     {
         // phase must be created in persistent memory
-        constexpr size_t alignment = alignof(T);
-        void* memory = m_PersistentAllocator->Allocate(sizeof(T), alignment);
-        assert(memory != nullptr);
-        T* phase = new (memory) T(std::forward<Args>(args)...);
+        T* phase = m_PersistentAllocator->Construct<T>(std::forward<Args>(args)...);
         m_Phases.push_back(phase); 
     }
 

@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 #include "Backend/Define.h"
 #include "Backend/Guard.h"
 #include "Graphics/View.h"
 #include "RenderGraphHandle.h"
 #include "RenderGraphNode.h"
+#include "RenderGraphResource.h"
 #include "Scene/Viewport.h"
 
 namespace wind
@@ -40,10 +42,20 @@ namespace wind
 
         virtual ~PassNode() = default;
 
+        // declare resource access
+        void DeclareResourceAccess(RenderGraphHandle handle, 
+                                 const ResourceState& state,
+                                 const RDGSubresourceRange& range = RDGSubresourceRange()) {
+            m_ResourceAccesses[handle] = {state, range};
+        }
+
+        const auto& GetResourceAccesses() const { return m_ResourceAccesses; }
+
     protected:
         RenderGraph* m_RenderGraph;
         std::string  m_PassName;
         PassType     m_PassType;
+        std::unordered_map<RenderGraphHandle, std::pair<ResourceState, RDGSubresourceRange>> m_ResourceAccesses;
     };
 
     struct AttachmentInfo

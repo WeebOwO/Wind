@@ -308,7 +308,7 @@ namespace wind
         RDGResourceDesc importImageDesc =
             RDGResourceDesc::Image2D(m_Swapchain->GetFormat(), m_Swapchain->GetWidth(), m_Swapchain->GetHeight());
 
-        VirtualImage* virtualImage = m_LinearAllocator->AllocateConstruct<VirtualImage>(importImageDesc);
+        VirtualImage* virtualImage = m_LinearAllocator->Construct<VirtualImage>(importImageDesc);
         virtualImage->image        = m_Swapchain->GetImage(frame.swapChainImageIndex);
         virtualImage->imageView    = m_Swapchain->GetImageView(frame.swapChainImageIndex);
         virtualImage->imageLayout  = vk::ImageLayout::eColorAttachmentOptimal;
@@ -327,7 +327,7 @@ namespace wind
         RDGResourceDesc cameraImageDesc =
             RDGResourceDesc::Image2D(cameraTexture->imageInfo.format, extent.width, extent.height);
 
-        VirtualImage* cameraVirtualImage   = m_LinearAllocator->AllocateConstruct<VirtualImage>(cameraImageDesc);
+        VirtualImage* cameraVirtualImage   = m_LinearAllocator->Construct<VirtualImage>(cameraImageDesc);
         cameraVirtualImage->image          = cameraTexture->allocateImage.image;
         cameraVirtualImage->imageView      = cameraTexture->imageView;
         cameraVirtualImage->imageLayout    = vk::ImageLayout::eColorAttachmentOptimal;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <vector>
 
 #include "Blackboard.h"
@@ -12,13 +13,13 @@
 namespace wind
 {
     class RenderGraphPhase;
-    class RenderGraphResourceRegistry; 
+    class RenderGraphResourceRegistry;
 
     struct RenderGraphUpdateContext
     {
         uint32_t                     frameIndex;
         vk::CommandBuffer            cmdBuffer;
-        RenderGraphResourceRegistry* resourceRegistry; 
+        RenderGraphResourceRegistry* resourceRegistry;
     };
 
     class RenderGraph
@@ -29,10 +30,12 @@ namespace wind
 
         auto& GetBlackboard() { return m_Blackboard; }
         template<typename T, typename... Args>
-        requires std::derived_from<T, RenderGraphPhase> void AddPhase(Args&&... args);
+        requires std::derived_from<T, RenderGraphPhase> 
+        void AddPhase(Args&&... args);
 
         template<typename T>
-        requires std::derived_from<T, PassNode> void AddPass(T* pass);
+        requires std::derived_from<T, PassNode> 
+        void AddPass(T* pass);
 
         RenderGraphHandle AllocRenderGraphResource(const RDGResourceDesc& resourceDesc);
         RenderGraphHandle ImportRenderGraphResource(VirtualResource* resource);
@@ -65,6 +68,17 @@ namespace wind
 
         void Compile();
 
+        struct ResourceTransition
+        {
+            RenderGraphHandle   handle;
+            ResourceState       from;
+            ResourceState       to;
+            RDGSubresourceRange range;
+        };
+
+        void CollectTransitions(PassNode* pass, std::vector<ResourceTransition>& transitions);
+        void InsertBarriers(vk::CommandBuffer cmdBuffer, const std::vector<ResourceTransition>& transitions);
+
         RenderGraphUpdateContext            m_Context;
         Scoped<RenderGraphResourceRegistry> m_ResourceRegistry;
         Scoped<LinearAllocator>             m_FrameAllocator;
@@ -75,6 +89,9 @@ namespace wind
         std::vector<RenderGraphPhase*>      m_Phases;
         Blackboard                          m_Blackboard;
         Device*                             m_Device;
+
+        // global resource states tracking
+        std::unordered_map<RenderGraphHandle, ResourceState> m_GlobalResourceStates;
     };
 
 } // namespace wind

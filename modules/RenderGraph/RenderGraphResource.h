@@ -176,17 +176,64 @@ namespace wind
         RDGSubresourceRange(uint16_t inBaseMip        = 0,
                             uint16_t inMipLevels      = 1,
                             uint32_t inBaseArrayLayer = 0,
-                            uint32_t inArrayLayers    = 1)
+                            uint32_t inArrayLayers    = 1,
+                            vk::ImageAspectFlags inAspectMask = vk::ImageAspectFlagBits::eColor)
         {
             baseMipLevel   = inBaseMip;
             miplevels      = inMipLevels;
             baseArrayLayer = inBaseArrayLayer;
             arrayLayers    = inArrayLayers;
+            aspectMask     = inAspectMask;
         } 
 
         uint16_t baseMipLevel;
         uint16_t miplevels;
         uint32_t baseArrayLayer;
         uint32_t arrayLayers;
+        vk::ImageAspectFlags aspectMask;
     };
+
+    struct ResourceState {
+        vk::ImageLayout layout;
+        vk::AccessFlags accessFlags;
+        vk::PipelineStageFlags stageFlags;
+        vk::ImageAspectFlags aspectMask;  // 对于图像资源
+        
+        bool operator==(const ResourceState& other) const {
+            return layout == other.layout && 
+                   accessFlags == other.accessFlags && 
+                   stageFlags == other.stageFlags &&
+                   aspectMask == other.aspectMask;
+        }
+    };
+
+    namespace ResourceStates {
+        constexpr ResourceState Undefined = {
+            vk::ImageLayout::eUndefined,
+            vk::AccessFlags(),
+            vk::PipelineStageFlagBits::eTopOfPipe,
+            vk::ImageAspectFlagBits::eColor
+        };
+
+        constexpr ResourceState ColorAttachment = {
+            vk::ImageLayout::eColorAttachmentOptimal,
+            vk::AccessFlagBits::eColorAttachmentWrite,
+            vk::PipelineStageFlagBits::eColorAttachmentOutput,
+            vk::ImageAspectFlagBits::eColor
+        };
+
+        constexpr ResourceState DepthStencilAttachment = {
+            vk::ImageLayout::eDepthStencilAttachmentOptimal,
+            vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+            vk::PipelineStageFlagBits::eEarlyFragmentTests,
+            vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil
+        };
+
+        constexpr ResourceState ShaderRead = {
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            vk::AccessFlagBits::eShaderRead,
+            vk::PipelineStageFlagBits::eFragmentShader,
+            vk::ImageAspectFlagBits::eColor
+        };
+    }
 } // namespace wind
