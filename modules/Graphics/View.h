@@ -10,6 +10,6 @@ namespace wind
     {
         Viewport   viewport;
         vk::Rect2D scissor;
-        Camera*     camera;
+        Camera*    camera;
     };
 } // namespace wind

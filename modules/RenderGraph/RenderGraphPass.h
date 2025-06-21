@@ -92,12 +92,9 @@ namespace wind
             AttachmentInfo              stencil {};
             Viewport                    viewPort {};
             vk::Rect2D                  renderArea {};
-            vk::ClearValue              clearValue {};
             uint8_t                     sampleCount = 1;
             uint8_t                     layerCount  = 1;
         };
-
-        void InitView(View* view) { m_View = view; }
 
         void BeginRendering(vk::CommandBuffer cmdBuffer);
         void EndRendering(vk::CommandBuffer cmdBuffer);
@@ -110,9 +107,15 @@ namespace wind
         void SetDepthAttachment(const AttachmentInfo& depth) { m_Descriptor.depth = depth; }
         void SetStencilAttachment(const AttachmentInfo& stencil) { m_Descriptor.stencil = stencil; }
 
+        // this function will be called during the render graph update phase
+        void SetViewport(const Viewport& viewport) 
+        { 
+            m_Descriptor.viewPort = viewport;
+            m_Descriptor.renderArea = vk::Rect2D {{0, 0}, viewport.width, viewport.height};
+        }
+
     protected:
         Descriptor m_Descriptor {};
-        View*      m_View;
     };
 
 } // namespace wind

@@ -161,6 +161,14 @@ namespace wind
         }
     }
 
+    void Renderer::InitView()
+    {
+        m_View->viewport = {0, 0, m_Swapchain->GetWidth(), m_Swapchain->GetHeight()};
+        m_View->camera   = m_RenderCamera;
+        m_RenderGraph->SetView(m_View.get());
+        // will perform the culling logic here in the future
+    }
+
     void Renderer::RenderFrame()
     {
         // draw a triangle
@@ -170,16 +178,18 @@ namespace wind
 
         auto& frame = GetCurrentFrameData();
 
-        RenderGraphUpdateContext context = {m_FrameCounter, frame.commandStream->GetCommandBuffer()};
+        RenderGraphUpdateContext context = 
+        {
+            .frameIndex = m_FrameCounter,
+            .cmdBuffer  = frame.commandStream->GetCommandBuffer(),
+        };
+
+        InitView();
 
         m_RenderGraph->PrepareFrame(context);
-        m_View->camera = m_RenderCamera;
         // add the pass based on our need
         m_RenderGraph->AddPass(m_GeometryPass.get());
         m_RenderGraph->AddPass(m_UIPass.get());
-
-        m_GeometryPass->InitView(m_View.get());
-        m_UIPass->InitView(m_View.get());
 
         ImportRenderGraphResources();
 
@@ -313,8 +323,6 @@ namespace wind
         virtualImage->imageView    = m_Swapchain->GetImageView(frame.swapChainImageIndex);
         virtualImage->imageLayout  = vk::ImageLayout::eColorAttachmentOptimal;
         virtualImage->name         = GlobalRT::BackBuffer;
-
-        m_View->viewport = {0, 0, m_Swapchain->GetWidth(), m_Swapchain->GetHeight()};
 
         // import the swapchain image as a render graph resource
         RenderGraphHandle backBufferHandle = m_RenderGraph->ImportRenderGraphResource(virtualImage);

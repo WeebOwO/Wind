@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderGraph/RenderGraphPass.h"
+#include "Scene/Viewport.h"
 
 namespace wind
 {
@@ -12,5 +13,10 @@ namespace wind
 
         void Setup(RenderGraphBuilder& renderGraph) override;
         void Execute(RenderGraphUpdateContext& context) override;
+
+        void SetViewport(const Viewport& viewport);
+
+    private:
+        Viewport m_Viewport;
     };
 } // namespace wind

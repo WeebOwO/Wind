@@ -21,15 +21,11 @@ namespace wind
         };
 
         SetRenderTargets(renderTargets);
-
-        m_Descriptor.viewPort     = m_View->viewport;
-        m_Descriptor.renderArea   = vk::Rect2D {{0, 0}, m_View->viewport.width, m_View->viewport.height};
     }
 
     void UIPass::Execute(RenderGraphUpdateContext& context)
     {
         vk::CommandBuffer cmdBuffer = context.cmdBuffer;
-        BeginRendering(cmdBuffer);
 
         // draw UI here
         ImGui::Render();
@@ -43,7 +39,5 @@ namespace wind
         }
 
         ImGui_ImplVulkan_RenderDrawData(main_draw_data, cmdBuffer);
-
-        EndRendering(cmdBuffer);
     }
 } // namespace wind

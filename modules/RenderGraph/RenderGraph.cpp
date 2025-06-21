@@ -53,6 +53,7 @@ namespace wind
         std::array<float, 4> red = {1.0f, 0.0f, 0.0f, 1.0f};
 
         for (auto* pass : m_Passes) {
+            BeforeExecute(pass);
             // collect resource transitions
             std::vector<ResourceTransition> transitions;
             m_Device->BeginDebugRegion(m_Context.cmdBuffer, pass->GetPassName().c_str(), red.data());
@@ -69,6 +70,7 @@ namespace wind
             }
 
             m_Device->EndDebugRegion(m_Context.cmdBuffer);
+            AfterExecute(pass);
         }
     }
 
@@ -114,11 +116,21 @@ namespace wind
     void RenderGraph::BeforeExecute(PassNode* pass)
     {
         // before execute the pass
+        if (pass->GetPassType() == PassType::RenderPass) 
+        {
+            RenderPassNode* renderPass = static_cast<RenderPassNode*>(pass);
+            renderPass->SetViewport(m_View->viewport);  
+            renderPass->BeginRendering(m_Context.cmdBuffer);
+        }
     }
 
     void RenderGraph::AfterExecute(PassNode* pass)
     {
-        
+        if (pass->GetPassType() == PassType::RenderPass) 
+        {
+            RenderPassNode* renderPass = static_cast<RenderPassNode*>(pass);
+            renderPass->EndRendering(m_Context.cmdBuffer);
+        }
     }
 
     void RenderGraph::CollectTransitions(PassNode* pass, std::vector<ResourceTransition>& transitions) {

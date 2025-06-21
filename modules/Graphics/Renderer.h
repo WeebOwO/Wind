@@ -51,6 +51,8 @@ namespace wind
         Camera* GetRenderCamera() { return m_RenderCamera; }
 
     private:
+        void InitView();
+
         void ImportRenderGraphResources();
         void InitImGui();
         void CreateFrameData();
