@@ -13,11 +13,20 @@ namespace wind
 
     enum class BlendMode
     {
-        None,
+        Opaque,
         AlphaBlend,
         Additive,
     };
 
+    enum class VertexInputType : uint8_t
+    {
+        FullScreenQuad,
+        StaticMesh,
+        SkinnedMesh,
+        UI
+    };
+
+    // todo: need refactor
     struct GraphicPipelineDesc
     {
     public:
@@ -35,6 +44,7 @@ namespace wind
         GraphicPipelineDesc& SetDepthAttachmentFormat(vk::Format format);
         GraphicPipelineDesc& DisableDepthTest();
         GraphicPipelineDesc& EnableDepthTest(bool write, vk::CompareOp compareOp);
+        GraphicPipelineDesc& SetVertexInputType(VertexInputType type);
 
     private:
         friend class Device;
@@ -49,9 +59,13 @@ namespace wind
         vk::PipelineMultisampleStateCreateInfo         m_MultisamplingCI;
         vk::PipelineDepthStencilStateCreateInfo        m_DepthStencilCI;
         vk::PipelineRenderingCreateInfo                m_RenderingCI;
+        vk::PipelineVertexInputStateCreateInfo         m_VertexInputCI;
         vk::Format                                     m_ColorFormat;
+
+        std::vector<vk::VertexInputAttributeDescription> m_VertexAttributes;
+        std::vector<vk::VertexInputBindingDescription>   m_VertexBindings;
         // need to call default constructor to initialize the layout info
-        vk::PipelineLayout                             m_Layout;
+        vk::PipelineLayout m_Layout;
     };
 
     class Pipeline : public Resource

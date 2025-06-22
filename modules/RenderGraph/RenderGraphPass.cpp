@@ -9,13 +9,13 @@ namespace wind
     void PassNode::Setup(RenderGraphBuilder& renderGraph)
     {
         // record the render graph
-        WIND_CORE_WARN("RenderGraphPass {} setup function not implemented", m_PassName);
+        WIND_CORE_WARN("RenderGraphPass {} setup function not implemented", m_PassName.GetName());
     }
 
     void PassNode::Execute(RenderGraphUpdateContext& context)
     {
         // execute the render graph pass
-        WIND_CORE_WARN("RenderGraphPass {} execute function not implemented", m_PassName);
+        WIND_CORE_WARN("RenderGraphPass {} execute function not implemented", m_PassName.GetName());
     }
 
     void RenderPassNode::BeginRendering(vk::CommandBuffer cmdBuffer)

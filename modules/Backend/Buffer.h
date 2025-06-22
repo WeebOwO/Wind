@@ -42,7 +42,7 @@ namespace wind
         void InitRHI() override;
         void ReleaseRHI() override;
 
-        void UpdateData(const void* data, size_t size);
+        void UpdateData(const void* data, size_t size, size_t offset = 0);
 
     private:
         vk::BufferCreateInfo    m_BufferCreateInfo;

@@ -49,14 +49,13 @@ namespace wind
 
     void GPUBuffer::Unmap() { vmaUnmapMemory(m_Device->GetAllocator(), m_AllocateBuffer.allocation); }
 
-    void GPUBuffer::UpdateData(const void* data, size_t size)
+    void GPUBuffer::UpdateData(const void* data, size_t size, size_t offset)
     {
         if (m_MappedData == nullptr)
         {
             WIND_CORE_ERROR("Buffer is not mapped");
             return;
         }
-        memcpy(m_MappedData, data, size);
+        memcpy(static_cast<uint8_t*>(m_MappedData) + offset, data, size);
     }
-
 } // namespace wind

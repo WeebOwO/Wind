@@ -1,5 +1,8 @@
 #include "Game.h"
 
+#include <Windows.h>
+#include <iostream>
+
 #include "Config.h"
 #include "Core/GlobalContext.h"
 
@@ -18,6 +21,9 @@ namespace wind
         {
             workingDir = PROJECT_DIR;
         }
+
+        // set windows working directory
+        SetCurrentDirectoryA(workingDir.string().c_str());
 
         g_GlobalContext->pathManager.MarkRootDir(workingDir);
 
@@ -77,6 +83,8 @@ namespace wind
                 // set the working directory
                 std::string path = arg.substr(arg.find("=") + 1);
                 workingDir = path;
+
+                std::cout << "Working directory: " << workingDir << std::endl;
             }
         }
     }

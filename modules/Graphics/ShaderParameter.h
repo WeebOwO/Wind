@@ -14,6 +14,11 @@ namespace wind
                 m_NameHash = std::hash<std::string>{}(m_Name);
             }
 
+        void SetValue(const T& value) 
+        {
+            
+        }
+
     private:
         std::string m_Name;
         int         m_NameHash;

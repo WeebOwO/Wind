@@ -5,5 +5,5 @@
         "vertex" : "Triangle.vert",
         "fragment" : "Triangle.frag"
     },
-    "blendmode" : "addtive"
+    "blendmode" : "opaque"
 }

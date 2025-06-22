@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "Buffer.h"
 #include "Guard.h"
 #include "Resource.h"
 
@@ -20,6 +21,14 @@ namespace wind
     {
         eImmdiately,
         eDeferred,
+    };
+
+    struct DrawCommand
+    {
+        Handle<GPUBuffer> vertexBuffer;
+        Handle<GPUBuffer> indexBuffer;
+        uint32_t          indexCount;
+        uint32_t          instanceCount;
     };
 
     class CommandStream : public Resource
@@ -44,6 +53,8 @@ namespace wind
 
         vk::CommandBuffer Begin();
         vk::CommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
+
+        void Draw(const DrawCommand& draw);
 
     private:
         CommandQueueType  m_QueueType;

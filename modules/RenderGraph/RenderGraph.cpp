@@ -46,6 +46,8 @@ namespace wind
         {
             RenderGraphBuilder builder(*this, pass);
             pass->Setup(builder);
+            // default not culled
+            pass->culled = false;
         }
 
         Compile();
@@ -53,14 +55,16 @@ namespace wind
         std::array<float, 4> red = {1.0f, 0.0f, 0.0f, 1.0f};
 
         for (auto* pass : m_Passes) {
+            if (pass->culled) continue;
+
             BeforeExecute(pass);
             // collect resource transitions
             std::vector<ResourceTransition> transitions;
-            m_Device->BeginDebugRegion(m_Context.cmdBuffer, pass->GetPassName().c_str(), red.data());
+            // m_Device->BeginDebugRegion(m_Context.commandStream->GetCommandBuffer(), pass->GetPassName().c_str(), red.data());
             CollectTransitions(pass, transitions);
             
             // insert barriers
-            InsertBarriers(m_Context.cmdBuffer, transitions);
+            InsertBarriers(m_Context.commandStream->GetCommandBuffer(), transitions);
             // execute pass
             pass->Execute(m_Context);
             
@@ -69,7 +73,7 @@ namespace wind
                 m_GlobalResourceStates[handle] = access.first;
             }
 
-            m_Device->EndDebugRegion(m_Context.cmdBuffer);
+            // m_Device->EndDebugRegion(m_Context.commandStream->GetCommandBuffer());
             AfterExecute(pass);
         }
     }
@@ -120,7 +124,7 @@ namespace wind
         {
             RenderPassNode* renderPass = static_cast<RenderPassNode*>(pass);
             renderPass->SetViewport(m_View->viewport);  
-            renderPass->BeginRendering(m_Context.cmdBuffer);
+            renderPass->BeginRendering(m_Context.commandStream->GetCommandBuffer());
         }
     }
 
@@ -129,7 +133,7 @@ namespace wind
         if (pass->GetPassType() == PassType::RenderPass) 
         {
             RenderPassNode* renderPass = static_cast<RenderPassNode*>(pass);
-            renderPass->EndRendering(m_Context.cmdBuffer);
+            renderPass->EndRendering(m_Context.commandStream->GetCommandBuffer());
         }
     }
 

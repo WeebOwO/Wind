@@ -11,12 +11,16 @@ namespace wind
 {
     class Device;
 
-    struct CompileEntry
+    struct VertexAndFragmentCompileEntry
     {
-        std::string           entryPoint;
-        std::string           target;
-        std::string           sourcePath;
-        std::vector<uint32_t> outSpirv;
+        std::string shaderFileName;
+        std::string shaderSource;
+
+        std::string vertexEntry;
+        std::string fragmentEntry;
+
+        std::vector<uint32_t> vertexSpirv;
+        std::vector<uint32_t> fragmentSpirv;
     };
 
     class SlangCompiler
@@ -24,8 +28,18 @@ namespace wind
     public:
         SlangCompiler();
         ~SlangCompiler();
-
-        void Test();
+    
+        void Compile(VertexAndFragmentCompileEntry& entry);
+        
+        // 辅助方法：从文件加载着色器源码
+        static std::string LoadShaderSourceFromFile(const std::string& filePath);
+        
+        // 便捷方法：直接从文件路径编译着色器
+        static bool CompileFromFile(const std::string& filePath, 
+                                   const std::string& vertexEntry,
+                                   const std::string& fragmentEntry,
+                                   std::vector<uint32_t>& vertexSpirv,
+                                   std::vector<uint32_t>& fragmentSpirv);
 
     private:
         void InitializeSlang();

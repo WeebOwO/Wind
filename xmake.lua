@@ -42,5 +42,5 @@ target("Game")
     add_includedirs("modules/", "xmake/") 
     add_files("game/**.cpp")
     -- set the working directory to the prject directory
-    set_runargs("--working-dir=".. os.scriptdir())
+    set_runargs("--working-dir=$(projectdir)")
     add_packages("spdlog", "glfw", "entt", "vk-bootstrap", "vulkansdk", "vulkan-memory-allocator", "glm", "shaderc", "spirv-cross", "nlohmann_json")

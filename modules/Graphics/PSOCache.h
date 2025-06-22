@@ -15,11 +15,13 @@ namespace wind
         Count
     };
 
-    class PSOCache
+    using CustomPipelineID = int;
+
+    class PipelineManager
     {
     public:
-        PSOCache();
-        ~PSOCache();
+        PipelineManager();
+        ~PipelineManager();
 
         void Init(Device* device, ShaderLibrary* shaderLibrary);
         void Destroy();
@@ -30,6 +32,12 @@ namespace wind
         void RecompilePipeline(PipelineID id);
 
         Pipeline* GetPipeline(PipelineID id) { return m_Pipelines[id].pipeline.get(); }
+        Pipeline* GetPipeline(CustomPipelineID id) { return m_CustomPipelines[id].pipeline.get(); }
+
+        CustomPipelineID CreatePipeline(GraphicPipelineDesc& desc);
+        ShaderLibrary* GetShaderLibrary() { return m_ShaderLibrary; }
+
+        vk::PipelineLayout GetEmptyPipelineLayout() const { return m_EmptyPipelineLayout; }
 
     private:
         struct PipelineRecord
@@ -38,10 +46,15 @@ namespace wind
             std::unique_ptr<Pipeline> pipeline;
         };
 
-        using PSOMap = std::unordered_map<PipelineID, PipelineRecord>;
+        using PreDefinePSOMap = std::unordered_map<PipelineID, PipelineRecord>;
+        using CustomPSOMap    = std::unordered_map<CustomPipelineID, PipelineRecord>;
 
-        PSOMap         m_Pipelines;
-        Device*        m_Device;
-        ShaderLibrary* m_ShaderLibrary;
+        PreDefinePSOMap m_Pipelines;
+        CustomPSOMap    m_CustomPipelines;
+        Device*         m_Device;
+        ShaderLibrary*  m_ShaderLibrary;
+
+        // pre define pipeline layout
+        vk::PipelineLayout m_EmptyPipelineLayout;
     };
 } // namespace wind

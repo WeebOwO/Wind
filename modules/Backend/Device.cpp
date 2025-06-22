@@ -137,11 +137,23 @@ namespace wind
              .commandBufferCount = 1,
         })[0];
 
+        // create internal staging buffer
+        BufferDesc stagingBufferDesc = {
+            .byteSize = 4 * 1024 * 1024,
+            .usage    = vk::BufferUsageFlagBits::eTransferSrc,
+            .memoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU,
+        };
+
+        m_InternalStagingBuffer = CreateResourceUnique<GPUBuffer>(stagingBufferDesc);
+        m_InternalStagingBuffer->InitRHI();
+
         return true;
     }
 
     void Device::Shutdown()
     {
+        m_InternalStagingBuffer->ReleaseRHI();
+        m_InternalStagingBuffer.reset();
         vmaDestroyAllocator(m_Allocator);
         m_Device.destroyCommandPool(m_ImmediateCommandPool);
         m_Device.destroy();
@@ -175,4 +187,26 @@ namespace wind
     }
 
     void Device::EndDebugRegion(vk::CommandBuffer cmdBuffer) { cmdBuffer.endDebugUtilsLabelEXT(); }
+
+    void Device::UploadDataToGPU(const void* data, size_t size, Handle<GPUBuffer> buffer)
+    {
+        m_InternalStagingBuffer->Map();
+
+        m_InternalStagingBuffer->UpdateData(data, size);
+
+        vk::BufferCopy copyRegion = {
+            .srcOffset = 0,
+            .dstOffset = 0,
+            .size      = size,
+        };
+
+        GPUBuffer* gpuBuffer = Get(buffer);
+
+        ExecuteImmediate([&](vk::CommandBuffer cmdBuffer) 
+        {
+            cmdBuffer.copyBuffer(m_InternalStagingBuffer->GetNativeHandle(), gpuBuffer->GetNativeHandle(), copyRegion);
+        });
+
+        m_InternalStagingBuffer->Unmap();
+    }
 } // namespace wind

@@ -7,31 +7,13 @@
 
 namespace wind
 {
-    enum class ShaderType : uint8_t
-    {
-        Unknown,
-        Vertex,
-        Fragment,
-        Compute,
-        RayGen,
-        Miss,
-        ClosestHit,
-        AnyHit,
-        Intersection,
-        Count
-    };
-
     struct BlobData
     {
         BlobData() = default;
-        BlobData(ShaderType type) : type(type) {}
 
-        ShaderType type = ShaderType::Unknown;
-
-        std::vector<uint32_t>   data;   // SPIRV data
-        vk::ShaderModule        module; // shader module
-        vk::ShaderStageFlagBits stage;  // shader stage
-        std::string             shaderCode;
+        vk::ShaderStageFlagBits stage;
+        std::vector<uint32_t>   spirv; // SPIRV data
+        vk::ShaderModule        module;
     };
 
     struct ShaderMetaData
@@ -50,6 +32,7 @@ namespace wind
         vk::ShaderStageFlags shadeshaderStageFlag;
     };
 
+    // abstraction about vulkan shader module
     class Shader : public Resource
     {
     public:
@@ -60,19 +43,16 @@ namespace wind
         void ReleaseRHI() override;
 
         auto GetBlobData() -> const BlobData& { return m_Blob; }
-        vk::PipelineLayoutCreateInfo GetPipelineLayoutInfo() { return m_PipelineLayoutInfo; }
+
+        vk::ShaderModule GetNativeHandle() const { return m_Blob.module; }
 
     private:
         friend class Device;
 
         void GenerateReflectionData();
         void ReflectShader(const BlobData& blob);
-        void CreatePipelineLayoutInfo();
 
         BlobData                                        m_Blob;
         std::unordered_map<std::string, ShaderMetaData> m_ReflectionDatas;
-
-        // pipeline layout
-        vk::PipelineLayoutCreateInfo m_PipelineLayoutInfo;
     };
 } // namespace wind

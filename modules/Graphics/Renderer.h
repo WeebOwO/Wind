@@ -11,7 +11,9 @@
 #include "PSOCache.h"
 #include "Passes/GeometryPass.h"
 #include "Passes/UIPass.h"
+#include "Scene/GPUScene.h"
 #include "ShaderCompiler/ShaderLibary.h"
+
 
 namespace wind
 {
@@ -24,12 +26,13 @@ namespace wind
 
     struct FrameData
     {
-        vk::Semaphore         imageAvailableSemaphore;
-        vk::Semaphore         renderFinishedSemaphore;
-        vk::Fence             inFlightFence;
-        DeletionQueue         deletionQueue;
-        uint32_t              swapChainImageIndex;
-        Scoped<CommandStream> commandStream;
+        vk::Semaphore               imageAvailableSemaphore;
+        vk::Semaphore               renderFinishedSemaphore;
+        vk::Fence                   inFlightFence;
+        DeletionQueue               deletionQueue;
+        uint32_t                    swapChainImageIndex;
+        Scoped<CommandStream>       commandStream;
+        Scoped<DescriptorAllocator> descriptorAllocator;
     };
 
     // todo: this should not be a application
@@ -66,23 +69,24 @@ namespace wind
         void EndFrame();
 
         // renderer specific data
-        Scoped<Window>         m_Window;
-        Scoped<Device>         m_Device;
-        Scoped<Swapchain>      m_Swapchain;
-        Scoped<ShaderLibrary>  m_ShaderLibrary;
-        Scoped<PSOCache>       m_PipelineCache;
-        Scoped<RenderGraph>    m_RenderGraph;
-        Scoped<SlangCompiler>  m_SlangCompiler;
-        Scoped<View>           m_View;
-        std::list<PassNode*>   m_ActivePassRoot;
-        LinearAllocator*       m_LinearAllocator;
-        DeletionQueue          m_MainDelelteQueue;
-        uint32_t               m_FrameCounter;
-        std::vector<FrameData> m_Frames;
+        Scoped<Window>          m_Window;
+        Scoped<GPUScene>        m_GPUScene;
+        Scoped<Device>          m_Device;
+        Scoped<Swapchain>       m_Swapchain;
+        Scoped<ShaderLibrary>   m_ShaderLibrary;
+        Scoped<PipelineManager> m_PipelineManager;
+        Scoped<RenderGraph>     m_RenderGraph;
+        Scoped<View>            m_View;
+        std::list<PassNode*>    m_ActivePassRoot;
+        LinearAllocator*        m_LinearAllocator;
+        DeletionQueue           m_MainDelelteQueue;
+        uint32_t                m_FrameCounter;
+        std::vector<FrameData>  m_Frames;
 
         // pass specific data
         Scoped<GeometryPass> m_GeometryPass;
         Scoped<UIPass>       m_UIPass;
+        Scoped<DescriptorAllocator> m_GlobalDescriptorAllocator;
 
         Camera* m_RenderCamera;
 

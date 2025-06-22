@@ -6,6 +6,7 @@
 #include "Backend/Define.h"
 #include "Backend/Guard.h"
 #include "Graphics/View.h"
+#include "Core/FastPropertyName.h"
 #include "RenderGraphHandle.h"
 #include "RenderGraphNode.h"
 #include "RenderGraphResource.h"
@@ -35,7 +36,7 @@ namespace wind
         void RegisterGraph(RenderGraph* renderGraph) { m_RenderGraph = renderGraph; }
 
         PassType           GetPassType() const { return m_PassType; }
-        const std::string& GetPassName() const { return m_PassName; }
+        const std::string& GetPassName() const { return m_PassName.GetName(); }
 
         virtual void Setup(RenderGraphBuilder& renderGraph);
         virtual void Execute(RenderGraphUpdateContext& context);
@@ -53,7 +54,7 @@ namespace wind
 
     protected:
         RenderGraph* m_RenderGraph;
-        std::string  m_PassName;
+        FastPropertyName m_PassName;
         PassType     m_PassType;
         std::unordered_map<RenderGraphHandle, std::pair<ResourceState, RDGSubresourceRange>> m_ResourceAccesses;
     };
@@ -113,6 +114,8 @@ namespace wind
             m_Descriptor.viewPort = viewport;
             m_Descriptor.renderArea = vk::Rect2D {{0, 0}, viewport.width, viewport.height};
         }
+        
+        virtual void BakeRenderPipeline() {};
 
     protected:
         Descriptor m_Descriptor {};

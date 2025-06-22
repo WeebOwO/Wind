@@ -38,6 +38,8 @@ namespace wind
     class ShaderLibrary
     {
     public:
+        using ShaderRef = std::shared_ptr<Shader>;
+
         ShaderLibrary();
         ~ShaderLibrary();
 
@@ -48,22 +50,22 @@ namespace wind
 
         void Update();
 
-        // if the shader is not found, it will create a new shader from this filename
-        // this path should be relative to the shader root directory
-        Shader* GetShader(const std::string& filePath);
+        // todo: current just test for slang shader compile, will be removed later
+        ShaderRef CreateShader(BlobData& data);
 
         bool        HaveDirtyShaders() const;
         const auto& GetDirtyShaders() const { return m_DirtyShaders; }
         void        AllDirtyClear();
 
     private:
-        using ShaderMap = std::unordered_map<ShaderID, std::unique_ptr<Shader>>;
-
-        void CompileShader(ShaderID& id);
+        using WatchedShaderMap = std::unordered_map<ShaderID, std::unique_ptr<Shader>>;
 
         Device*                      m_Device;
-        ShaderMap                    m_Shaders;
+        WatchedShaderMap             m_WatchedShaders;
         std::unordered_set<ShaderID> m_DirtyShaders;
         std::unique_ptr<FileWatcher> m_FileWatcher;
+
+        // todo: current just test for slang shader compile, will be removed later
+        std::vector<ShaderRef> m_TrackedShaders;
     };
 } // namespace wind

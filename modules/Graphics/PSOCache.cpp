@@ -12,37 +12,35 @@ using json = nlohmann::json;
 
 namespace
 {
-    static std::unordered_map<wind::PipelineID, std::string> PipeLineFileNames = {
+    // clang-format off
+    static std::unordered_map<wind::PipelineID, std::string> PipeLineFileNames = 
+    {
         {wind::PipelineID::Triangle, "Triangle.json"},
-        {wind::PipelineID::UI, "UI.json"},
     };
-}
+    // clang-format on
+} // namespace
 
 namespace wind
 {
-    PSOCache::PSOCache() {}
-    PSOCache::~PSOCache() {}
+    PipelineManager::PipelineManager() {}
+    PipelineManager::~PipelineManager() {}
 
-    void PSOCache::Init(Device* device, ShaderLibrary* shaderLibrary)
+    void PipelineManager::Init(Device* device, ShaderLibrary* shaderLibrary)
     {
-        m_Device        = device;
-        m_ShaderLibrary = shaderLibrary;
-
-        for (int i = 0; i < static_cast<int>(PipelineID::Count); i++)
-        {
-            CompilePipeline(static_cast<PipelineID>(i));
-        }
+        m_Device              = device;
+        m_ShaderLibrary       = shaderLibrary;
+        m_EmptyPipelineLayout = m_Device->GetDevice().createPipelineLayout({});
     }
 
-    void PSOCache::Destroy()
+    void PipelineManager::Destroy()
     {
-        for (auto& [id, pipeline] : m_Pipelines)
+        for (auto& [id, pipeline] : m_CustomPipelines)
         {
             pipeline.pipeline->ReleaseRHI();
         }
     }
 
-    void PSOCache::Update()
+    void PipelineManager::Update()
     {
         auto& dirtyShaders = m_ShaderLibrary->GetDirtyShaders();
 
@@ -58,13 +56,13 @@ namespace wind
         }
     }
 
-    void PSOCache::RecompilePipeline(PipelineID id)
+    void PipelineManager::RecompilePipeline(PipelineID id)
     {
         m_Pipelines[id].pipeline->ReleaseRHI();
         CompilePipeline(id);
     }
 
-    void PSOCache::CompilePipeline(PipelineID id)
+    void PipelineManager::CompilePipeline(PipelineID id)
     {
         std::filesystem::path path = g_GlobalContext->pathManager.GetShaderRootDir() / PipeLineFileNames[id];
         std::ifstream         file(path);
@@ -110,26 +108,14 @@ namespace wind
                 }
             }
         }
+    }
 
-        vk::PipelineLayout pipelineLayout = m_Device->GetDevice().createPipelineLayout({});
-
-        desc.SetShaders(m_ShaderLibrary->GetShader(vertexShaderPath)->GetBlobData().module,
-                        m_ShaderLibrary->GetShader(fragmentShaderPath)->GetBlobData().module)
-            .SetLayout(pipelineLayout)
-            .SetInputTopology(vk::PrimitiveTopology::eTriangleList)
-            .SetPolygonMode(vk::PolygonMode::eFill)
-            .SetCullMode(vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
-            .SetMultisamplingNone()
-            .EnableDepthTest(true, vk::CompareOp::eLessOrEqual);
-
-        m_Pipelines[id].pipeline = m_Device->CreateResourceUnique<Pipeline>(desc);
-        m_Pipelines[id].pipeline->InitRHI();
-
-        m_Pipelines[id].shaderIDs.clear();
-        m_Pipelines[id].shaderIDs.push_back(vertexShaderPath);
-        m_Pipelines[id].shaderIDs.push_back(fragmentShaderPath);
-
-        file.close();
+    CustomPipelineID PipelineManager::CreatePipeline(GraphicPipelineDesc& desc)
+    {
+        auto id                        = m_CustomPipelines.size();
+        m_CustomPipelines[id].pipeline = m_Device->CreateResourceUnique<Pipeline>(desc);
+        m_CustomPipelines[id].pipeline->InitRHI();
+        return id;
     }
 
 } // namespace wind

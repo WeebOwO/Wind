@@ -6,5 +6,7 @@ layout(location = 0) out vec4 outColor;
 
 void main() 
 {
-    outColor = vec4(1.0);
+    // conver uv to color 
+    vec3 color = vec3(inUV, 0.0);
+    outColor = vec4(color, 1.0);
 }

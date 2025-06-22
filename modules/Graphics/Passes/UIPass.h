@@ -1,7 +1,8 @@
 #pragma once
 
-#include "RenderGraph/RenderGraphPass.h"
 #include "Scene/Viewport.h"
+#include "Graphics/PSOCache.h"
+#include "RenderGraph/RenderGraphPass.h"
 
 namespace wind
 {
@@ -9,7 +10,12 @@ namespace wind
     class UIPass : public RenderPassNode
     {
     public:
-        UIPass() : RenderPassNode("UIPass") {};
+        struct Data 
+        {
+            RenderGraphHandle backBuffer;
+        };
+
+        UIPass(PipelineManager* pipelineManager) : RenderPassNode("UIPass"), m_PipelineManager(pipelineManager) {};
 
         void Setup(RenderGraphBuilder& renderGraph) override;
         void Execute(RenderGraphUpdateContext& context) override;
@@ -17,6 +23,8 @@ namespace wind
         void SetViewport(const Viewport& viewport);
 
     private:
-        Viewport m_Viewport;
+        Data m_Data;
+        PipelineID m_PipelineID;
+        PipelineManager* m_PipelineManager;
     };
 } // namespace wind

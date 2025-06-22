@@ -64,7 +64,7 @@ namespace wind
 
     GraphicPipelineDesc& GraphicPipelineDesc::SetBlendMode(BlendMode mode)
     {
-        if (mode == BlendMode::None)
+        if (mode == BlendMode::Opaque)
         {
             m_ColorBlendAttachmentCI.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
                                                       vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
@@ -149,6 +149,42 @@ namespace wind
         return *this;
     }
 
+    GraphicPipelineDesc& GraphicPipelineDesc::SetVertexInputType(VertexInputType type)
+    {
+        // staitc mesh layout will be float3 position and float3 color
+        if (type == VertexInputType::StaticMesh)
+        {
+            m_VertexAttributes = {
+                {.location = 0, .binding = 0, .format = vk::Format::eR32G32B32Sfloat, .offset = 0},
+                {.location = 1, .binding = 0, .format = vk::Format::eR32G32B32Sfloat, .offset = 12},
+            };
+
+            m_VertexBindings = {
+                {.binding = 0, .stride = 24, .inputRate = vk::VertexInputRate::eVertex},
+            };
+
+            m_VertexInputCI.setVertexBindingDescriptionCount(static_cast<uint32_t>(m_VertexBindings.size()));
+            m_VertexInputCI.setPVertexBindingDescriptions(m_VertexBindings.data());
+            m_VertexInputCI.setVertexAttributeDescriptionCount(static_cast<uint32_t>(m_VertexAttributes.size()));
+            m_VertexInputCI.setPVertexAttributeDescriptions(m_VertexAttributes.data());
+        }
+
+        if (type == VertexInputType::FullScreenQuad)
+        {
+            // clang-format off
+            m_VertexInputCI = 
+            {
+                .vertexBindingDescriptionCount   = 0,
+                .pVertexBindingDescriptions      = nullptr,
+                .vertexAttributeDescriptionCount = 0,
+                .pVertexAttributeDescriptions    = nullptr,
+            };
+            // clang-format on
+        }
+
+        return *this;
+    }
+
     Pipeline::Pipeline(Device* device, const GraphicPipelineDesc& desc) : Resource(device), m_Desc(desc) {}
 
     Pipeline::~Pipeline() = default;
@@ -177,13 +213,6 @@ namespace wind
              .pDynamicStates    = &dynamicStates[0],
         };
 
-        vk::PipelineVertexInputStateCreateInfo vertexInputCI = {
-            .vertexBindingDescriptionCount   = 0,
-            .pVertexBindingDescriptions      = nullptr,
-            .vertexAttributeDescriptionCount = 0,
-            .pVertexAttributeDescriptions    = nullptr,
-        };
-
         m_Layout = m_Desc.m_Layout;
         // transfer ownership of the layout to the pipeline
 
@@ -191,7 +220,7 @@ namespace wind
         pipelineCI.setLayout(m_Layout)
             .setRenderPass(nullptr)
             .setStages(m_Desc.m_ShaderStagesCI)
-            .setPVertexInputState(&vertexInputCI)
+            .setPVertexInputState(&m_Desc.m_VertexInputCI)
             .setPInputAssemblyState(&m_Desc.m_InputAssemblyCI)
             .setPViewportState(&viewportStateCI)
             .setPRasterizationState(&m_Desc.m_RasterizerCI)

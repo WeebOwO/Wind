@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphics/PSOCache.h"
+#include "Backend/Pipeline.h"
 #include "RenderGraph/RenderGraphPass.h"
 #include "ShaderCompiler/ShaderLibary.h"
 
@@ -12,18 +13,17 @@ namespace wind
     class GeometryPass : public RenderPassNode
     {
     public:
-        GeometryPass(PipelineID pipeline, PSOCache* globalPSOCache);
+        GeometryPass(PipelineManager* pipelineManager);
         ~GeometryPass() override;
 
         void Setup(RenderGraphBuilder& renderGraph) override;
         void Execute(RenderGraphUpdateContext& context) override;
 
-    private:
-        void BlitToBackBuffer(vk::CommandBuffer cmdBuffer, vk::Image color, vk::Image backBuffer);
+        void BakeRenderPipeline() override;
 
+    private:
         RenderGraphHandle            m_SceneColorHandle;
-        PSOCache*                    m_PsoCacheLibrary;
-        PipelineID                   m_PipelineID;
-        std::unordered_set<ShaderID> m_ShaderID;
+        PipelineManager*             m_PipelineManager;
+        CustomPipelineID             m_CustomPipelineID;
     };
 } // namespace wind

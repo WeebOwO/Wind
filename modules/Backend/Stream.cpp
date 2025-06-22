@@ -42,4 +42,14 @@ namespace wind
 
         return m_CommandBuffer;
     }
+
+    void CommandStream::Draw(const DrawCommand& draw)
+    {
+        GPUBuffer* vertexBuffer = m_Device->Get(draw.vertexBuffer);
+        GPUBuffer* indexBuffer  = m_Device->Get(draw.indexBuffer);
+
+        m_CommandBuffer.bindVertexBuffers(0, {vertexBuffer->GetNativeHandle()}, {0});
+        m_CommandBuffer.bindIndexBuffer(indexBuffer->GetNativeHandle(), 0, vk::IndexType::eUint32);
+        m_CommandBuffer.drawIndexed(draw.indexCount, draw.instanceCount, 0, 0, 0);
+    }
 } // namespace wind

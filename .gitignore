@@ -15,3 +15,5 @@ xmake-requires.lock
 # auto generate file
 xmake/Config.h
 .vscode/
+crash.dmp
+imgui.ini

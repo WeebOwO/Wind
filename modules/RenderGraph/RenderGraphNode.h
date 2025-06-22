@@ -17,5 +17,6 @@ namespace wind
         NodeID              handle;
         NodeType            nodeType;
         std::vector<NodeID> dependencies;
+        bool                culled;
     };
 } // namespace wind

@@ -12,12 +12,12 @@ namespace wind
     void UIPass::Setup(RenderGraphBuilder& builder)
     {
         // setup the pass
-        RenderGraphHandle handle = builder.GetResourceHandle(GlobalRT::SceneColor);
+        m_Data.backBuffer = builder.GetResourceHandle(GlobalRT::BackBuffer);
         vk::ClearValue clearValue = {.color = vk::ClearColorValue(std::array<float, 4> {0.0f, 0.0f, 0.0f, 1.0f})};
 
         std::vector<AttachmentInfo> renderTargets = 
         {
-            {handle, clearValue, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore},
+            {m_Data.backBuffer, clearValue, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eStore},
         };
 
         SetRenderTargets(renderTargets);
@@ -25,9 +25,15 @@ namespace wind
 
     void UIPass::Execute(RenderGraphUpdateContext& context)
     {
-        vk::CommandBuffer cmdBuffer = context.cmdBuffer;
+        vk::CommandBuffer cmdBuffer = context.commandStream->GetCommandBuffer();
 
-        // draw UI here
+        // Pipeline* pipeline = m_PsoCacheLibrary->GetPipeline(m_PipelineID);
+
+        // cmdBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->GetNativeHandle());
+
+        // cmdBuffer.draw(3, 1, 0, 0);
+
+        // draw UI here 
         ImGui::Render();
         ImDrawData* main_draw_data = ImGui::GetDrawData();
 

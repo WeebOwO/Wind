@@ -8,7 +8,9 @@
 #include "RenderGraphHandle.h"
 #include "RenderGraphPass.h"
 #include "RenderGraphResource.h"
+#include "Scene/GPUScene.h"
 #include "VirtualResource.h"
+
 
 namespace wind
 {
@@ -18,8 +20,9 @@ namespace wind
     struct RenderGraphUpdateContext
     {
         uint32_t                     frameIndex;
-        vk::CommandBuffer            cmdBuffer;
+        CommandStream*               commandStream;
         RenderGraphResourceRegistry* resourceRegistry;
+        GPUScene*                    scene;
     };
 
     class RenderGraph

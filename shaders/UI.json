@@ -5,5 +5,5 @@
         "fragment": "UIPass.frag"
     },
     "CullMode": "None",
-    "BlendMode": "Alpha"
+    "BlendMode": "opaque"
 }

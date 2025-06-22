@@ -29,7 +29,7 @@ namespace wind
         m_Device                    = Device::Create(extensions, m_Window.get());
         m_Swapchain                 = m_Device->CreateResourceUnique<Swapchain>(800, 600);
         m_ShaderLibrary             = std::make_unique<ShaderLibrary>();
-        m_PipelineCache             = std::make_unique<PSOCache>();
+        m_PipelineManager           = std::make_unique<PipelineManager>();
 
         // initialize the persistent memory with 1MB
         m_LinearAllocator = new LinearAllocator(1024 * 1024);
@@ -43,10 +43,33 @@ namespace wind
         RegisterDeletionQueue();
 
         m_ShaderLibrary->Init(m_Device.get());
-        m_PipelineCache->Init(m_Device.get(), m_ShaderLibrary.get());
+        m_PipelineManager->Init(m_Device.get(), m_ShaderLibrary.get());
+        m_GPUScene = std::make_unique<GPUScene>(m_Device.get());
 
-        m_SlangCompiler = std::make_unique<SlangCompiler>();
-        m_SlangCompiler->Test();
+        // Triangle mesh
+        SubMesh triangleSubMesh = {
+            .vertices =
+                {
+                    {.position = {0.0f, -0.5f, 0.5f}, .color = {1.0f, 0.0f, 0.0f}},
+                    {.position = {0.5f, 0.5f, 0.5f}, .color = {0.0f, 1.0f, 0.0f}},
+                    {.position = {-0.5f, 0.5f, 0.5f}, .color = {0.0f, 0.0f, 1.0f}},
+                },
+            .indices = {0, 1, 2},
+        };
+
+        Mesh triangleMesh = {
+            .subMeshes = {triangleSubMesh},
+        };
+
+        std::vector<DescriptorAllocator::PoolSizeRatio> globalSize = {
+            {vk::DescriptorType::eUniformBuffer, 3},
+            {vk::DescriptorType::eStorageBuffer, 3},
+            {vk::DescriptorType::eCombinedImageSampler, 4},
+        };
+
+        m_GlobalDescriptorAllocator = m_Device->CreateResourceUnique<DescriptorAllocator>(1000, globalSize);
+
+        m_GPUScene->UploadMesh(triangleMesh);
 
         // init imgui part
         InitImGui();
@@ -140,6 +163,7 @@ namespace wind
     {
         WIND_CORE_INFO("Renderer shutting down");
         m_Device->WaitIdle();
+        m_GPUScene->ReleaseScene();
         m_MainDelelteQueue.Flush();
         delete m_LinearAllocator;
     }
@@ -174,14 +198,12 @@ namespace wind
         // draw a triangle
         BeginFrame();
 
-        ImGui::ShowDemoWindow();
-
         auto& frame = GetCurrentFrameData();
 
-        RenderGraphUpdateContext context = 
-        {
-            .frameIndex = m_FrameCounter,
-            .cmdBuffer  = frame.commandStream->GetCommandBuffer(),
+        RenderGraphUpdateContext context = {
+            .frameIndex    = m_FrameCounter,
+            .commandStream = frame.commandStream.get(),
+            .scene         = m_GPUScene.get(),
         };
 
         InitView();
@@ -299,6 +321,12 @@ namespace wind
 
         vk::Device vkDevice = m_Device->GetDevice();
 
+        std::vector<DescriptorAllocator::PoolSizeRatio> frameSize = {
+            {vk::DescriptorType::eUniformBuffer, 3},
+            {vk::DescriptorType::eStorageBuffer, 3},
+            {vk::DescriptorType::eCombinedImageSampler, 4},
+        };
+
         for (auto& frame : m_Frames)
         {
             frame.imageAvailableSemaphore = vkDevice.createSemaphore({});
@@ -307,6 +335,9 @@ namespace wind
             frame.commandStream =
                 m_Device->CreateResourceUnique<CommandStream>(CommandQueueType::Graphics, StreamMode::eImmdiately);
             frame.commandStream->InitRHI();
+
+            frame.descriptorAllocator = m_Device->CreateResourceUnique<DescriptorAllocator>(1000, frameSize);
+            frame.descriptorAllocator->InitRHI();
         }
     }
 
@@ -329,7 +360,7 @@ namespace wind
         m_RenderGraph->GetBlackboard().Put(GlobalRT::BackBuffer, backBufferHandle);
 
         // import camera color
-        GPUTexture*  cameraTexture = m_Device->GetTexture(m_RenderCamera->GetTextureHandle());
+        GPUTexture*  cameraTexture = m_Device->Get(m_RenderCamera->GetTextureHandle());
         vk::Extent3D extent        = cameraTexture->imageInfo.extent;
 
         RDGResourceDesc cameraImageDesc =
@@ -350,8 +381,8 @@ namespace wind
         // initialize the render graph
         m_RenderGraph = std::make_unique<RenderGraph>(m_Device.get());
         // create the render graph passes
-        m_GeometryPass = std::make_unique<GeometryPass>(PipelineID::Triangle, m_PipelineCache.get());
-        m_UIPass       = std::make_unique<UIPass>();
+        m_GeometryPass = std::make_unique<GeometryPass>(m_PipelineManager.get());
+        m_UIPass       = std::make_unique<UIPass>(m_PipelineManager.get());
     }
 
     void Renderer::RegisterDeletionQueue()
@@ -361,13 +392,15 @@ namespace wind
         m_MainDelelteQueue.PushFunction([this]() { m_GeometryPass.reset(); });
         m_MainDelelteQueue.PushFunction([this]() { m_Window.reset(); });
         m_MainDelelteQueue.PushFunction([this]() { m_Swapchain.reset(); });
+        m_MainDelelteQueue.PushFunction([this]() { m_GlobalDescriptorAllocator->ReleaseRHI(); });
         m_MainDelelteQueue.PushFunction([this]() {
             m_ShaderLibrary->Destroy();
             m_ShaderLibrary.reset();
         });
+        
         m_MainDelelteQueue.PushFunction([this]() {
-            m_PipelineCache->Destroy();
-            m_PipelineCache.reset();
+            m_PipelineManager->Destroy();
+            m_PipelineManager.reset();
         });
 
         // push the deletion queue to the main deletion queue
@@ -380,6 +413,7 @@ namespace wind
                 vkDevice.destroySemaphore(frame.renderFinishedSemaphore);
                 vkDevice.destroyFence(frame.inFlightFence);
                 frame.commandStream->ReleaseRHI();
+                frame.descriptorAllocator->ReleaseRHI();
             }
         });
     }
@@ -392,7 +426,7 @@ namespace wind
         }
 
         m_Device->WaitIdle();
-        m_PipelineCache->Update();
+        m_PipelineManager->Update();
         m_ShaderLibrary->AllDirtyClear();
     }
 } // namespace wind
